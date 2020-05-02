@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sucess</title>
+</head>
+
+<body>
+{% if user.is_authenticated%}
+    <h1>Selamat Datang {{user.get_full_name}}</h1>
+{% else %}
+    <h1>Anda Belum Login</h1>
+{% endif %}
+{% if user.siswa.alamat == None %}
+    <h1>Silahkan Lengkapi Indentias Anda</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token%}
+        <input type="text" name="alamat" placeholder="alamat">
+        <input type="text" name="date" placeholder="date">
+        <input type="text" name="umur" placeholder="umur">
+        <input type="text" name="jk" placeholder="jk">
+        <input type="file" name='foto'>
+        <input type="file" name='akta'>
+        <input type="submit">
+    </form>
+{% elif user.siswa.nilai_un_matematika == None %}
+    <h1>Silahkan Lengkap Nilai Anda</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="text" name="mtk" placeholder="mtk">
+        <input type="text" name="indo" placeholder="indo">
+        <input type="text" name="ing" placeholder="ing">
+        <input type="file" name='skhun'>
+        <input type="submit">
+    </form>
+{% else %}
+    <img src="{{user.siswa.foto_diri.url}}">
+    <h1>Alamat : {{user.siswa.alamat}}</h1>
+    <h1>Tanggal Lahir : {{user.siswa.tanggal_lahir}}</h1>
+    <h1>Umur : {{user.siswa.umur}}</h1>
+    <h1>Nilai Rata-Rata UN : 
+        {{user.siswa.nilai_un_matematika|add:user.siswa.nilai_un_indonesia|add:user.siswa.nilai_un_inggris}}
+    </h1>
+{% endif %}
+    
+</body>
+
+</html>

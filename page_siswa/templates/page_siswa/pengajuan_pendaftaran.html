@@ -1,0 +1,410 @@
+{% load static %}
+<div class="card card-primary card-outline">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-sm-12 col-md-7 text-sm-center text-md-right">
+                <span style="font-size: 30px;">Data Siswa</span>
+            </div>
+            <div class="col-sm-12 col-md-3 offset-md-2">
+                <button class="btn btn-success float-right ml-2" id='btn_edit' type="button" value="edit"
+                    onclick="editData(this.value)">Edit</button>
+                <button class="btn btn-secondary float-right" id='btn_cancel' type="button" value="edit"
+                    onclick="location.href='{% url 'siswa:tahapan_pendaftaran'%}'"
+                    style="display: none;">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{% url 'siswa:proses_pengajuan'%}" enctype="multipart/form-data" id="formSiswa">
+            {% csrf_token%}
+            <input type="hidden" name="decision" id="decision" value="pengajuan">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="first_name">Nama Depan</label>
+                    <input type="text" class="form-control editabled" id="first_name" name="first_name"
+                        placeholder="Nama Depan" value="{{user.first_name}}" required disabled>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="last_name">Nama Belakang</label>
+                    <input type="text" class="form-control editabled" id="last_name" name='last_name'
+                        placeholder="Nama Belakang" value='{{user.last_name}}' required disabled>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Jenis Kelamin</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="jk" id="laki-laki" value="Laki-Laki" required
+                        {% if request.user.DetailUser.jenis_kelamin == 'Laki-Laki'%}checked{%else%}disabled{%endif%}>
+                    <label class="form-check-label" for="laki-laki">
+                        Laki-Laki
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="jk" id="perempuan" value="Perempuan" required
+                        {% if request.user.DetailUser.jenis_kelamin == 'Perempuan'%}checked{%else%}disabled{%endif%}>
+                    <label class="form-check-label" for="perempuan">
+                        Perempuan
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="datetimepicker5">Tanggal Lahir</label>
+                        <input type="text" class="form-control editabled datetimepicker-input" id="datetimepicker5"
+                            data-toggle="datetimepicker" data-target="#datetimepicker5" name="tanggal"
+                            value="{{request.user.DetailUser.tanggal_lahir}}" required disabled />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="tempat_lahir">Tempat Lahir</label>
+                        <input type="text" class="form-control editabled" id="tempat_lahir" name="tempat"
+                            placeholder="Tempat Lahir" value="{{request.user.DetailUser.tempat_lahir}}" required
+                            disabled />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="umur">Umur</label>
+                        <input type="number" class="form-control editabled" id="umur" name="umur" placeholder="Umur"
+                            required disabled value="{{request.user.DetailUser.umur}}" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <label for="inputAddress">Alamat Lengkap</label>
+                    <div class="form-check hidden ml-2" style="display: none;">
+                        <input class="form-check-input" type="checkbox" value="edit_alamat" id="edit_alamat"
+                            onchange="split_alamat(this.value)">
+                        <label class="form-check-label" for="edit_alamat">
+                            Ganti Alamat Lengkap
+                        </label>
+                    </div>
+                </div>
+                <textarea class="form-control alamat_lengkap" placeholder="Alamat Lengkap" name='alamat'
+                    disabled>{{request.user.DetailUser.alamat}}</textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-3 alamat_lengkap" style="display: none;">
+                    <label for="provinsi">Provinsi</label>
+                    <select id="provinsi" class="form-control alamat_select" disabled>
+                        <option selected disabled value>Silahkan Pilih</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3 alamat_lengkap" style="display: none;">
+                    <label for="kabupaten">Kabupaten/Kota</label>
+                    <select id="kabupaten" class="form-control alamat_select" disabled>
+                        <option selected disabled value>Silahkan Pilih</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3 alamat_lengkap" style="display: none;">
+                    <label for="kecamatan">Kecamatan</label>
+                    <select id="kecamatan" class="form-control alamat_select" disabled>
+                        <option selected disabled value>Silahkan Pilih</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3 alamat_lengkap" style="display: none;">
+                    <label for="desa">Desa/Kelurahan</label>
+                    <select id="desa" name="desa" class="form-control alamat_select" disabled>
+                        <option selected disabled value>Silahkan Pilih</option>
+                    </select>
+                </div>
+            </div>
+            <input type="hidden" id='prov' name="prov">
+            <input type="hidden" id='kab' name="kab">
+            <input type="hidden" id='kec' name="kec">
+            <div class="form-row mt-2">
+                <div class="col-12 text-center">
+                    <h3><u>Hasil Nilai UN</u></h3>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="mtk">Matematika</label>
+                    <input type="number" step="any" class="form-control editabled" name="mtk" id="mtk"
+                        value="{{request.user.DetailUser.nilai_matematika}}" required disabled>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="indo">Bhs.Indonesia</label>
+                    <input type="number" step="any" class="form-control editabled" name="indo" id="indo"
+                        value="{{request.user.DetailUser.nilai_indonesia}}" required disabled>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="ing">Bhs.Inggris</label>
+                    <input type="number" step="any" class="form-control editabled" name="ing" id="ing"
+                        value="{{request.user.DetailUser.nilai_inggris}}" required disabled>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="ipa">IPA</label>
+                    <input type="number" step="any" class="form-control editabled" name="ipa" id="ipa"
+                        value="{{request.user.DetailUser.nilai_ipa}}" required disabled>
+                </div>
+            </div>
+            <div class="form-row" id="berkas">
+                <div class="col-12 text-center">
+                    <h3><u>Berkas-Berkas</u></h3>
+                </div>
+                <div class="col-lg-4 col-md-4 col-xs-6 text-center hidden">
+                    <label>Ijazah</label>
+                    <a href="{{user.DetailUser.berkas_ijazah.url}}" data-fancybox
+                        data-caption="Ijazah {{request.user.get_full_name}}">
+                        <img class="img-fluid" src="{{user.DetailUser.berkas_ijazah.url}}" style="height: 250px;">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-4 col-xs-6 text-center hidden">
+                    <label>Akta Kelahiran</label>
+                    <a href="{{user.DetailUser.berkas_akta.url}}" data-fancybox
+                        data-caption="Akta Kelahiran {{request.user.get_full_name}}">
+                        <img class="img-fluid" src="{{user.DetailUser.berkas_akta.url}}" style="height: 250px;">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-4 col-xs-6 text-center hidden">
+                    <label>Surat Kesehatan</label>
+                    <a href="{{user.DetailUser.berkas_kesehatan.url}}" data-fancybox
+                        data-caption="Surat Kesehatan {{request.user.get_full_name}}">
+                        <img class="img-fluid" src="{{user.DetailUser.berkas_kesehatan.url}}" style="height: 250px;">
+                    </a>
+                </div>
+            </div>
+            <div class="d-flex justify-content-around">
+                <div class="form-check hidden" style="display: none;">
+                    <input class="form-check-input" type="checkbox" value="edit_foto" id="edit_foto"
+                        onchange="upload_ulang(this.value)">
+                    <label class="form-check-label" for="edit_foto">
+                        Upload Ulang Foto Diri
+                    </label>
+                </div>
+                <div class="form-check hidden" style="display: none;">
+                    <input class="form-check-input" type="checkbox" value="edit_ijazah" id="edit_ijazah"
+                        onchange="upload_ulang(this.value)">
+                    <label class="form-check-label" for="edit_ijazah">
+                        Upload Ulang Ijazah
+                    </label>
+                </div>
+                <div class="form-check hidden" style="display: none;">
+                    <input class="form-check-input" type="checkbox" value="edit_akta" id="edit_akta"
+                        onchange="upload_ulang(this.value)">
+                    <label class="form-check-label" for="edit_akta">
+                        Upload Ulang Akta Kelahiran
+                    </label>
+                </div>
+                <div class="form-check hidden" style="display: none;">
+                    <input class="form-check-input" type="checkbox" value="edit_kesehatan" id="edit_kesehatan"
+                        onchange="upload_ulang(this.value)">
+                    <label class="form-check-label" for="edit_kesehatan">
+                        Upload Ulang Surat Kesehatan
+                    </label>
+                </div>
+            </div>
+            <div class="form-row" id="foto" style="display: none;">
+                <label>Upload Foto Diri</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="input_foto" name="foto">
+                    <label class="custom-file-label" for="input_foto">Choose file</label>
+                </div>
+            </div>
+            <div class="form-row" id="ijazah" style="display: none;">
+                <label>Upload Ijazah/SKHUN</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="input_ijazah" name="skhun">
+                    <label class="custom-file-label" for="input_ijazah">Choose file</label>
+                </div>
+            </div>
+            <div class="form-row" id="akta" style="display: none;">
+                <label>Upload Akta Kelahiran</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="input_akta" name="akta">
+                    <label class="custom-file-label" for="input_akta">Choose file</label>
+                </div>
+            </div>
+            <div class="form-row" id="kesehatan" style="display: none;">
+                <label>Upload Surat Kesehatan</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="input_kesehatan" name="kesehatan">
+                    <label class="custom-file-label" for="input_kesehatan">Choose file</label>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary mt-2 float-right" id="btn_pendaftaran"
+                onclick="open_modal('send')">Ajukan Pendaftaran</button>
+        </form>
+    </div>
+    <div class="modal fade" id="ModalCenter" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalLongTitle">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id='modal-body'>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+                    <button type="submit" form="formSiswa" id="btn_yes" class="btn btn-primary">Ya</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function open_modal(val) {
+        var send_html = `
+            <h5>Harap Periksa Kembali Data-data Anda Sebelum Mengirimkan Pengajuan.</h5>
+            <h5>Dikarenakan <b>Jika Anda Sudah Mengirimkan Pengajuan Anda TIdak Dapat Merubah Kembali Data Anda.</b></h5>
+        `
+        if (val == 'Simpan') {
+            document.getElementById('ModalLongTitle').innerHTML = 'Peringatan';
+            document.getElementById('modal-body').innerHTML = 'Apakah anda yakin ingin mengedit data siswa ?';
+            $('#ModalCenter').modal({ backdrop: 'static', keyboard: true });
+        }
+        else {
+            document.getElementById('ModalLongTitle').innerHTML = 'Peringatan';
+            document.getElementById('modal-body').innerHTML = send_html;
+            document.getElementById('btn_yes').innerHTML = 'Ajukan Pendaftaran';
+            $('#ModalCenter').modal({ backdrop: 'static', keyboard: true });
+        }
+    }
+    function split_alamat() {
+        var val = '{{request.user.DetailUser.alamat}}';
+        var data = val.split(",");
+        var alamats = document.getElementsByClassName('alamat_lengkap');
+        var sel = document.getElementsByClassName('alamat_select');
+        var id = document.getElementById('edit_alamat');
+        if (id.checked == true) {
+            for (var i = 0; i < sel.length; i++) {
+                // var option = document.createElement("option");
+                // option.text = data[4 - i];
+                // option.disabled = true;
+                // option.hidden = true;
+                // option.selected = true
+                // sel[i].add(option);
+                sel[i].required = true;
+            }
+            alamats[0].disabled = false;
+            alamats[0].required = true;
+            alamats[0].innerHTML = data[0];
+            for (var i = 1; i < alamats.length; i++) {
+                alamats[i].style.display = 'block';
+            }
+        }
+        else {
+            for (var i = 0; i < sel.length; i++) {
+                sel[i].required = false;
+            }
+            alamats[0].disabled = true;
+            alamats[0].required = false;
+            alamats[0].innerHTML = val;
+            for (var i = 1; i < alamats.length; i++) {
+                alamats[i].style.display = 'none';
+            }
+        }
+    }
+    function upload_ulang(file) {
+        btn = document.getElementById(file);
+        if (btn.checked == true) {
+            switch (file) {
+                case 'edit_ijazah':
+                    document.getElementById('ijazah').style.display = 'block';
+                    document.getElementById('input_ijazah').required = true;
+                    break;
+                case 'edit_akta':
+                    document.getElementById('akta').style.display = 'block';
+                    document.getElementById('input_akta').required = true;
+                    break;
+                case 'edit_kesehatan':
+                    document.getElementById('kesehatan').style.display = 'block';
+                    document.getElementById('input_kesehatan').required = true;
+                    break;
+                case 'edit_foto':
+                    document.getElementById('foto').style.display = 'block';
+                    document.getElementById('input_foto').required = true;
+                    break;
+            }
+        }
+        else if (btn.checked == false) {
+            switch (file) {
+                case 'edit_ijazah':
+                    document.getElementById('ijazah').style.display = 'none';
+                    document.getElementById('input_ijazah').value = '';
+                    document.getElementById('input_ijazah').required = false;
+                    break;
+                case 'edit_akta':
+                    document.getElementById('akta').style.display = 'none';
+                    document.getElementById('input_akta').value = '';
+                    document.getElementById('input_akta').required = false;
+                    break;
+                case 'edit_kesehatan':
+                    document.getElementById('kesehatan').style.display = 'none';
+                    document.getElementById('input_kesehatan').value = '';
+                    document.getElementById('input_kesehatan').required = false;
+                    break;
+                case 'edit_foto':
+                    document.getElementById('foto').style.display = 'none';
+                    document.getElementById('input_foto').value = '';
+                    document.getElementById('input_foto').required = false;
+                    break;
+            }
+        }
+    };
+    function editData(check) {
+        var btn = document.getElementById('btn_edit');
+        var inputs = document.getElementsByClassName('editabled');
+        var alamats = document.getElementsByClassName('alamat_lengkap');
+        var radio = document.getElementsByClassName('form-check-input');
+        var hidden = document.getElementsByClassName('hidden');
+        if (check == 'edit') {
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].disabled = false;
+            }
+            document.getElementById('decision').value = 'edit';
+            document.getElementById('btn_cancel').style.display = 'block';
+            document.getElementById('btn_pendaftaran').style.display = 'none';
+            hidden[0].style.display = 'block';
+            btn.value = 'save';
+            btn.innerHTML = 'Simpan';
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-primary');
+            for (var i = 0; i < radio.length; i++) {
+                if (radio[i].checked == false) {
+                    radio[i].disabled = false;
+                }
+            }
+            for (var i = 1; i < 4; i++) {
+                hidden[i].style.display = 'none';
+            }
+            for (var i = 4; i < hidden.length; i++) {
+                hidden[i].style.display = 'block';
+            }
+        }
+        else if (check == 'save') {
+            open_modal('Simpan');
+        }
+        else if (check == 'Cancel') {
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].disabled = true;
+            }
+            for (var i = 1; i < alamats.length; i++) {
+                alamats[i].style.display = 'none';
+            }
+            hidden[0].style.display = 'none';
+            document.getElementById('edit_alamat').checked = false;
+            alamats[0].innerHTML = '{{request.user.DetailUser.alamat}}'
+            btn.value = 'edit'
+            btn.innerHTML = 'Edit'
+            btn.classList.remove('btn-primary')
+            btn.classList.add('btn-success')
+            for (var i = 0; i < radio.length; i++) {
+                if (radio[i].checked == false) {
+                    radio[i].disabled = true;
+                }
+            }
+            for (var i = 1; i < 4; i++) {
+                hidden[i].style.display = 'block';
+            }
+            for (var i = 4; i < hidden.length; i++) {
+                hidden[i].style.display = 'none';
+            }
+        }
+
+    }
+</script>

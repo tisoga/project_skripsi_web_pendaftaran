@@ -1,0 +1,53 @@
+<div class="card card-primary card-outline">
+    <div class="card-header d-flex justify-content-center">
+        <h5 class="card-title m-0" id='xxs'>Upload Berkas</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token%}
+            <div class="form-row">
+                <label>Upload Ijazah/SKHUN</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="customFile" name="skhun" required>
+                    <label class="custom-file-label" for="customFile">Choose file</label>
+                </div>
+            </div>
+            <div class="form-row mt-2">
+                <div class="col-12 text-center">
+                    <h3><b><u>Nilai UN</u></b></h3>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="mtk">Matematika</label>
+                    <input type="number" step="any" class="form-control" name="mtk" id="mtk">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="indo">Bhs.Indonesia</label>
+                    <input type="number" step="any" class="form-control" name="indo" id="indo">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="ing">Bhs.Inggris</label>
+                    <input type="number" step="any" class="form-control" name="ing" id="ing">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="ipa">IPA</label>
+                    <input type="number" step="any" class="form-control" name="ipa" id="ipa">
+                </div>
+            </div>
+            <div class="form-row">
+                <label>Upload Akta Kelahiran</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="customFile" name="akta" required>
+                    <label class="custom-file-label" for="customFile">Choose file</label>
+                </div>
+            </div>
+            <div class="form-row">
+                <label>Upload Surat Kesehatan</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="customFile" name="kesehatan" required>
+                    <label class="custom-file-label" for="customFile">Choose file</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Simpan</button>
+        </form>
+    </div>
+</div>

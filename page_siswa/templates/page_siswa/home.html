@@ -1,0 +1,84 @@
+{% extends 'page_siswa/base_siswa.html'%}
+
+{% block title %}Beranda{% endblock %}
+
+{% block judul %}Beranda{% endblock %}
+
+{% block content %}
+<div class="card card-primary card-outline">
+    <div class="card-header d-flex justify-content-center">
+        <h5 class="card-title m-0">Tahapan Pendaftaran</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-3">
+                {% if request.user.DetailUser.status == 0 %}
+                <a href="{% url 'siswa:tahapan_pendaftaran' %}">
+                    <div class='bg-primary text-center' style="height: 100px;">
+                {% else %}
+                    <div class='bg-success text-center' style="height: 100px;">
+                {% endif %}
+                        <i class="fas fa-user fa-2x pt-4"></i>
+                        <p class="pt-1">Identitas Diri</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-3">
+                {% if request.user.DetailUser.status == 0 %}
+                    <div class='bg-secondary text-center' style="height: 100px;">
+                {% elif request.user.DetailUser.status == 1 %}
+                <a href="{% url 'siswa:tahapan_pendaftaran' %}">
+                    <div class='bg-primary text-center' style="height: 100px;">
+                {% else %}
+                    <div class='bg-success text-center' style="height: 100px;">
+                {% endif %}
+                        <i class="fas fa-file fa-2x pt-4"></i>
+                        <p class="pt-1">Berkas-Berkas</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-3">
+                {% if request.user.DetailUser.status == 0 or request.user.DetailUser.status == 1 %}
+                    <div class='bg-secondary text-center' style="height: 100px;">
+                {% elif request.user.DetailUser.status == 2 %}
+                <a href="{% url 'siswa:tahapan_pendaftaran' %}">
+                    <div class='bg-primary text-center' style="height: 100px;">
+                {% else %}
+                    <div class='bg-success text-center' style="height: 100px;">
+                {% endif %}
+                    <i class="fas fa-clipboard fa-2x pt-4"></i>
+                    <p class="pt-1">Pengajuan Pendaftaran</p>
+                </div>
+                </a>
+            </div>
+            <div class="col-3">
+                {% if request.user.DetailUser.status == 0 or request.user.DetailUser.status == 1 or request.user.DetailUser.status == 2%}
+                    <div class='bg-secondary text-center' style="height: 100px;">
+                {% elif request.user.DetailUser.status == 3 %}
+                    <div class='bg-secondary text-center' style="height: 100px;">
+                {% elif request.user.DetailUser.status == 5 %}
+                <a href="{% url 'siswa:tahapan_pendaftaran' %}">
+                    <div class='bg-primary text-center' style="height: 100px;">
+                {% else %}
+                    <div class='bg-success text-center' style="height: 100px;">
+                {% endif %}
+                    <i class="fas fa-retweet fa-2x pt-4"></i>
+                    <p class="pt-1">Daftar Ulang</p>
+                </div>
+            </div>
+        </div>
+        <!-- <a href="#" class="btn btn-primary">Profile</a> -->
+    </div>
+</div>
+
+<!-- <div class="card card-primary card-outline">
+  <div class="card-header">
+    <h5 class="card-title m-0">Batas Akhir penggantian Data Siswa</h5>
+  </div>
+  <div class="card-body">
+    <h6 class="card-title">Special title treatment</h6>
+
+    <p class="card-text">Diharapkan untuk mengcheck kembali apakah data siswa sudah benar atau tidak, dikarenakan proses pengeditan data siswa akan ditutup pada tanggal 15 January 2020</p>
+  </div>
+</div> -->
+{% endblock %}

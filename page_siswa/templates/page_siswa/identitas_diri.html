@@ -1,0 +1,95 @@
+<div class="card card-primary card-outline">
+    <div class="card-header d-flex justify-content-center">
+        <h5 class="card-title m-0" id='xxs'>Identitas Diri</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token%}
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="first_name">Nama Depan</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Nama Depan" 
+                        value="{{user.first_name}}" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="last_name">Nama Belakang</label>
+                    <input type="text" class="form-control" id="last_name" name='last_name' placeholder="Nama Belakang" 
+                        value='{{user.last_name}}' required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Jenis Kelamin</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="jk" id="laki-laki" value="Laki-Laki" required>
+                    <label class="form-check-label" for="laki-laki">
+                        Laki-Laki
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="jk" id="perempuan" value="Perempuan" required>
+                    <label class="form-check-label" for="perempuan">
+                        Perempuan
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="datetimepicker5">Tanggal Lahir</label>
+                        <input type="text" class="form-control datetimepicker-input" id="datetimepicker5"
+                            data-toggle="datetimepicker" data-target="#datetimepicker5" name="tanggal" 
+                            placeholder="Tanggal Lahir" required/>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="tempat_lahir">Tempat Lahir</label>
+                        <input type="text" class="form-control" id="tempat_lahir" name="tempat" placeholder="Tempat Lahir" required/>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="umur">Umur</label>
+                        <input type="number" class="form-control" id="umur" name="umur" placeholder="Umur" required/>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputAddress">Alamat Lengkap</label>
+                <textarea class="form-control" 
+                    placeholder="Alamat Lengkap" name='alamat'></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="provinsi">Provinsi</label>
+                    <select id="provinsi" class="form-control" required disabled>
+                        <option selected disabled value>Silahkan Pilih</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="kabupaten">Kabupaten/Kota</label>
+                    <select id="kabupaten" class="form-control" required disabled>
+                        <option selected disabled value>Silahkan Pilih</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="kecamatan">Kecamatan</label>
+                    <select id="kecamatan" class="form-control" required disabled>
+                        <option selected disabled value>Silahkan Pilih</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="desa">Desa/Kelurahan</label>
+                    <select id="desa" name="desa" class="form-control" required disabled>
+                        <option selected disabled value>Silahkan Pilih</option>
+                    </select>
+                </div>
+            </div>
+            <input type="hidden" id='prov' name="prov">
+            <input type="hidden" id='kab' name="kab">
+            <input type="hidden" id='kec' name="kec">
+            <label>Foto</label>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="customFile" name="foto" required>
+                <label class="custom-file-label" for="customFile">Choose file</label>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Simpan</button>
+        </form>
+    </div>
+</div>

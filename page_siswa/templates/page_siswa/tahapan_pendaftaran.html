@@ -1,0 +1,15 @@
+{% extends 'page_siswa/base_siswa.html'%}
+
+{% block title %} {{page}} {% endblock %}
+
+{% block judul %} {{page}} {% endblock %}
+
+{% block content %}
+    {% if page == 'Identitas Diri' %}
+        {% include 'page_siswa/identitas_diri.html'%}
+    {% elif page == 'Berkas-Berkas' %}
+        {% include 'page_siswa/berkas_berkas.html'%}
+    {% elif page == 'Pengajuan Pendaftaran'%}
+        {% include 'page_siswa/pengajuan_pendaftaran.html'%}
+    {% endif %}
+{% endblock %}

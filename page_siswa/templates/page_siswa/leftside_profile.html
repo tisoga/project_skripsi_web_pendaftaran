@@ -1,0 +1,72 @@
+{% load static %}
+<div class="card card-primary card-outline">
+    <div class="card-body box-profile">
+        <div class="text-center">
+            {% if user.DetailUser.foto_diri %}
+            <img class="img-fluid" src="{{user.DetailUser.foto_diri.url}}" style="height: 250px;"
+                onerror="this.src='{% static 'assets/Network-Profile.png'%}'">
+            {% else %}
+            <img class="img-fluid" src="{% static 'assets/Network-Profile.png'%}" style="height: 250px;">
+            {% endif %}
+        </div>
+
+        <h3 class="profile-username text-center">{{user.get_full_name}}</h3>
+
+        <ul class="list-group list-group-unbordered mb-3">
+            <li class="list-group-item">
+                <b>Nis :</b> <a class="float-right">{{user.nis}}</a>
+            </li>
+            <li class="list-group-item">
+                <b>Jenis Kelamin :</b> <a class="float-right">{{user.DetailUser.jenis_kelamin}}</a>
+            </li>
+            <li class="list-group-item">
+                <b>Tanggal Lahir :</b> <a class="float-right">{{user.DetailUser.tanggal_lahir}}</a>
+            </li>
+            <li class="list-group-item">
+                <b>Tempat Lahir :</b> <a class="float-right">{{user.DetailUser.tempat_lahir}}</a>
+            </li>
+            <li class="list-group-item">
+                <b>Umur :</b> <a class="float-right">{{user.DetailUser.umur}}</a>
+            </li>
+            <li class="list-group-item">
+                <b>Status Pendaftaran :</b> <a class="float-right">{{request.user.DetailUser.print_status}}</a>
+            </li>
+        </ul>
+
+        <!-- <a href="#" class="btn btn-success btn-block"><b>Edit Profile</b></a> -->
+
+        <ul class="list-group list-group-unbordered mb-3">
+            <li class="list-group-item">
+                <p class="text-center" style="margin-bottom: -10px;"><b>Nilai Test</b></p>
+            </li>
+            <li class="list-group-item">
+                <b>Matematika :</b>
+                {% if user.nilai_mtk or user.nilai_mtk == 0 %}
+                <a class="float-right"> {{user.nilai_mtk}}</a>
+                {% else %}
+                <button class="btn btn-secondary btn-sm float-right" type="button" data-toggle="modal"
+                    data-target="#dialogMtk" name="test" value="indo">Mulai Test</button>
+                {% endif %}
+            </li>
+            <li class="list-group-item">
+                <b>Bhs.Inggris :</b>
+                {% if user.nilai_inggris or user.nilai_inggirs == 0 %}
+                <a class="float-right"> {{user.nilai_inggris}}</a>
+                {% else %}
+                <button class="btn btn-secondary btn-sm float-right" type="button" data-toggle="modal"
+                    data-target="#dialogIng" name="test" value="indo">Mulai Test</button>
+                {% endif %}
+            </li>
+            <li class="list-group-item">
+                <b>Bhs.Indonesia :</b>
+                {% if user.nilai_indonesia or user.nilai_indonesia == 0 %}
+                <a class="float-right"> {{user.nilai_indonesia}}</a>
+                {% else %}
+                <button class="btn btn-secondary btn-sm float-right" type="button" data-toggle="modal"
+                    data-target="#dialogIndo" name="test" value="indo">Mulai Test</button>
+                {%endif%}
+            </li>
+        </ul>
+    </div>
+    <!-- /.card-body -->
+</div>
