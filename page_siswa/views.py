@@ -79,6 +79,7 @@ def tahapan_pendaftaran_views(request):
     elif status == 2:
         page = 'Pengajuan Pendaftaran'
     elif status == 3:
+        # page = 'Pengajuan Pendaftaran'
         return redirect('siswa:home')
     elif status == 5:
         page = 'Daftar Ulang'

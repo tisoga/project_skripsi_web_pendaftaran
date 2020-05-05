@@ -110,14 +110,22 @@ class Siswa(models.Model):
     
     def print_status(self):
         if self.status == 0:
-            return 'Pelengkapan Identitas Diri'
+            color = 'text-secondary'
+            text = 'Pelengkapan Identitas Diri'
         elif self.status == 1:
-            return 'Pelengkapan Berkas-Berkas'
+            color = 'text-secondary'
+            text = 'Pelengkapan Berkas-Berkas'
         elif self.status == 2:
-            return 'Pengajuan Pendaftaran'
+            color = 'text-secondary'
+            text = 'Pengajuan Pendaftaran'
         elif self.status == 3:
-            return 'Sedang Diverifikasi'
+            color = 'text-primary'
+            text = 'Sedang Diverifikasi'
         elif self.status == 4:
-            return 'Verifikasi Gagal'
+            color = 'text-warning'
+            text = 'Verifikasi Gagal'
         elif self.status == 5:
-            return 'Proses Daftar Ulang'
+            color = 'text-primary'
+            text = 'Proses Daftar Ulang'
+        html = '<b>Status Pendaftaran :</b> <a class="{} float-right">{}</a>'.format(color, text)
+        return html

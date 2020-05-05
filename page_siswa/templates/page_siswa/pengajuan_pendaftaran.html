@@ -113,7 +113,12 @@
             <input type="hidden" id='kec' name="kec">
             <div class="form-row mt-2">
                 <div class="col-12 text-center">
-                    <h3><u>Hasil Nilai UN</u></h3>
+                    <h3 style="display: inline-block;"><b><u>Hasil Nilai UN</u></b></h3>
+                    <a href="#">
+                        <i class="fa fa-question-circle fa-sm" data-toggle="tooltip"
+                            title="Gunakan titik '.' untuk memasukan nilai bernilai koma ','"
+                            style="display: inline-block;position: absolute;"></i>
+                    </a>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="mtk">Matematika</label>
@@ -221,7 +226,7 @@
                 </div>
             </div>
             <button type="button" class="btn btn-primary mt-2 float-right" id="btn_pendaftaran"
-                onclick="open_modal('send')">Ajukan Pendaftaran</button>
+                onclick="open_modal('Send')">Ajukan Pendaftaran</button>
         </form>
     </div>
     <div class="modal fade" id="ModalCenter" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle"
@@ -238,173 +243,10 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+                    <button type="button" class="btn btn-secondary" id="btn_no" data-dismiss="modal">Tidak</button>
                     <button type="submit" form="formSiswa" id="btn_yes" class="btn btn-primary">Ya</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    function open_modal(val) {
-        var send_html = `
-            <h5>Harap Periksa Kembali Data-data Anda Sebelum Mengirimkan Pengajuan.</h5>
-            <h5>Dikarenakan <b>Jika Anda Sudah Mengirimkan Pengajuan Anda TIdak Dapat Merubah Kembali Data Anda.</b></h5>
-        `
-        if (val == 'Simpan') {
-            document.getElementById('ModalLongTitle').innerHTML = 'Peringatan';
-            document.getElementById('modal-body').innerHTML = 'Apakah anda yakin ingin mengedit data siswa ?';
-            $('#ModalCenter').modal({ backdrop: 'static', keyboard: true });
-        }
-        else {
-            document.getElementById('ModalLongTitle').innerHTML = 'Peringatan';
-            document.getElementById('modal-body').innerHTML = send_html;
-            document.getElementById('btn_yes').innerHTML = 'Ajukan Pendaftaran';
-            $('#ModalCenter').modal({ backdrop: 'static', keyboard: true });
-        }
-    }
-    function split_alamat() {
-        var val = '{{request.user.DetailUser.alamat}}';
-        var data = val.split(",");
-        var alamats = document.getElementsByClassName('alamat_lengkap');
-        var sel = document.getElementsByClassName('alamat_select');
-        var id = document.getElementById('edit_alamat');
-        if (id.checked == true) {
-            for (var i = 0; i < sel.length; i++) {
-                // var option = document.createElement("option");
-                // option.text = data[4 - i];
-                // option.disabled = true;
-                // option.hidden = true;
-                // option.selected = true
-                // sel[i].add(option);
-                sel[i].required = true;
-            }
-            alamats[0].disabled = false;
-            alamats[0].required = true;
-            alamats[0].innerHTML = data[0];
-            for (var i = 1; i < alamats.length; i++) {
-                alamats[i].style.display = 'block';
-            }
-        }
-        else {
-            for (var i = 0; i < sel.length; i++) {
-                sel[i].required = false;
-            }
-            alamats[0].disabled = true;
-            alamats[0].required = false;
-            alamats[0].innerHTML = val;
-            for (var i = 1; i < alamats.length; i++) {
-                alamats[i].style.display = 'none';
-            }
-        }
-    }
-    function upload_ulang(file) {
-        btn = document.getElementById(file);
-        if (btn.checked == true) {
-            switch (file) {
-                case 'edit_ijazah':
-                    document.getElementById('ijazah').style.display = 'block';
-                    document.getElementById('input_ijazah').required = true;
-                    break;
-                case 'edit_akta':
-                    document.getElementById('akta').style.display = 'block';
-                    document.getElementById('input_akta').required = true;
-                    break;
-                case 'edit_kesehatan':
-                    document.getElementById('kesehatan').style.display = 'block';
-                    document.getElementById('input_kesehatan').required = true;
-                    break;
-                case 'edit_foto':
-                    document.getElementById('foto').style.display = 'block';
-                    document.getElementById('input_foto').required = true;
-                    break;
-            }
-        }
-        else if (btn.checked == false) {
-            switch (file) {
-                case 'edit_ijazah':
-                    document.getElementById('ijazah').style.display = 'none';
-                    document.getElementById('input_ijazah').value = '';
-                    document.getElementById('input_ijazah').required = false;
-                    break;
-                case 'edit_akta':
-                    document.getElementById('akta').style.display = 'none';
-                    document.getElementById('input_akta').value = '';
-                    document.getElementById('input_akta').required = false;
-                    break;
-                case 'edit_kesehatan':
-                    document.getElementById('kesehatan').style.display = 'none';
-                    document.getElementById('input_kesehatan').value = '';
-                    document.getElementById('input_kesehatan').required = false;
-                    break;
-                case 'edit_foto':
-                    document.getElementById('foto').style.display = 'none';
-                    document.getElementById('input_foto').value = '';
-                    document.getElementById('input_foto').required = false;
-                    break;
-            }
-        }
-    };
-    function editData(check) {
-        var btn = document.getElementById('btn_edit');
-        var inputs = document.getElementsByClassName('editabled');
-        var alamats = document.getElementsByClassName('alamat_lengkap');
-        var radio = document.getElementsByClassName('form-check-input');
-        var hidden = document.getElementsByClassName('hidden');
-        if (check == 'edit') {
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].disabled = false;
-            }
-            document.getElementById('decision').value = 'edit';
-            document.getElementById('btn_cancel').style.display = 'block';
-            document.getElementById('btn_pendaftaran').style.display = 'none';
-            hidden[0].style.display = 'block';
-            btn.value = 'save';
-            btn.innerHTML = 'Simpan';
-            btn.classList.remove('btn-success');
-            btn.classList.add('btn-primary');
-            for (var i = 0; i < radio.length; i++) {
-                if (radio[i].checked == false) {
-                    radio[i].disabled = false;
-                }
-            }
-            for (var i = 1; i < 4; i++) {
-                hidden[i].style.display = 'none';
-            }
-            for (var i = 4; i < hidden.length; i++) {
-                hidden[i].style.display = 'block';
-            }
-        }
-        else if (check == 'save') {
-            open_modal('Simpan');
-        }
-        else if (check == 'Cancel') {
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].disabled = true;
-            }
-            for (var i = 1; i < alamats.length; i++) {
-                alamats[i].style.display = 'none';
-            }
-            hidden[0].style.display = 'none';
-            document.getElementById('edit_alamat').checked = false;
-            alamats[0].innerHTML = '{{request.user.DetailUser.alamat}}'
-            btn.value = 'edit'
-            btn.innerHTML = 'Edit'
-            btn.classList.remove('btn-primary')
-            btn.classList.add('btn-success')
-            for (var i = 0; i < radio.length; i++) {
-                if (radio[i].checked == false) {
-                    radio[i].disabled = true;
-                }
-            }
-            for (var i = 1; i < 4; i++) {
-                hidden[i].style.display = 'block';
-            }
-            for (var i = 4; i < hidden.length; i++) {
-                hidden[i].style.display = 'none';
-            }
-        }
-
-    }
-</script>

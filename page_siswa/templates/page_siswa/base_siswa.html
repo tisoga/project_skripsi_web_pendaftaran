@@ -205,6 +205,8 @@
 
   <script src="{% static 'js/bs-custom-file-input.min.js'%}"></script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+
   <script>
     bsCustomFileInput.init()
     var form = document.querySelector('form')
@@ -214,6 +216,7 @@
 
   <script type="text/javascript"
     src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
+
 
   <script type="text/javascript">
     $(function () {
@@ -225,17 +228,32 @@
     });
   </script>
 
-  <script>
-    {% include 'page_siswa/js/tahapan_pendaftaran_1.js' %}
-  </script>
-
   <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+  {% if request.user.DetailUser.status == 0 %}
+  <script>
+    {% include 'page_siswa/js/alamatLengkap.js' %}
+  </script>
+  {% endif %}
+
+  {% if request.user.DetailUser.status == 2 %}
+  <script>
+    {% include 'page_siswa/js/alamatLengkap.js' %}
+    {% include 'page_siswa/js/pengajuanPendaftaran1.js' %}
+    open_modal('first');
+  </script>
+  {% endif %}
 
   {% if matpel.nama %}
   <script type="text/javascript">
     $('#notifikasi').modal({ backdrop: 'static', keyboard: false });
   </script>
   {% endif %}
+  <script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
 </body>
 
 </html>

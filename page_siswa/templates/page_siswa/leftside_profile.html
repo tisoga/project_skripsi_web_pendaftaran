@@ -29,7 +29,7 @@
                 <b>Umur :</b> <a class="float-right">{{user.DetailUser.umur}}</a>
             </li>
             <li class="list-group-item">
-                <b>Status Pendaftaran :</b> <a class="float-right">{{request.user.DetailUser.print_status}}</a>
+                {{request.user.DetailUser.print_status | safe}}
             </li>
         </ul>
 
