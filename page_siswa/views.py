@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.db import IntegrityError
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from .models import CustomUser, Siswa
+from .models import CustomUser, Siswa, list_events
 
 from datetime import datetime
 
@@ -18,8 +18,8 @@ def convert_date(date):
 
 
 def homepage(request):
-    status = request.user.DetailUser.status
-    print(status)
+    page = 'home'
+    events = list_events.objects.all()
     if request.method == 'POST':
         if request.POST.get('email'):
             email = request.POST['email']
@@ -31,7 +31,7 @@ def homepage(request):
             return redirect('siswa:login')
     return render(request=request,
                   template_name='page_siswa/home.html',
-                  context={'status': status})
+                  context={'page': page, 'events': events})
 
 
 def login_views(request):

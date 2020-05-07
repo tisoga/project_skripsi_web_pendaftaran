@@ -71,14 +71,15 @@
     </div>
 </div>
 
-<!-- <div class="card card-primary card-outline">
-  <div class="card-header">
-    <h5 class="card-title m-0">Batas Akhir penggantian Data Siswa</h5>
+<div class="card card-primary card-outline">
+    <div class="card-header d-flex justify-content-center">
+    <h5 class="card-title m-0">List Jadwal</h5>
   </div>
   <div class="card-body">
-    <h6 class="card-title">Special title treatment</h6>
-
-    <p class="card-text">Diharapkan untuk mengcheck kembali apakah data siswa sudah benar atau tidak, dikarenakan proses pengeditan data siswa akan ditutup pada tanggal 15 January 2020</p>
+    <script>
+        {% include 'page_siswa/js/list_events.js'%}
+    </script>
+    <div id='calendar'></div>
   </div>
-</div> -->
+</div>
 {% endblock %}

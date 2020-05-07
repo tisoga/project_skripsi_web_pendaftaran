@@ -77,14 +77,21 @@ class Siswa(models.Model):
     alamat = models.TextField(default=None, null=True)
     asal_sekolah = models.CharField(max_length=255, default=None, null=True)
     status = models.PositiveSmallIntegerField(default=0, null=True)
-    nilai_matematika = models.DecimalField(default=None, null=True, max_digits=4, decimal_places=2)
-    nilai_indonesia = models.DecimalField(default=None, null=True, max_digits=4, decimal_places=2)
-    nilai_inggris = models.DecimalField(default=None, null=True, max_digits=4, decimal_places=2)
-    nilai_ipa = models.DecimalField(default=None, null=True, max_digits=4, decimal_places=2)
+    nilai_matematika = models.DecimalField(
+        default=None, null=True, max_digits=4, decimal_places=2)
+    nilai_indonesia = models.DecimalField(
+        default=None, null=True, max_digits=4, decimal_places=2)
+    nilai_inggris = models.DecimalField(
+        default=None, null=True, max_digits=4, decimal_places=2)
+    nilai_ipa = models.DecimalField(
+        default=None, null=True, max_digits=4, decimal_places=2)
     foto_diri = models.ImageField(upload_to='images/', null=True, default=None)
-    berkas_ijazah = models.ImageField(upload_to='images/', null=True, default=None)
-    berkas_akta = models.ImageField(upload_to='images/', null=True, default=None)
-    berkas_kesehatan = models.ImageField(upload_to='images/', null=True, default=None)
+    berkas_ijazah = models.ImageField(
+        upload_to='images/', null=True, default=None)
+    berkas_akta = models.ImageField(
+        upload_to='images/', null=True, default=None)
+    berkas_kesehatan = models.ImageField(
+        upload_to='images/', null=True, default=None)
 
     object = SiswaManager()
 
@@ -95,19 +102,19 @@ class Siswa(models.Model):
         return self.user.get_full_name()
 
     def check_progress(self):
-        if not (self.jenis_kelamin and self.tanggal_lahir and self.tempat_lahir \
-            and self.umur and self.alamat and self.foto_diri) and \
-                (self.jenis_kelamin and self.tanggal_lahir and self.tempat_lahir \
+        if not (self.jenis_kelamin and self.tanggal_lahir and self.tempat_lahir
+                and self.umur and self.alamat and self.foto_diri) and \
+                (self.jenis_kelamin and self.tanggal_lahir and self.tempat_lahir
                     and self.umur and self.alamat and self.foto_diri):
             return '1'
-        elif not (self.berkas_ijazah and self.berkas_akta and self.berkas_kesehatan \
-            and self.nilai_indonesia and self.nilai_inggris and self.nilai_matematika and self.nilai_ipa) and \
-                (self.berkas_ijazah and self.berkas_akta and self.berkas_kesehatan \
+        elif not (self.berkas_ijazah and self.berkas_akta and self.berkas_kesehatan
+                  and self.nilai_indonesia and self.nilai_inggris and self.nilai_matematika and self.nilai_ipa) and \
+                (self.berkas_ijazah and self.berkas_akta and self.berkas_kesehatan
                     and self.nilai_indonesia and self.nilai_inggris and self.nilai_matematika and self.nilai_ipa):
             return '2'
         else:
             return '3'
-    
+
     def print_status(self):
         if self.status == 0:
             color = 'text-secondary'
@@ -127,5 +134,18 @@ class Siswa(models.Model):
         elif self.status == 5:
             color = 'text-primary'
             text = 'Proses Daftar Ulang'
-        html = '<b>Status Pendaftaran :</b> <a class="{} float-right">{}</a>'.format(color, text)
+        html = '<b>Status Pendaftaran :</b> <a class="{} float-right">{}</a>'.format(
+            color, text)
         return html
+
+
+class list_events(models.Model):
+    name = models.CharField(max_length=255)
+    start_date = models.DateField(default=None, null = True)
+    end_date = models.DateField(default=None,  blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'tabel_events'
