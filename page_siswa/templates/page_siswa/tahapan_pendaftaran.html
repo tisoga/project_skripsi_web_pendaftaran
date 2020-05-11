@@ -13,3 +13,13 @@
         {% include 'page_siswa/pengajuan_pendaftaran.html'%}
     {% endif %}
 {% endblock %}
+
+{% block javascript %}
+    {% if page == 'Identitas Diri' %}
+        {% include 'page_siswa/js/alamatLengkap.js' %}    
+    {% elif page == 'Pengajuan Pendaftaran'%}
+        {% include 'page_siswa/js/alamatLengkap.js' %}
+        {% include 'page_siswa/js/pengajuanPendaftaran1.js' %}
+        open_modal('first');
+    {% endif %}
+{% endblock %}

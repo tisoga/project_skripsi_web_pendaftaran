@@ -253,21 +253,13 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
-
-  {% if page == 'Identitas Diri' %}
+  
   <script>
-    {% include 'page_siswa/js/alamatLengkap.js' %}
-  </script>
-  {% endif %}
+  {% block javascript %}
 
-  {% if page == 'Pengajuan Pendaftaran' %}
-  <script>
-    {% include 'page_siswa/js/alamatLengkap.js' %}
-    {% include 'page_siswa/js/pengajuanPendaftaran1.js' %}
-    open_modal('first');
+  {% endblock %}
   </script>
-  {% endif %}
-
+  
   {% if matpel.nama %}
   <script type="text/javascript">
     $('#notifikasi').modal({ backdrop: 'static', keyboard: false });

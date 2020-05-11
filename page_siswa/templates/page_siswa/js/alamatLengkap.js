@@ -1,15 +1,18 @@
 $(document).ready(function () {
     $.ajax({
-        url: "http://dev.farizdotid.com/api/daerahindonesia/provinsi",
+        type: 'GET',
+        url: "{% url 'siswa:ajax_provinsi'%}",
         dataType: 'json',
         success: function (data) {
             // alert(data)
             $("#provinsi").attr('disabled', false);
-            $.each(data.semuaprovinsi, function (key, value) {
+            $.each(data.provinsi, function (key, value) {
                 $("#provinsi").append('<option value=' + value.id + '>' + value.nama + '</option>');
             });
-            $("#provinsi").append('<option value=' + key + '>' + value + '</option>');
-        }
+        },
+        error: function(textStatus, errorThrown) { 
+            alert("Status: " + textStatus.status); alert("Error: " + errorThrown); 
+        } 
     });
 });
 
@@ -34,15 +37,14 @@ $("#provinsi").change(function () {
     document.getElementById('kab').value = '';
     document.getElementById('kec').value = '';
     $.ajax({                       // initialize an AJAX request
-        url: "http://dev.farizdotid.com/api/daerahindonesia/provinsi/" + id + "/kabupaten",
+        url: "{% url 'siswa:ajax_kota' 1234%}".replace(/1234/, id),
         dataType: 'json',
         success: function (data) {   // `data` is the return of the `load_cities` view function
             // alert(data.kabupatens)
             $("#kabupaten").attr('disabled', false);
-            $.each(data.kabupatens, function (key, value) {
+            $.each(data.kota_kabupaten, function (key, value) {
                 $("#kabupaten").append('<option value=' + value.id + '>' + value.nama + '</option>');
             });
-            $("#kabupaten").append('<option value=' + key + '>' + value + '</option>');
         }
     });
 
@@ -63,14 +65,13 @@ $("#provinsi").change(function () {
         document.getElementById('kab').value = $("#kabupaten option:selected").html();
         document.getElementById('kec').value = '';
         $.ajax({                       // initialize an AJAX request
-            url: "http://dev.farizdotid.com/api/daerahindonesia/provinsi/kabupaten/" + id + "/kecamatan",
+            url: "{% url 'siswa:ajax_kecamatan' 1234%}".replace(/1234/, id),
             dataType: 'json',
             success: function (data) {   // `data` is the return of the `load_cities` view function
                 $("#kecamatan").attr('disabled', false);
-                $.each(data.kecamatans, function (key, value) {
+                $.each(data.kecamatan, function (key, value) {
                     $("#kecamatan").append('<option value=' + value.id + '>' + value.nama + '</option>');
                 });
-                $("#kecamatan").append('<option value=' + key + '>' + value + '</option>');
             }
         });
 
@@ -85,11 +86,11 @@ $("#provinsi").change(function () {
             .append('<option value disabled selected>Silahkan Pilih</option>');
         document.getElementById('kec').value = $("#kecamatan option:selected").html();
         $.ajax({                       // initialize an AJAX request
-            url: "http://dev.farizdotid.com/api/daerahindonesia/provinsi/kabupaten/kecamatan/" + id + "/desa",
+            url: "{% url 'siswa:ajax_kelurahan' 1234%}".replace(/1234/, id),
             dataType: 'json',
             success: function (data) {   // `data` is the return of the `load_cities` view function
                 $("#desa").attr('disabled', false);
-                $.each(data.desas, function (key, value) {
+                $.each(data.kelurahan, function (key, value) {
                     $("#desa").append('<option value=' + value.nama + '>' + value.nama + '</option>');
                 });
                 $("#kecamatan").append('<option value=' + key + '>' + value + '</option>');

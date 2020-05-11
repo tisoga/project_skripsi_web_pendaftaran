@@ -8,18 +8,25 @@ function open_modal(val) {
         document.getElementById('modal-body').innerHTML = html_pendaftaran;
         document.getElementById('btn_no').innerHTML = 'Ya';
         document.getElementById('btn_no').className = 'btn btn-primary';
-        document.getElementById('btn_yes').remove()
+        document.getElementById('btn_yes').style.display = 'none'
         $('#ModalCenter').modal({ backdrop: 'static', keyboard: true });
     }
     else if (val == 'Simpan') {
         document.getElementById('ModalLongTitle').innerHTML = 'Peringatan';
         document.getElementById('modal-body').innerHTML = 'Apakah anda yakin ingin mengedit data siswa ?';
+        document.getElementById('btn_no').innerHTML = 'Tidak';
+        document.getElementById('btn_no').className = 'btn btn-secondary';
+        document.getElementById('btn_yes').style.display = 'block'
+        document.getElementById('btn_yes').innerHTML = 'Ya';
         $('#ModalCenter').modal({ backdrop: 'static', keyboard: true });
     }
     else if (val == 'Send')
     {
         document.getElementById('ModalLongTitle').innerHTML = 'Peringatan';
         document.getElementById('modal-body').innerHTML = html_pendaftaran;
+        document.getElementById('btn_no').innerHTML = 'Tidak';
+        document.getElementById('btn_no').className = 'btn btn-secondary';
+        document.getElementById('btn_yes').style.display = 'block'
         document.getElementById('btn_yes').innerHTML = 'Ajukan Pendaftaran';
         $('#ModalCenter').modal({ backdrop: 'static', keyboard: true });
     }

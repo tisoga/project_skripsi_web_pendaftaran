@@ -34,39 +34,47 @@
         </ul>
 
         <!-- <a href="#" class="btn btn-success btn-block"><b>Edit Profile</b></a> -->
-
+        {% with siswa=user.DetailUser %}
+        {% if siswa.nilai_matematika and siswa.nilai_indonesia and siswa.nilai_inggris and siswa.nilai_ipa%}
         <ul class="list-group list-group-unbordered mb-3">
             <li class="list-group-item">
-                <p class="text-center" style="margin-bottom: -10px;"><b>Nilai Test</b></p>
+                <p class="text-center" style="margin-bottom: -10px;"><b>Hasil Nilai UN</b></p>
             </li>
             <li class="list-group-item">
                 <b>Matematika :</b>
-                {% if user.nilai_mtk or user.nilai_mtk == 0 %}
-                <a class="float-right"> {{user.nilai_mtk}}</a>
+                {% if siswa.nilai_matematika or siswa.DetailUser.nilai_matematika == 0 %}
+                <a class="float-right"> {{siswa.nilai_matematika}}</a>
                 {% else %}
-                <button class="btn btn-secondary btn-sm float-right" type="button" data-toggle="modal"
-                    data-target="#dialogMtk" name="test" value="indo">Mulai Test</button>
+                <a class="float-right">0</a>
                 {% endif %}
             </li>
             <li class="list-group-item">
                 <b>Bhs.Inggris :</b>
-                {% if user.nilai_inggris or user.nilai_inggirs == 0 %}
-                <a class="float-right"> {{user.nilai_inggris}}</a>
+                {% if siswa.nilai_inggris or siswa.nilai_inggris == 0 %}
+                <a class="float-right"> {{siswa.nilai_inggris}}</a>
                 {% else %}
-                <button class="btn btn-secondary btn-sm float-right" type="button" data-toggle="modal"
-                    data-target="#dialogIng" name="test" value="indo">Mulai Test</button>
+                <a class="float-right">0</a>
                 {% endif %}
             </li>
             <li class="list-group-item">
                 <b>Bhs.Indonesia :</b>
-                {% if user.nilai_indonesia or user.nilai_indonesia == 0 %}
-                <a class="float-right"> {{user.nilai_indonesia}}</a>
+                {% if siswa.nilai_indonesia or siswa.nilai_indonesia == 0 %}
+                <a class="float-right"> {{siswa.nilai_indonesia}}</a>
                 {% else %}
-                <button class="btn btn-secondary btn-sm float-right" type="button" data-toggle="modal"
-                    data-target="#dialogIndo" name="test" value="indo">Mulai Test</button>
+                <a class="float-right">0</a>
+                {%endif%}
+            </li>
+            <li class="list-group-item">
+                <b>IPA :</b>
+                {% if siswa.nilai_ipa or siswa.nilai_ipa == 0 %}
+                <a class="float-right"> {{siswa.nilai_ipa}}</a>
+                {% else %}
+                <a class="float-right">0</a>
                 {%endif%}
             </li>
         </ul>
+        {% endif %}
+        {% endwith %}
     </div>
     <!-- /.card-body -->
 </div>

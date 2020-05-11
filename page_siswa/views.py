@@ -168,7 +168,6 @@ def proses_ajukan_pendaftaran(request):
 
 def success(request):
     cs = CustomUser.object.get(email=request.user.email)
-    print(request.user.siswa.nilai_un_matematika)
     if request.method == 'POST':
         siswa = request.user.siswa
         if request.POST.get('alamat'):
