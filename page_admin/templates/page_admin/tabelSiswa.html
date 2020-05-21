@@ -1,0 +1,249 @@
+{% extends 'page_admin/base.html' %}
+
+{%block judul%}List Siswa{%endblock%}
+
+{% block konten %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="form-row">
+                        <div class="col-12">
+                            <h3 class="card-title">Sorting Siswa Berdasarkan</h3>
+                        </div>
+                        <div class="col-10">
+                            <form method="POST" name="formSiswa" id="formSiswa">
+                                {%csrf_token%}
+                                <input type="hidden" name="ganti" id="sort">
+                                <select class="form-control" onchange="sortSiswa(this.value)">
+                                    <option value="0">Semua Siswa</option>
+                                    <option value="1">Siswa Yang Belum Melengkapi Identitas</option>
+                                    <option value="2">Siswa Yang Belum Mengupload Berkas-Berkas</option>
+                                    <option value="3">Siswa Yang Belum diverifikasi</option>
+                                </select>
+                            </form>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group input-group-sm" style="width: 150px;">
+                                <input type="text" name="table_search" class="form-control float-right"
+                                    placeholder="Search">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            Action
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-primary" id="detail" value="" onclick="openDetail(this.value)">
+                                Detail
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-siswa" style="display: none;">
+                    <h3 class="text-center">Detail Siswa</h3>
+                    <table class="table">
+                        <tr>
+                            <th style="width: 18%">NIS</th>
+                            <td style="width: 32%">17160120</td>
+                            <th style="width: 18%">Email</th>
+                            <td style="width: 32%">wohoo@gmail.com</td>
+                        </tr>
+                        <tr>
+                            <th>Nama Lengkap</th>
+                            <td>Ryan Afrizal</td>
+                            <th>Jenis Kelamin</th>
+                            <td>Laki-Laki</td>
+                        </tr>
+                        <tr>
+                            <th>Tanggal Lahir</th>
+                            <td>1</td>
+                            <th>Umur</th>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <th colspan="1">Alamat</th>
+                            <td colspan="3">sdgs d sl;dj gl;sjg ;lsdj ;lsjg ;lsdj gl;sj;lgsd j;lsjg
+                                ;lsdjg;lsdjg;lsdj;ljs;l sd;l1</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-bordered table-hover" id="data">
+                        <form id='dataSiswa' method="POST">
+                            {% csrf_token %}
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th class="text-center align-middle" style="width: 6%">#</th>
+                                    <th class="text-center align-middle" style="width: 12%">NIS</th>
+                                    <th class="text-center align-middle" style="width: 29%">Nama</th>
+                                    <th class="text-center align-middle" style="width: 29%">E-mail</th>
+                                    <th class="text-center align-middle">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- {% for siswa in list_siswa %}
+                                <tr onclick="checkTheBox('{{siswa.nis}}')" style="cursor: pointer;">
+                                    <td>
+                                        <input type="radio" name="data" id="{{siswa.nis}}" value="{{siswa.nis}}"
+                                            required>
+                                    </td>
+                                    <td class="text-center align-middle">{{siswa.nis}}</td>
+                                    <td class="align-middle">{{siswa.user.get_full_name}}</td>
+                                    <td class="align-middle">{{siswa.user.email}}</td>
+                                    <td class="align-middle">{{siswa.print_status.status}}</td>
+                                </tr>
+                                {% endfor %} -->
+                            </tbody>
+                        </form>
+                    </table>
+                </div>
+            </div>
+            {% if list_siswa.has_other_pages %}
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+                    {% if list_siswa.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{list_siswa.previous_page_number}}">«</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">«</span>
+                    </li>
+                    {% endif %}
+                    {% for page in list_siswa.paginator.page_range%}
+                    {% if page == list_siswa.number %}
+                    <li class="page-item active">
+                        <span class="page-link">{{page}}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{page}}">{{page}}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if list_siswa.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{list_siswa.next_page_number}}">»</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">»</span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    html = (nis, nama, email, status) => `
+        <tr onclick="checkTheBox('${nis}')" style="cursor: pointer;">
+            <td>
+                <input type="radio" name="data" id="${nis}" value="${nis}"
+                    required>
+            </td>
+            <td class="text-center align-middle">${nis}</td>
+            <td class="align-middle">${nama}</td>
+            <td class="align-middle">${email}</td>
+            <td class="align-middle">${status}</td>
+        </tr>`
+    print_status = (data) => {
+        switch (data) {
+            case 0:
+                status = 'Pelengkapan Identitas Diri'
+                break;
+            case 1:
+                status = 'Pelengkapan Berkas-Berkas'
+                break
+            case 2:
+                status = 'Pengajuan Pendaftaran'
+                break
+            case 3:
+                status = 'Sedang Diverifikasi'
+                break
+            case 4:
+                status = 'Verifikasi Gagal'
+                break
+            case 5:
+                status = 'Proses Daftar Ulang'
+                break
+        }
+        return status
+    }
+    $(document).ready(function () {
+        $.ajax({
+            type: 'GET',
+            url: '{% url "admin_page:ajax_list_siswa" 0%}',
+            dataType: 'json',
+            success: function (data) {
+                $.each(data, function (key, value) {
+                    $('#data tbody').append(html(value.nis, value.user.first_name + ' ' + value.user.last_name, value.user.email, print_status(value.status)))
+                })
+            }
+        })
+    })
+</script>
+
+<script>
+    function checkTheBox(id) {
+        row = document.getElementById(id)
+        detail = document.getElementById('detail')
+        row.checked = true;
+        detail.value = id
+    }
+    function openDetail(val){
+        if(val){
+            $('#modalDetail').modal({ backdrop: 'static', keyboard: false });
+        }
+        else{
+            alert('fail')
+        }
+    }
+    function sortSiswa(sort) {
+        $('#data tbody').empty()
+        document.getElementById('detail').value = ''
+        $.ajax({
+            type: 'GET',
+            url: '{% url "admin_page:ajax_list_siswa" 1234%}'.replace(/1234/, sort),
+            dataType: 'json',
+            success: function (data) {
+                $.each(data, function (key, value) {
+                    $('#data tbody').append(html(value.nis, value.user.first_name + ' ' + value.user.last_name, value.user.email, print_status(value.status)))
+                })
+            }
+        })
+    }
+</script>
+
+{% endblock %}

@@ -52,6 +52,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
     object = CustomUserManager()
+    objects = CustomUserManager()
 
     def __str__(self):
         return self.email
@@ -136,7 +137,11 @@ class Siswa(models.Model):
             text = 'Proses Daftar Ulang'
         html = '<b>Status Pendaftaran :</b> <a class="{} float-right">{}</a>'.format(
             color, text)
-        return html
+        data = {
+            'html': html,
+            'status': text
+        }
+        return data
 
 
 class list_events(models.Model):

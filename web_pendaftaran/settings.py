@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'page_siswa',
+    'page_admin',
     'api',
     'knox',
     'rest_framework'

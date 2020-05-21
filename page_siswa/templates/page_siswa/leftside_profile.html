@@ -29,7 +29,7 @@
                 <b>Umur :</b> <a class="float-right">{{user.DetailUser.umur}}</a>
             </li>
             <li class="list-group-item">
-                {{request.user.DetailUser.print_status | safe}}
+                {{request.user.DetailUser.print_status.html | safe}}
             </li>
         </ul>
 
