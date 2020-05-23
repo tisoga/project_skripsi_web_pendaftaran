@@ -23,27 +23,28 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link {%if active == 'beranda'%}active{%endif%}">
+                    <a href="{% url 'admin_page:home'%}" class="nav-link {%if active == 'beranda'%}active{%endif%}">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Beranda</p>
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link {%if active == 'penentuan'%}active{%endif%}">
+                    <a href="{% url 'admin_page:list_siswa'%}" class="nav-link {%if active == 'list'%}active{%endif%}">
                         <i class="nav-icon fas fa-copy"></i>
                         <p>List Siswa</p>
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link {%if active == 'penentuan'%}active{%endif%}">
-                        <i class="nav-icon fas fa-clipboard"></i>
-                        <p>Penentuan Kelas Otomatis</p>
+                    <a href="{% url 'admin_page:verifikasi_siswa'%}"
+                        class="nav-link {%if active == 'verifikasi'%}active{%endif%}">
+                        <i class="nav-icon fas fa-clipboard-check"></i>
+                        <p>Verifikasi Siswa</p>
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link {%if active == 'tambah'%}active{%endif%}">
-                        <i class="nav-icon fas fa-user-plus"></i>
-                        <p>Tambah Siswa</p>
+                    <a href="{% url 'admin_page:events'%}" class="nav-link {%if active == 'events'%}active{%endif%}">
+                        <i class="nav-icon fas fa-calendar-day"></i>
+                        <p>Jadwal Events</p>
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
@@ -58,8 +59,10 @@
                         <p>Soal Test</p>
                     </a>
                 </li>
-                <li class="nav-item has-treeview {%if active == 'set_tahun' or active == 'tambah_tahun'%}menu-open{%endif%}">
-                    <a href="#" class="nav-link {%if active == 'set_tahun' or active == 'tambah_tahun'%}active{%endif%}">
+                <li
+                    class="nav-item has-treeview {%if active == 'set_tahun' or active == 'tambah_tahun'%}menu-open{%endif%}">
+                    <a href="#"
+                        class="nav-link {%if active == 'set_tahun' or active == 'tambah_tahun'%}active{%endif%}">
                         <i class="nav-icon fas fa-cog"></i>
                         <p>
                             Tahun Ajaran
@@ -79,7 +82,7 @@
                                 <p>Tahun Ajaran Baru</p>
                             </a>
                         </li>
-                        </ul>
+                    </ul>
                 </li>
             </ul>
         </nav>

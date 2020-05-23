@@ -19,7 +19,10 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.0-alpha14/css/tempusdominus-bootstrap-4.min.css" />
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+    {% block header %}
+    
+    {% endblock %}
 </head>
 
 <body class="hold-transition sidebar-mini layout-boxed">
@@ -102,18 +105,18 @@
 
         // Donut Chart
         var pieChartCanvas = $('#sales-chart-canvas').get(0).getContext('2d')
-        var labelData = {{data.tahun}}
-        var dataLaki = {{data.laki_all}}
-        var dataPerempuan = {{data.perempuan_all}}
+        var labelData = {{ data.tahun }}
+        var dataLaki = {{ data.laki_all }}
+        var dataPerempuan = {{ data.perempuan_all }}
         var pieData = {
             labels: [
                 "Laki-Laki",
                 "Perempuan"
             ],
-        datasets: [
-            {
-                data: [{{data.laki|safe}}, {{data.perempuan|safe}}],
-                backgroundColor: ['#00a65a', '#f0ad4e'],
+            datasets: [
+                {
+                    data: [{{ data.laki | safe }}, {{ data.perempuan | safe }}],
+            backgroundColor: ['#00a65a', '#f0ad4e'],
             }
         ]
         }
@@ -208,6 +211,9 @@
         )
     </script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
+        integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+        crossorigin="anonymous"></script>
 
     <script type="text/javascript">
         $(function () {
@@ -216,6 +222,8 @@
             });
         });
     </script>
+
+    <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
     {% block script %}
 
     {% endblock %}

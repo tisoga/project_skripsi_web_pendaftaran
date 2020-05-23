@@ -1,6 +1,6 @@
 {% extends 'page_admin/base.html' %}
 
-{%block judul%}List Siswa{%endblock%}
+{%block judul%}Verifikasi Siswa{%endblock%}
 
 {% block konten %}
 {% load static%}
@@ -11,19 +11,13 @@
                 <div class="card-header">
                     <div class="form-row">
                         <div class="col-12">
-                            <h3 class="card-title">Sorting Siswa Berdasarkan</h3>
+                            Action
                         </div>
                         <div class="col-10">
-                            <form method="POST" name="formSiswa" id="formSiswa">
-                                {%csrf_token%}
-                                <input type="hidden" name="ganti" id="sort">
-                                <select class="form-control" onchange="sortSiswa(this.value)">
-                                    <option value="0">Semua Siswa</option>
-                                    <option value="1">Siswa Yang Belum Melengkapi Identitas</option>
-                                    <option value="2">Siswa Yang Belum Mengupload Berkas-Berkas</option>
-                                    <option value="3">Siswa Yang Belum diverifikasi</option>
-                                </select>
-                            </form>
+                            <button type="button" class="btn btn-primary" id="detail" value=""
+                                onclick="openDetail(this.value)">
+                                Detail
+                            </button>
                         </div>
                         <div class="col-2">
                             <div class="input-group input-group-sm" style="width: 150px;">
@@ -35,15 +29,6 @@
                                     </button>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-12">
-                            Action
-                        </div>
-                        <div>
-                            <button type="button" class="btn btn-primary" id="detail" value=""
-                                onclick="openDetail(this.value)">
-                                Detail
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -57,11 +42,13 @@
                                     <th class="text-center align-middle" style="width: 12%">NIS</th>
                                     <th class="text-center align-middle" style="width: 29%">Nama</th>
                                     <th class="text-center align-middle" style="width: 29%">E-mail</th>
-                                    <th class="text-center align-middle">Status</th>
+                                    <th class="text-center align-middle" style="width: 10%">Jenis Kelamin</th>
+                                    <th class="text-center align-middle">Tanggal Lahir</th>
+                                    <th class="text-center align-middle">Umur</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- {% for siswa in list_siswa %}
+                                {% for siswa in list_siswa %}
                                 <tr onclick="checkTheBox('{{siswa.nis}}')" style="cursor: pointer;">
                                     <td>
                                         <input type="radio" name="data" id="{{siswa.nis}}" value="{{siswa.nis}}"
@@ -70,9 +57,11 @@
                                     <td class="text-center align-middle">{{siswa.nis}}</td>
                                     <td class="align-middle">{{siswa.user.get_full_name}}</td>
                                     <td class="align-middle">{{siswa.user.email}}</td>
-                                    <td class="align-middle">{{siswa.print_status.status}}</td>
+                                    <td class="align-middle">{{siswa.jenis_kelamin}}</td>
+                                    <td class="align-middle">{{siswa.tanggal_lahir}}</td>
+                                    <td class="align-middle text-center">{{siswa.umur}}</td>
                                 </tr>
-                                {% endfor %} -->
+                                {% endfor %}
                             </tbody>
                         </form>
                     </table>
@@ -202,8 +191,13 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="openPeringatan()">Kirim Pemberitahuan</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" onclick="openPeringatan('pesan')">Kirim
+                    Pemberitahuan</button>
+                <button type="button" class="btn btn-danger" onclick="openPeringatan('tolak')">Tolak
+                    Verifikasi</button>
+                <button type="button" class="btn btn-primary" onclick="openPeringatan('terima')">Terima
+                    Verifikasi</button>
             </div>
         </div>
     </div>
@@ -247,55 +241,6 @@
 {% endblock %}
 
 {% block script %}
-<script>
-    html = (nis, nama, email, status) => `
-        <tr onclick="checkTheBox('${nis}')" style="cursor: pointer;">
-            <td>
-                <input type="radio" name="data" id="${nis}" value="${nis}"
-                    required>
-            </td>
-            <td class="text-center align-middle">${nis}</td>
-            <td class="align-middle">${nama}</td>
-            <td class="align-middle">${email}</td>
-            <td class="align-middle">${status}</td>
-        </tr>`
-    print_status = (data) => {
-        switch (data) {
-            case 0:
-                status = 'Pelengkapan Identitas Diri'
-                break;
-            case 1:
-                status = 'Pelengkapan Berkas-Berkas'
-                break
-            case 2:
-                status = 'Pengajuan Pendaftaran'
-                break
-            case 3:
-                status = 'Sedang Diverifikasi'
-                break
-            case 4:
-                status = 'Verifikasi Gagal'
-                break
-            case 5:
-                status = 'Proses Daftar Ulang'
-                break
-        }
-        return status
-    }
-    $(document).ready(function () {
-        $.ajax({
-            type: 'GET',
-            url: '{% url "admin_page:ajax_list_siswa"%}' + '?sort=0',
-            dataType: 'json',
-            success: function (data) {
-                $.each(data, function (key, value) {
-                    $('#data tbody').append(html(value.nis, value.user.first_name + ' ' + value.user.last_name, value.user.email, print_status(value.status)))
-                })
-            }
-        })
-    })
-</script>
-
 <script>
     function checkTheBox(id) {
         row = document.getElementById(id)
@@ -361,20 +306,6 @@
             $('#notifikasi').modal();
         }
     }
-    function sortSiswa(sort) {
-        $('#data tbody').empty()
-        document.getElementById('detail').value = ''
-        $.ajax({
-            type: 'GET',
-            url: '{% url "admin_page:ajax_list_siswa"%}' + '?sort=' + sort,
-            dataType: 'json',
-            success: function (data) {
-                $.each(data, function (key, value) {
-                    $('#data tbody').append(html(value.nis, value.user.first_name + ' ' + value.user.last_name, value.user.email, print_status(value.status)))
-                })
-            }
-        })
-    }
 </script>
 
 <script>
@@ -384,16 +315,56 @@
             <p><b>${peringatan}</b></p>
         `
         body = document.getElementById('modalPeringatan')
-        msg = `
+        if (check === 'terima') {
+            $('#modalDetail').modal('hide');
+            pesan = 'Apakah Anda Yakin akan Menerima Verifikasi Siswa ini ?'
+            body.innerHTML = html(pesan)
+        }
+        else if (check === 'tolak') {
+            msg = `
+                <form method="POST" id="kirim">
+                    {% csrf_token %}
+                    <select class="form-control" onChange='pilihAlasan(this.value)'>
+                        <option disabled selected>Pilih Alasan</option>
+                        <option>Data Tidak Sesuai Dokumen</option>
+                        <option>Foto Tidak Jelas</option>
+                        <option>Dokumen Tidak Jelas</option>
+                        <option value='0'>Lainnya ...</option>
+                    </select>
+                    <input type="text" name='alasan' class="form-control" id="alasanLainnya" style='display: none' required>
+                </form>
+            `
+            pesan = html('Silahkan Pilih Alasan Anda Menolak Verifikasi ini ?') + msg
+            body.innerHTML = html(pesan)
+        }
+        else if (check === 'pesan') {
+            msg = `
                 <form method="POST" id="kirim">
                     {% csrf_token %}
                     <input type="text" name='alasan' class="form-control" id="alasanLainnya" placeholder='Masukan Pemberitahuan yang ingin anda kirim' required>
                 </form>
             `
-        pesan = html('Silahkan Masukan Pemberitahuan yang ingin dikirimkan untuk Siswa ini') + msg
-        body.innerHTML = html(pesan)
+            pesan = html('Silahkan Masukan Pemberitahuan yang ingin dikirimkan untuk Siswa ini') + msg
+            body.innerHTML = html(pesan)
+        }
         $('#peringatan').modal();
     }
+</script>
+
+<script>
+    function pilihAlasan(val) {
+        alasanText = document.getElementById('alasanLainnya')
+        if (val === '0') {
+            alasanText.value = ''
+            alasanText.placeholder = 'Silahkan Masukan Alasan Gagalnya Verifikasi'
+            alasanText.style.display = 'block'
+        }
+        else {
+            alasanText.value = val
+            alasanText.style.display = 'none'
+        }
+    }
+
 </script>
 
 {% endblock %}

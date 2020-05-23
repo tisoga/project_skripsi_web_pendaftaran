@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
         center: 'title',
         right: 'dayGridMonth'
       },
-      defaultDate: '2020-02-12',
+      defaultDate: '{% now "Y-m-d" %}',
       locale: initialLocaleCode,
       buttonIcons: false, // show the prev/next text
       weekNumbers: false,
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
             {
             title: '{{event.name}}',
             start: '{{event.start_date|safe}}',
-            end: '{{event.end_date|safe}}',
+            end: '{{event.end_date|safe}}T00:00:00.0+0100',
             classNames: ['bg-dark']
             },
         {% endfor %}
