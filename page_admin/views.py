@@ -3,11 +3,13 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from page_siswa.views import convert_date
-from page_siswa.models import Siswa, list_events
+from page_siswa.models import Siswa, list_events, list_notifikasi
 # Create your views here.
 
 
 def homepage(request):
+    if request.user.is_authenticated and not request.user.is_staff:
+        return redirect('siswa:home')
     siswa = Siswa.object.all()
     laki = siswa.filter(jenis_kelamin='Laki-Laki')
     perempuan = siswa.filter(jenis_kelamin='Perempuan')
@@ -25,32 +27,59 @@ def homepage(request):
 
 
 def listsiswa(request):
+    if request.user.is_authenticated and not request.user.is_staff:
+        return redirect('siswa:home')
     list_siswa = Siswa.object.all()
     paginator = Paginator(list_siswa, 7)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    # test = list(page_obj.object_list.values())
-    # json = JsonResponse(test, safe=False)
-    # print(json.content)
+    if request.method == 'POST':
+        alasan = request.POSt.get('alasan')
+        siswa = Siswa.object.get(nis = request.POST.get('nis_siswa'))
+        list_notifikasi.objects.create(siswa = siswa, notifikasi = alasan)
+        messages.success(request, f'Pesan berhasil dikirimkan')
     return render(request=request,
                   template_name='page_admin/tabelSiswa.html',
                   context={'list_siswa': page_obj, 'active': 'list'})
 
 
 def verifikasi_siswa(request):
+    if request.user.is_authenticated and not request.user.is_staff:
+        return redirect('siswa:home')
     list_siswa = Siswa.object.filter(status=3).order_by('nis')
     paginator = Paginator(list_siswa, 7)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     if request.method == 'POST':
-        print(request.POST)
+        siswa = Siswa.object.get(nis = request.POST.get('nis_siswa'))
+        if request.POST.get('check') == 'terima':
+            alasan = 'Verifikasi Berhasil'
+            siswa.status = 6
+            siswa.save()
+            list_notifikasi.objects.create(siswa = siswa, notifikasi = alasan)
+            messages.success(request, f'Status siswa {siswa.nis} berhasil diverifikasi')
+            return redirect('admin_page:verifikasi_siswa')
+        elif request.POST.get('check') == 'tolak':
+            alasan = 'Verifikasi Gagal : {}'.format(request.POST.get('alasan'))
+            siswa.status = 4
+            siswa.save()
+            list_notifikasi.objects.create(siswa = siswa, notifikasi = alasan)
+            messages.success(request, f'Status siswa {siswa.nis} gagal diverifikasi dengan alasan {alasan}')
+            return redirect('admin_page:verifikasi_siswa')
+        elif request.POST.get('check') == 'pesan':
+            alasan = request.POST.get('alasan')
+            list_notifikasi.objects.create(siswa = siswa, notifikasi = alasan)
+            messages.success(request, f'Pesan berhasil dikirimkan')
+            return redirect('admin_page:verifikasi_siswa')
     return render(request=request,
                   template_name='page_admin/tabelVerifikasiSiswa.html',
                   context={'list_siswa': page_obj, 'active': 'verifikasi'})
 
 
 def events(request):
-    events = list_events.objects.all()
+    if request.user.is_authenticated and not request.user.is_staff:
+        return redirect('siswa:home')
+    event = list_events.objects.all()
     if request.method == 'POST':
         if request.POST.get('event'):
             nama = request.POST.get('event')
@@ -67,4 +96,4 @@ def events(request):
             return redirect('admin_page:events')
     return render(request=request,
                   template_name='page_admin/events.html',
-                  context={'active': 'events', 'events': events})
+                  context={'active': 'events', 'events': event})

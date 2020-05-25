@@ -27,7 +27,7 @@
     <!-- /.login-logo -->
     <div class="card">
       {% include 'page_siswa/messages.html'%}
-      <div class="col-12">
+      <!-- <div class="col-12">
         <div class="form-row mt-2 mb-2">
           <div class="col-4 offset-2">
             <input type="radio" id='siswa' name="kls" onclick="showHideDiv()" checked>Login Siswa
@@ -35,10 +35,10 @@
           <div class="col-6">
             <input type="radio" id='admin' name="kls" onclick="showHideDiv()">Login Admin
           </div>
-        </div>
-      </div>
+        </div> -->
+      <!-- </div> -->
       <div class="card-body login-card-body" id="divsiswa" style="display: block;">
-        <p class="login-box-msg">Login untuk Siswa</p>
+        <p class="login-box-msg">Login</p>
         <form method="POST">
           {% csrf_token %}
           <div class="input-group mb-3">

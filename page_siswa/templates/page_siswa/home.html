@@ -43,18 +43,26 @@
                 {% elif request.user.DetailUser.status == 2 %}
                 <a href="{% url 'siswa:tahapan_pendaftaran' %}">
                     <div class='bg-primary text-center' style="height: 100px;">
+                {% elif request.user.DetailUser.status == 4 %}
+                <a href="{% url 'siswa:tahapan_pendaftaran' %}">
+                    <div class='bg-danger text-center' style="height: 100px;">
                 {% else %}
                     <div class='bg-success text-center' style="height: 100px;">
                 {% endif %}
+                {% if request.user.DetailUser.status == 4 %}
+                    <i class="fas fa-clipboard fa-2x pt-4"></i>
+                    <p class="pt-1 h6">Pengajuan Pendaftaran Ulang</p>
+                {% else %}
                     <i class="fas fa-clipboard fa-2x pt-4"></i>
                     <p class="pt-1">Pengajuan Pendaftaran</p>
+                {% endif %}
                 </div>
                 </a>
             </div>
             <div class="col-3">
-                {% if request.user.DetailUser.status == 0 or request.user.DetailUser.status == 1 or request.user.DetailUser.status == 2%}
+                {% if request.user.DetailUser.status == 0 or request.user.DetailUser.status == 1 or request.user.DetailUser.status == 2 or request.user.DetailUser.status == 4%}
                     <div class='bg-secondary text-center' style="height: 100px;">
-                {% elif request.user.DetailUser.status == 3 %}
+                {% elif request.user.DetailUser.status == 3 or request.user.DetailUser.status == 6 %}
                     <div class='bg-secondary text-center' style="height: 100px;">
                 {% elif request.user.DetailUser.status == 5 %}
                 <a href="{% url 'siswa:tahapan_pendaftaran' %}">
@@ -65,6 +73,7 @@
                     <i class="fas fa-retweet fa-2x pt-4"></i>
                     <p class="pt-1">Daftar Ulang</p>
                 </div>
+                </a>
             </div>
         </div>
         <!-- <a href="#" class="btn btn-primary">Profile</a> -->

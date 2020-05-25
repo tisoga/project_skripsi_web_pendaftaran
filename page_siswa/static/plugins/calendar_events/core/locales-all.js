@@ -687,8 +687,8 @@
             doy: 7 // The week that contains Jan 1st is the first week of the year.
         },
         buttonText: {
-            prev: "prev",
-            next: "next",
+            prev: "«",
+            next: "»",
             today: "hari ini",
             month: "Bulan",
             week: "Minggu",

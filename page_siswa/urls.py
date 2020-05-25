@@ -5,8 +5,10 @@ from . import ajax
 app_name = 'siswa'
 
 urlpatterns = [
-    path('', views.homepage, name='home'),
+    path('', views.redirect_sites, name='rd'),
+    path('home/', views.homepage, name='home'),
     path('login/', views.login_views, name='login'),
+    path('logout/', views.logout_views, name='logout'),
     path('register/', views.register_views, name='register'),
     path('tahapan_pendaftaran/', views.tahapan_pendaftaran_views, name='tahapan_pendaftaran'),
     path('proses_pengajuan_pendaftaran', views.proses_ajukan_pendaftaran, name='proses_pengajuan'),

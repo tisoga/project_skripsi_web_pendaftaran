@@ -78,41 +78,6 @@
                     </table>
                 </div>
             </div>
-            {% if list_siswa.has_other_pages %}
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-end">
-                    {% if list_siswa.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{list_siswa.previous_page_number}}">«</a>
-                    </li>
-                    {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">«</span>
-                    </li>
-                    {% endif %}
-                    {% for page in list_siswa.paginator.page_range%}
-                    {% if page == list_siswa.number %}
-                    <li class="page-item active">
-                        <span class="page-link">{{page}}</span>
-                    </li>
-                    {% else %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{page}}">{{page}}</a>
-                    </li>
-                    {% endif %}
-                    {% endfor %}
-                    {% if list_siswa.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{list_siswa.next_page_number}}">»</a>
-                    </li>
-                    {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">»</span>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
         </div>
     </div>
 </div>
@@ -203,7 +168,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="openPeringatan()">Kirim Pemberitahuan</button>
+                <button type="button" class="btn btn-primary" id="btnNis" onclick="openPeringatan(this.value)">Kirim
+                    Pemberitahuan</button>
             </div>
         </div>
     </div>
@@ -279,6 +245,18 @@
             case 5:
                 status = 'Proses Daftar Ulang'
                 break
+            case 6:
+                status = 'Proses Seleksi Siswa'
+                break
+            case 7:
+                status = 'Tidak Diterima'
+                break
+            case 8:
+                status = 'Diterima'
+                break
+            case 9:
+                status = 'Pendaftaran ditutup'
+                break
         }
         return status
     }
@@ -321,6 +299,7 @@
         var ijazah = document.getElementsByClassName('berkasIjazah')
         var akta = document.getElementsByClassName('berkasAkta')
         var kesehatan = document.getElementsByClassName('berkasKesehatan')
+        var btnNis = document.getElementById('btnNis')
         if (val) {
             $.ajax({
                 type: 'GET',
@@ -329,11 +308,12 @@
                 success: function (data) {
                     nis.innerHTML = data.nis
                     email.innerHTML = data.user.email
-                    nama.innerHTML = data.user.first_name + data.user.last_name
-                    if (data.status === '0' || data.status === '1') {
+                    nama.innerHTML = data.user.first_name + ' ' + data.user.last_name
+                    btnNis.value = data.nis
+                    if (data.status === 0 || data.status === 1) {
                         berkas.parentNode.removeChild(berkas)
                     }
-                    if (data.status !== '0') {
+                    if (data.status !== 0) {
                         fotoProfile.src = data.foto_diri
                         fotoProfile.style = 'height: 250px'
                         jk.innerHTML = data.jenis_kelamin
@@ -341,7 +321,7 @@
                         umur.innerHTML = data.umur
                         alamat.innerHTML = data.alamat
                     }
-                    if (data.status !== '0' && data.status !== '1') {
+                    if (data.status !== 0 && data.status !== 1) {
                         indo.innerHTML = data.nilai_indonesia
                         ing.innerHTML = data.nilai_inggris
                         mtk.innerHTML = data.nilai_matematika
@@ -378,7 +358,7 @@
 </script>
 
 <script>
-    function openPeringatan(check) {
+    function openPeringatan(nis) {
         $('#modalDetail').modal('hide');
         html = (peringatan) => `
             <p><b>${peringatan}</b></p>
@@ -387,10 +367,11 @@
         msg = `
                 <form method="POST" id="kirim">
                     {% csrf_token %}
-                    <input type="text" name='alasan' class="form-control" id="alasanLainnya" placeholder='Masukan Pemberitahuan yang ingin anda kirim' required>
+                    <input type='hidden' name='nis_siswa' class='form-control' id='idNis' value=${nis}>
+                    <input type="text" name='alasan' class="form-control" id="alasanLainnya" placeholder='Masukan Pesan yang ingin anda kirim' required>
                 </form>
             `
-        pesan = html('Silahkan Masukan Pemberitahuan yang ingin dikirimkan untuk Siswa ini') + msg
+        pesan = html('Silahkan Masukan Pesan yang ingin dikirimkan untuk Siswa ini') + msg
         body.innerHTML = html(pesan)
         $('#peringatan').modal();
     }

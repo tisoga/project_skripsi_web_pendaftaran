@@ -22,8 +22,23 @@
           </li> -->
         </ul>
         <ul class="navbar-nav ml-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+              <i class="far fa-bell"></i>
+              <span class="badge badge-warning navbar-badge">{{notifikasi|length}}</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+              <span class="dropdown-item dropdown-header">{{notifikasi|length}} Notifikasi</span>
+              <div class="dropdown-divider"></div>
+              {% for notif in notifikasi%}
+              <a href="#" class="dropdown-item">
+                <p class="text-sm">{{notif.notifikasi}}</p>
+              </a>
+              {% endfor %}
+            </div>
+          </li>
             <li class="nav-item">
-                <a href="/logout/" class="nav-link btn btn-default btn-flat" style="cursor: pointer;">Logout</a>
+                <a href="{% url 'siswa:logout' %}" class="nav-link btn btn-default btn-flat" style="cursor: pointer;">Logout</a>
             </li>
         </ul>
       </div>

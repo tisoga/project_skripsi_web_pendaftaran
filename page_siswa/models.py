@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.base_user import BaseUserManager
 # Create your models here
@@ -17,6 +18,16 @@ class CustomUserManager(BaseUserManager):
         user.save()
         return user
 
+    def create_admin(self, email, password, **extra_fields):
+        if not email:
+            raise ValueError('Email Harus di isi')
+        elif not password:
+            raise ValueError('Password Harus di isi')
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_active', True)
+
+        return self.create_user(email, password, **extra_fields)
+
     def create_superuser(self, email, password, **extra_fields):
         if not email:
             raise ValueError('Email Harus di isi')
@@ -34,7 +45,12 @@ class SiswaManager(BaseUserManager):
         email = self.normalize_email(email)
         email = CustomUser.object.create_user(
             email, password, first_name=first_name, last_name=last_name)
-        user = self.model(user=email, **extra_fields)
+        try:
+            nis = int(Siswa.object.latest('nis').nis) + 1
+        except ObjectDoesNotExist:
+            nis = '2021001'
+        print(nis)
+        user = self.model(user=email, nis=nis, **extra_fields)
         user.save()
 
         return user
@@ -53,6 +69,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     object = CustomUserManager()
     objects = CustomUserManager()
+
+    # class Meta:
+    #     db_table = 'tabel_user'
 
     def __str__(self):
         return self.email
@@ -98,9 +117,10 @@ class Siswa(models.Model):
 
     class Meta:
         db_table = 'tabel_siswa'
+        ordering = ['nis']
 
     def __str__(self):
-        return self.user.get_full_name()
+        return self.nis
 
     def check_progress(self):
         if not (self.jenis_kelamin and self.tanggal_lahir and self.tempat_lahir
@@ -130,11 +150,23 @@ class Siswa(models.Model):
             color = 'text-primary'
             text = 'Sedang Diverifikasi'
         elif self.status == 4:
-            color = 'text-warning'
+            color = 'text-danger'
             text = 'Verifikasi Gagal'
         elif self.status == 5:
             color = 'text-primary'
             text = 'Proses Daftar Ulang'
+        elif self.status == 6:
+            color = 'text-primary'
+            text = 'Proses Seleksi Siswa'
+        elif self.status == 7:
+            color = 'text-danger'
+            text = 'Tidak Diterima'
+        elif self.status == 8:
+            color = 'text-success'
+            text = 'Diterima'
+        elif self.status == 9:
+            color = 'text-secondary'
+            text = 'Pendaftaran ditutup'
         html = '<b>Status Pendaftaran :</b> <a class="{} float-right">{}</a>'.format(
             color, text)
         data = {
@@ -154,3 +186,15 @@ class list_events(models.Model):
 
     class Meta:
         db_table = 'tabel_events'
+
+class list_notifikasi(models.Model):
+    siswa = models.ForeignKey(Siswa, on_delete=models.CASCADE, related_name='notifikasi', default=None)
+    notifikasi = models.CharField(max_length = 255)
+    tanggal_notifikasi = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.tanggal_notifikasi)
+
+    class Meta:
+        db_table ='tabel_notifikasi'
+        ordering = ['-tanggal_notifikasi']

@@ -48,6 +48,7 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% if list_siswa %}
                                 {% for siswa in list_siswa %}
                                 <tr onclick="checkTheBox('{{siswa.nis}}')" style="cursor: pointer;">
                                     <td>
@@ -62,6 +63,13 @@
                                     <td class="align-middle text-center">{{siswa.umur}}</td>
                                 </tr>
                                 {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td class="text-center" colspan="7">
+                                        Tidak Ada Siswa Yang Perlu di Verifikasi
+                                    </td>
+                                </tr>
+                                {% endif %}
                             </tbody>
                         </form>
                     </table>
@@ -192,11 +200,12 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-warning" onclick="openPeringatan('pesan')">Kirim
+                <button type="button" class="btn btn-warning btnNis" onclick="openPeringatan('pesan', this.value)">Kirim
                     Pemberitahuan</button>
-                <button type="button" class="btn btn-danger" onclick="openPeringatan('tolak')">Tolak
+                <button type="button" class="btn btn-danger btnNis" onclick="openPeringatan('tolak', this.value)">Tolak
                     Verifikasi</button>
-                <button type="button" class="btn btn-primary" onclick="openPeringatan('terima')">Terima
+                <button type="button" class="btn btn-primary btnNis"
+                    onclick="openPeringatan('terima', this.value)">Terima
                     Verifikasi</button>
             </div>
         </div>
@@ -266,6 +275,7 @@
         var ijazah = document.getElementsByClassName('berkasIjazah')
         var akta = document.getElementsByClassName('berkasAkta')
         var kesehatan = document.getElementsByClassName('berkasKesehatan')
+        var btnNis = document.getElementsByClassName('btnNis')
         if (val) {
             $.ajax({
                 type: 'GET',
@@ -274,11 +284,11 @@
                 success: function (data) {
                     nis.innerHTML = data.nis
                     email.innerHTML = data.user.email
-                    nama.innerHTML = data.user.first_name + data.user.last_name
-                    if (data.status === '0' || data.status === '1') {
+                    nama.innerHTML = data.user.first_name + ' ' + data.user.last_name
+                    if (data.status === 0 || data.status === 1) {
                         berkas.parentNode.removeChild(berkas)
                     }
-                    if (data.status !== '0') {
+                    if (data.status !== 0) {
                         fotoProfile.src = data.foto_diri
                         fotoProfile.style = 'height: 250px'
                         jk.innerHTML = data.jenis_kelamin
@@ -286,7 +296,7 @@
                         umur.innerHTML = data.umur
                         alamat.innerHTML = data.alamat
                     }
-                    if (data.status !== '0' && data.status !== '1') {
+                    if (data.status !== 0 && data.status !== 1) {
                         indo.innerHTML = data.nilai_indonesia
                         ing.innerHTML = data.nilai_inggris
                         mtk.innerHTML = data.nilai_matematika
@@ -297,6 +307,9 @@
                         akta[1].src = data.berkas_akta
                         kesehatan[0].setAttribute('href', data.berkas_kesehatan)
                         kesehatan[1].src = data.berkas_kesehatan
+                        for (i = 0; i < btnNis.length; i++) {
+                            btnNis[i].value = data.nis
+                        }
                     }
                 }
             })
@@ -309,15 +322,21 @@
 </script>
 
 <script>
-    function openPeringatan(check) {
+    function openPeringatan(check, nis) {
         $('#modalDetail').modal('hide');
         html = (peringatan) => `
             <p><b>${peringatan}</b></p>
         `
         body = document.getElementById('modalPeringatan')
         if (check === 'terima') {
-            $('#modalDetail').modal('hide');
-            pesan = 'Apakah Anda Yakin akan Menerima Verifikasi Siswa ini ?'
+            msg = `
+                <form method="POST" id="kirim">
+                    {% csrf_token %}
+                    <input type="hidden" name='nis_siswa' class="form-control" value='${nis}' required>
+                    <input type="hidden" name='check' class="form-control" value='terima'>
+                </form>
+            `
+            pesan = html('Apakah Anda Yakin akan Menerima Verifikasi Siswa ini ?') + msg
             body.innerHTML = html(pesan)
         }
         else if (check === 'tolak') {
@@ -331,6 +350,8 @@
                         <option>Dokumen Tidak Jelas</option>
                         <option value='0'>Lainnya ...</option>
                     </select>
+                    <input type="hidden" name='nis_siswa' class="form-control" value='${nis}' required>
+                    <input type="hidden" name='check' class="form-control" value='tolak'>
                     <input type="text" name='alasan' class="form-control" id="alasanLainnya" style='display: none' required>
                 </form>
             `
@@ -341,10 +362,12 @@
             msg = `
                 <form method="POST" id="kirim">
                     {% csrf_token %}
-                    <input type="text" name='alasan' class="form-control" id="alasanLainnya" placeholder='Masukan Pemberitahuan yang ingin anda kirim' required>
+                    <input type="hidden" name='nis_siswa' class="form-control" value='${nis}' required>
+                    <input type="hidden" name='check' class="form-control" value='pesan'>
+                    <input type="text" name='alasan' class="form-control" id="alasanLainnya" placeholder='Masukan Pesan yang ingin anda kirim' required>
                 </form>
             `
-            pesan = html('Silahkan Masukan Pemberitahuan yang ingin dikirimkan untuk Siswa ini') + msg
+            pesan = html('Silahkan Masukan Pesan yang ingin dikirimkan untuk Siswa ini') + msg
             body.innerHTML = html(pesan)
         }
         $('#peringatan').modal();

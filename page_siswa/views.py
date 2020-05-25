@@ -2,8 +2,8 @@ import requests
 from django.shortcuts import render, redirect
 from django.db import IntegrityError
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
-from .models import CustomUser, Siswa, list_events
+from django.contrib.auth import authenticate, login, logout
+from .models import CustomUser, Siswa, list_events, list_notifikasi
 
 from datetime import datetime
 
@@ -17,36 +17,29 @@ def convert_date(date):
 # Create your views here.
 
 
-def homepage(request):
-    page = 'home'
-    events = list_events.objects.all()
-    if request.method == 'POST':
-        if request.POST.get('email'):
-            email = request.POST['email']
-            password = request.POST['password']
-            first_name = request.POST['first_name']
-            last_name = request.POST['last_name']
-            Siswa.object.create_user(
-                email=email, password=password, first_name=first_name, last_name=last_name)
-            return redirect('siswa:login')
-    return render(request=request,
-                  template_name='page_siswa/home.html',
-                  context={'page': page, 'events': events})
-
-
 def login_views(request):
     if request.method == 'POST':
         if request.POST.get('email'):
             email = request.POST['email']
             password = request.POST['password']
             user = authenticate(request, email=email, password=password)
-            if user:
+            if user and user.is_staff:
+                login(request, user)
+                return redirect('admin_page:home')
+            elif user and not user.is_staff:
                 login(request, user)
                 return redirect('siswa:home')
             else:
-                print('not')
+                messages.error(
+                    request, f'Cek Kembali Email atau Password anda')
+                return redirect('siswa:login')
     return render(request=request,
                   template_name='page_siswa/login.html')
+
+
+def logout_views(request):
+    logout(request)
+    return redirect('siswa:login')
 
 
 def register_views(request):
@@ -69,16 +62,47 @@ def register_views(request):
                   template_name='page_siswa/register.html')
 
 
+def redirect_sites(request):
+    if request.user.is_authenticated and request.user.is_staff:
+        return redirect('admin_page:home')
+    elif request.user.is_authenticated and not request.user.is_staff:
+        return redirect('siswa:home')
+    else:
+        return redirect('siswa:login')
+
+
+def homepage(request):
+    if request.user.is_authenticated and request.user.is_staff:
+        return redirect('admin_page:home')
+    page = 'home'
+    events = list_events.objects.all()
+    notifikasi = list_notifikasi.objects.filter(siswa=request.user.id)
+    if request.method == 'POST':
+        if request.POST.get('email'):
+            email = request.POST['email']
+            password = request.POST['password']
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
+            Siswa.object.create_user(
+                email=email, password=password, first_name=first_name, last_name=last_name)
+            return redirect('siswa:login')
+    return render(request=request,
+                  template_name='page_siswa/home.html',
+                  context={'page': page, 'events': events, 'notifikasi': notifikasi})
+
+
 def tahapan_pendaftaran_views(request):
+    if request.user.is_authenticated and request.user.is_staff:
+        return redirect('admin_page:home')
     data = Siswa.object.get(user=request.user)
     status = data.status
     if status == 0:
         page = 'Identitas Diri'
     elif status == 1:
         page = 'Berkas-Berkas'
-    elif status == 2:
+    elif status == 2 or status == 4:
         page = 'Pengajuan Pendaftaran'
-    elif status == 3:
+    elif status == 3 or status == 6 or status == 7 or status == 8 or status == 9:
         # page = 'Pengajuan Pendaftaran'
         return redirect('siswa:home')
     elif status == 5:
@@ -137,7 +161,8 @@ def proses_ajukan_pendaftaran(request):
             request.user.first_name = request.POST.get('first_name')
             request.user.last_name = request.POST.get('last_name')
             data_siswa.jenis_kelamin = request.POST.get('jk')
-            data_siswa.tanggal_lahir = convert_date(request.POST.get('tanggal'))
+            data_siswa.tanggal_lahir = convert_date(
+                request.POST.get('tanggal'))
             data_siswa.tempat_lahir = request.POST.get('tempat')
             data_siswa.umur = request.POST.get('umur')
             data_siswa.nilai_matematika = request.POST.get('mtk')
@@ -162,7 +187,8 @@ def proses_ajukan_pendaftaran(request):
         else:
             data_siswa.status = 3
             data_siswa.save()
-            messages.success(request, f'Pengajuan Pendaftaran Berhasil, Silahkan Tunggu Proses Verifikasi. Maksimal 3 x 24 Jam')
+            messages.success(
+                request, f'Pengajuan Pendaftaran Berhasil, Silahkan Tunggu Proses Verifikasi. Maksimal 3 x 24 Jam')
             return redirect('siswa:home')
 
 
