@@ -136,6 +136,13 @@ class Siswa(models.Model):
         else:
             return '3'
 
+    def check_rata_rata(self):
+        if self.nilai_indonesia and self.nilai_inggris and self.nilai_ipa and self.nilai_matematika:
+            rata_rata = (self.nilai_indonesia + self.nilai_inggris + self.nilai_ipa + self.nilai_matematika) / 4
+            return round(rata_rata,2)
+        else:
+            return None
+
     def print_status(self):
         if self.status == 0:
             color = 'text-secondary'

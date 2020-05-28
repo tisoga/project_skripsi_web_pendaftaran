@@ -8,6 +8,7 @@ urlpatterns = [
     path('', redirect_sites, name='rd'),
     path('home/', views.homepage, name='home'),
     path('list_siswa/', views.listsiswa, name='list_siswa'),
+    path('list_seleski/', views.tabelSeleksi, name='seleksi'),
     path('verifikasi_siswa/', views.verifikasi_siswa, name='verifikasi_siswa'),
     path('events/', views.events, name='events'),
     path('ajax/list_siswa', ajax.list_siswa, name='ajax_list_siswa'),

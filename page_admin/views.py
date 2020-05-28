@@ -34,13 +34,37 @@ def listsiswa(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     if request.method == 'POST':
-        alasan = request.POSt.get('alasan')
-        siswa = Siswa.object.get(nis = request.POST.get('nis_siswa'))
-        list_notifikasi.objects.create(siswa = siswa, notifikasi = alasan)
+        alasan = request.POST.get('alasan')
+        siswa = Siswa.object.get(nis=request.POST.get('nis_siswa'))
+        list_notifikasi.objects.create(siswa=siswa, notifikasi=alasan)
         messages.success(request, f'Pesan berhasil dikirimkan')
     return render(request=request,
                   template_name='page_admin/tabelSiswa.html',
                   context={'list_siswa': page_obj, 'active': 'list'})
+
+
+def tabelSeleksi(request):
+    if request.user.is_authenticated and not request.user.is_staff:
+        return redirect('siswa:home')
+    list_siswa = Siswa.object.filter(status = 6)
+    paginator = Paginator(list_siswa, 7)
+    page_number = request.GET.get('page')
+    # page_obj = paginator.get_page(page_number)
+    if request.method == 'POST':
+        for x in request.POST:
+            if request.POST[x] == 'Ya':
+                siswa = list_siswa.get(nis=x)
+                siswa.status = 5
+                siswa.save()
+            elif request.POST[x] == 'Tidak':
+                siswa = list_siswa.get(nis=x)
+                siswa.status = 7
+                siswa.save()
+        return redirect('admin_page:home')
+                
+    return render(request=request,
+                  template_name='page_admin/tabelSeleksi.html',
+                  context={'list_siswa': list_siswa, 'active': 'seleksi'})
 
 
 def verifikasi_siswa(request):
@@ -51,24 +75,26 @@ def verifikasi_siswa(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     if request.method == 'POST':
-        siswa = Siswa.object.get(nis = request.POST.get('nis_siswa'))
+        siswa = Siswa.object.get(nis=request.POST.get('nis_siswa'))
         if request.POST.get('check') == 'terima':
             alasan = 'Verifikasi Berhasil'
             siswa.status = 6
             siswa.save()
-            list_notifikasi.objects.create(siswa = siswa, notifikasi = alasan)
-            messages.success(request, f'Status siswa {siswa.nis} berhasil diverifikasi')
+            list_notifikasi.objects.create(siswa=siswa, notifikasi=alasan)
+            messages.success(
+                request, f'Status siswa {siswa.nis} berhasil diverifikasi')
             return redirect('admin_page:verifikasi_siswa')
         elif request.POST.get('check') == 'tolak':
             alasan = 'Verifikasi Gagal : {}'.format(request.POST.get('alasan'))
             siswa.status = 4
             siswa.save()
-            list_notifikasi.objects.create(siswa = siswa, notifikasi = alasan)
-            messages.success(request, f'Status siswa {siswa.nis} gagal diverifikasi dengan alasan {alasan}')
+            list_notifikasi.objects.create(siswa=siswa, notifikasi=alasan)
+            messages.success(
+                request, f'Status siswa {siswa.nis} gagal diverifikasi dengan alasan {alasan}')
             return redirect('admin_page:verifikasi_siswa')
         elif request.POST.get('check') == 'pesan':
             alasan = request.POST.get('alasan')
-            list_notifikasi.objects.create(siswa = siswa, notifikasi = alasan)
+            list_notifikasi.objects.create(siswa=siswa, notifikasi=alasan)
             messages.success(request, f'Pesan berhasil dikirimkan')
             return redirect('admin_page:verifikasi_siswa')
     return render(request=request,
@@ -85,7 +111,8 @@ def events(request):
             nama = request.POST.get('event')
             awal = convert_date(request.POST.get('mulai'))
             akhir = convert_date(request.POST.get('akhir'))
-            list_events.objects.create(name=nama, start_date=awal, end_date=akhir)
+            list_events.objects.create(
+                name=nama, start_date=awal, end_date=akhir)
             messages.success(request, f'Event Berhasil Ditambahkan')
             return redirect('admin_page:events')
         elif request.POST.get('id'):
