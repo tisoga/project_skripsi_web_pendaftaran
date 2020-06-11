@@ -74,6 +74,7 @@ def redirect_sites(request):
 def homepage(request):
     if request.user.is_authenticated and request.user.is_staff:
         return redirect('admin_page:home')
+    print(request.user.DetailUser.get_jenis_kelamin_display())
     page = 'home'
     events = list_events.objects.all()
     notifikasi = list_notifikasi.objects.filter(siswa=request.user.id)

@@ -17,7 +17,7 @@
                 <b>Nis :</b> <a class="float-right">{{user.DetailUser.nis}}</a>
             </li>
             <li class="list-group-item">
-                <b>Jenis Kelamin :</b> <a class="float-right">{{user.DetailUser.jenis_kelamin}}</a>
+                <b>Jenis Kelamin :</b> <a class="float-right">{{request.user.DetailUser.get_jenis_kelamin_display}}</a>
             </li>
             <li class="list-group-item">
                 <b>Tanggal Lahir :</b> <a class="float-right">{{user.DetailUser.tanggal_lahir}}</a>

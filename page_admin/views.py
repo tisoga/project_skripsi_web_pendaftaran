@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.db.models import F
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import JsonResponse
@@ -29,7 +30,7 @@ def homepage(request):
 def listsiswa(request):
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
-    list_siswa = Siswa.object.all()
+    list_siswa = Siswa.object.order_by('nis')
     paginator = Paginator(list_siswa, 7)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -46,25 +47,43 @@ def listsiswa(request):
 def tabelSeleksi(request):
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
-    list_siswa = Siswa.object.filter(status = 6)
+    error = ''
+    if request.method == 'GET':
+        error = request.GET.get('error')
+    s = 10
+    ass = Siswa.object.annotate(
+        avg=(F('nilai_matematika')+F('nilai_indonesia')+F('nilai_ipa')+F('nilai_inggris')/4))[:s]
+    print(ass)
+    list_siswa = Siswa.object.filter(status=6)
     paginator = Paginator(list_siswa, 7)
     page_number = request.GET.get('page')
     # page_obj = paginator.get_page(page_number)
     if request.method == 'POST':
-        for x in request.POST:
-            if request.POST[x] == 'Ya':
-                siswa = list_siswa.get(nis=x)
-                siswa.status = 5
-                siswa.save()
-            elif request.POST[x] == 'Tidak':
-                siswa = list_siswa.get(nis=x)
-                siswa.status = 7
-                siswa.save()
-        return redirect('admin_page:home')
-                
+        if request.POST.get('jumlahSiswa'):
+            jumlah = request.POST.get('jumlahSiswa')
+            if int(request.POST.get('jumlahSiswa')) > list_siswa.count():
+                response = redirect('admin_page:seleksi')
+                response['Location'] += '?error=otomatis'
+                messages.error(
+                    request, f'Jumlah Siswa Yang Ingin Diterima Melebihi dari siswa yang sudah terverifikasi')
+                return response
+            else:
+                siswa_seleksi = Siswa.object.annotate(
+                    avg=(F('nilai_matematika')+F('nilai_indonesia')+F('nilai_ipa')+F('nilai_inggris')/4))[:jumlah]
+        else:
+            for x in request.POST:
+                if request.POST[x] == 'Ya':
+                    siswa = list_siswa.get(nis=x)
+                    siswa.status = 5
+                    siswa.save()
+                elif request.POST[x] == 'Tidak':
+                    siswa = list_siswa.get(nis=x)
+                    siswa.status = 7
+                    siswa.save()
+            return redirect('admin_page:home')
     return render(request=request,
                   template_name='page_admin/tabelSeleksi.html',
-                  context={'list_siswa': list_siswa, 'active': 'seleksi'})
+                  context={'list_siswa': list_siswa, 'active': 'seleksi', 'error': error})
 
 
 def verifikasi_siswa(request):

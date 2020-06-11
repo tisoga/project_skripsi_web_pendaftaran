@@ -33,15 +33,15 @@
             <div class="form-group">
                 <label>Jenis Kelamin</label>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="jk" id="laki-laki" value="Laki-Laki" required
-                        {% if request.user.DetailUser.jenis_kelamin == 'Laki-Laki'%}checked{%else%}disabled{%endif%}>
+                    <input class="form-check-input" type="radio" name="jk" id="laki-laki" value="L" required
+                        {% if request.user.DetailUser.jenis_kelamin == 'L'%}checked{%else%}disabled{%endif%}>
                     <label class="form-check-label" for="laki-laki">
                         Laki-Laki
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="jk" id="perempuan" value="Perempuan" required
-                        {% if request.user.DetailUser.jenis_kelamin == 'Perempuan'%}checked{%else%}disabled{%endif%}>
+                    <input class="form-check-input" type="radio" name="jk" id="perempuan" value="P" required
+                        {% if request.user.DetailUser.jenis_kelamin == 'P'%}checked{%else%}disabled{%endif%}>
                     <label class="form-check-label" for="perempuan">
                         Perempuan
                     </label>
