@@ -1,3 +1,4 @@
+import json
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
@@ -246,7 +247,7 @@ class sekolah(models.Model):
         tutup = 1,_('Pendaftaran diTutup')
 
     nama = models.CharField(max_length=255, default=None)
-    alamat = models.TextField()
+    alamat = models.TextField(default=None)
     daya_tampung = models.PositiveIntegerField(default=0)
     status_pendaftaran = models.BooleanField(choices=StatusPendaftaran.choices, default=0)
 
@@ -266,4 +267,4 @@ class sekolah(models.Model):
         sisa = jumlah_siswa - (zonasi + afirmasi + perpindahan + prestasi)
 
         data = {'zonasi': zonasi, 'afirmasi': afirmasi, 'perpindahan': perpindahan, 'prestasi': prestasi+sisa}
-        return data
+        return json.dumps(data)

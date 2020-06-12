@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from . import ajax
-
+from page_admin import ajax as ajax_admin
 app_name = 'siswa'
 
 urlpatterns = [
@@ -16,5 +16,5 @@ urlpatterns = [
     path('ajax/get_provinsi', ajax.get_provinsi, name='ajax_provinsi'),
     path('ajax/get_kota/<int:id>', ajax.get_kota, name='ajax_kota'),
     path('ajax/get_kecamatan/<int:id>', ajax.get_kecamatan, name='ajax_kecamatan'),
-    path('ajax/get_kelurahan/<int:id>', ajax.get_kelurahan, name='ajax_kelurahan')
+    path('ajax/get_kelurahan/<int:id>', ajax.get_kelurahan, name='ajax_kelurahan'),
 ]

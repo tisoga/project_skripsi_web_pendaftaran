@@ -1,0 +1,286 @@
+{% extends 'page_admin/base.html' %}
+{% load static %}
+{% block judul %}Setting PPDB{% endblock %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block konten %}
+{% load pembagian_kuota %}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="text-center">Setting PPDB</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-5">
+                    <div class="card">
+                        <div class="card-header bg-primary">
+                            Daya Tampung Sekolah
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" id="formKuota">
+                                {% csrf_token %}
+                                <label for="dayaTampung">Masukan Daya Tampung Sekolah</label>
+                                <input type="text" class="form-control" name="dayaTampung" id="dayaTampung"
+                                    onchange="pembagianKuota(this.value)" value="{{data_sekolah.daya_tampung}}"
+                                    required>
+                                <h4 class="mt-2"> Kuota Siswa untuk Setiap jalur</h4>
+                                <hr style="margin-top: -10px;">
+                                <div class="form-row">
+                                    <div class="col-sm-12 col-lg-6">
+                                        <label for="afirmasi">Jalur Zonasi</label>
+                                        <input type="number" class="form-control" name="zonasi" id="zonasi" value=0
+                                            readonly>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-6">
+                                        <label for="afirmasi">Jalur Afirmasi</label>
+                                        <input type="number" class="form-control" name="afirmasi" id="afirmasi" value=0
+                                            readonly>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-6">
+                                        <label for="afirmasi">Jalur Perpindahan</label>
+                                        <input type="number" class="form-control" name="perpindahan" id="perpindahan"
+                                            value=0 readonly>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-6">
+                                        <label for="afirmasi">Jalur Prestasi</label>
+                                        <input type="number" class="form-control" name="prestasi" id="prestasi" value=0
+                                            readonly>
+                                    </div>
+                                </div>
+                                <input type="button" class="btn btn-primary mt-2 float-right" value="Simpan"
+                                    data-toggle="modal" data-target="#modalDayaTampung">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-7">
+                    <div class="card">
+                        <div class="card-header bg-success text-center">
+                            Pengaturan Lainnya
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-around">
+                                <button class="btn btn-danger" type="button" id="btnStatus"
+                                    onclick="showHideDiv('status')">Status PPDB</button>
+                                <button class="btn btn-info" type="button" id="btnAlamat"
+                                    onclick="showHideDiv('nama')">Nama Sekolah</button>
+                                <button class="btn btn-warning" type="button" id="btnAlamat"
+                                    onclick="showHideDiv('alamat')">Alamat Sekolah</button>
+                            </div>
+                            <hr>
+                            <div id="divStatus" style="display: none;">
+                                <form method="POST" id="formStatus">
+                                    {% csrf_token %}
+                                    <label>Status Pendaftaran PPDB</label>
+                                    <select class="form-control" name="status" required>
+                                        <option value="0" {% if data_sekolah.status_pendaftaran == 0%}selected{%endif%}>
+                                            Pendaftaran Ditutup</option>
+                                        <option value="1" {% if data_sekolah.status_pendaftaran == 1%}selected{%endif%}>
+                                            Pendaftaran Dibuka</option>
+                                    </select>
+                                    <input type="button" class="form-control btn-primary mt-2" value="Simpan"
+                                        data-toggle="modal" data-target="#modalStatusPPDB">
+                                </form>
+                            </div>
+                            <div id="divNama" style="display: none;">
+                                <form method="POST" id="formNama">
+                                    {% csrf_token %}
+                                    <label>Masukan Nama Sekolah</label>
+                                    {% if data_sekolah.nama %}
+                                    <input type="text" class="form-control" name="nama_sekolah"
+                                        placeholder="Masukan Nama Sekolah" value="{{data_sekolah.nama}}" required>
+                                    {% else %}
+                                    <input type="text" class="form-control" name="nama_sekolah"
+                                        placeholder="Masukan Nama Sekolah" required>
+                                    {% endif %}
+                                    <input type="button" class="form-control btn-primary mt-2" value="Simpan"
+                                        data-toggle="modal" data-target="#modalNamaSekolah">
+                                </form>
+                            </div>
+                            <div id="divAlamat" style="display: none;">
+                                <label>Pilih Lokasi Alamat Sekolah</label>
+                                <form method="POST" id="fformSekolah">
+                                    <div class="form-row">
+                                        {% csrf_token %}
+                                        <div class="form-group col-md-6">
+                                            <label for="provinsi">Provinsi</label>
+                                            <select id="provinsi" class="form-control" required disabled>
+                                                <option selected disabled value>Silahkan Pilih</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="kabupaten">Kabupaten/Kota</label>
+                                            <select id="kabupaten" class="form-control" required disabled>
+                                                <option selected disabled value>Silahkan Pilih</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="kecamatan">Kecamatan</label>
+                                            <select id="kecamatan" class="form-control" required disabled>
+                                                <option selected disabled value>Silahkan Pilih</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="desa">Desa/Kelurahan</label>
+                                            <select id="desa" name="desa" class="form-control" required disabled>
+                                                <option selected disabled value>Silahkan Pilih</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <input type="button" class="form-control btn-primary mt-2" value="Simpan"
+                                        data-toggle="modal" data-target="#modalAlamat">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="modalDayaTampung" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h5>Apakah Anda Yakin akan Merubah Daya Tampung Sekolah ?</h5>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+                <button type="submit" form="formKuota" class="btn btn-primary">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade bd-example-modal-sm" id="modalAlamat" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h5>Apakah Anda Yakin akan Mengganti Alamat Sekolah?</h5>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+                <button type="submit" form="formStatus" class="btn btn-primary">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade bd-example-modal-sm" id="modalStatusPPDB" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h5>Apakah Anda Yakin akan Mengganti Status PPDB ?</h5>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+                <button type="submit" form="formStatus" class="btn btn-primary">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade bd-example-modal-sm" id="modalNamaSekolah" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h5>Apakah Anda Yakin akan Mengganti Nama Sekolah ?</h5>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+                <button type="submit" form="formNama" class="btn btn-primary">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{data_sekolah.pembagian_kuota}}
+{% endblock %}
+
+{% block script %}
+{% if data_sekolah.daya_tampung != 0 %}
+<script>
+    $(document).ready(function () {
+        var data = JSON.parse('{{data_sekolah.pembagian_kuota|safe}}')
+        $('#afirmasi').val(data.afirmasi);
+        $('#zonasi').val(data.zonasi);
+        $('#perpindahan').val(data.perpindahan);
+        $('#prestasi').val(data.prestasi);
+    })
+</script>
+{% endif %}
+<script>
+    $('#dayaTampung').keyup(function () {
+        this.value = this.value.replace(/[^0-9\.]/g, '');
+        if (!this.value) {
+            this.value = 0
+        }
+        this.value = parseInt(this.value)
+        let daya = this.value
+        $.ajax({
+            url: "{% url 'admin_page:ajax_pembagian'%}" + '?daya_tampung=' + daya,
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#afirmasi').val(data.afirmasi);
+                $('#zonasi').val(data.zonasi);
+                $('#perpindahan').val(data.perpindahan);
+                $('#prestasi').val(data.prestasi);
+            },
+            error: function (e) {
+                alert(e.responseJSON.message)
+            }
+
+        })
+    })
+</script>
+
+<script>
+    function showHideDiv(val) {
+        if (val == 'status') {
+            $('#divNama').hide();
+            $('#divStatus').show();
+            $('#divAlamat').hide();
+        }
+        else if (val == 'alamat') {
+            $('#divNama').hide();
+            $('#divStatus').hide();
+            $('#divAlamat').show();
+        }
+        else if (val == 'nama') {
+            $('#divNama').show();
+            $('#divStatus').hide();
+            $('#divAlamat').hide();
+        }
+    }
+    function showModal(id) {
+        $('#notifikasi').modal();
+    }
+</script>
+{% endblock %}

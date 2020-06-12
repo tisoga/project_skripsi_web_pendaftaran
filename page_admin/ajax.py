@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 from django.core.paginator import Paginator
-
+from django.http import JsonResponse
 from page_siswa.models import Siswa
 
 from api.serializer import ListSiswaSerializer
@@ -23,3 +23,19 @@ def list_siswa(request):
     if request.method == 'GET':
         serializer = ListSiswaSerializer(list_siswa, many=True)
         return Response(serializer.data)
+    
+@api_view(['GET'])
+def pembagian_kuota(request):
+    if request.method == 'GET':
+        try:
+            jumlah_siswa = int(request.GET.get('daya_tampung'))
+            zonasi = int(jumlah_siswa * 0.50)
+            afirmasi = int(jumlah_siswa * 0.15)
+            perpindahan = int(jumlah_siswa * 0.05)
+            prestasi = int(jumlah_siswa * 0.30)
+            sisa = jumlah_siswa - (zonasi + afirmasi + perpindahan + prestasi)
+
+            data = {'zonasi': zonasi, 'afirmasi': afirmasi, 'perpindahan': perpindahan, 'prestasi': prestasi+sisa}
+            return Response(data)
+        except:
+            return Response({"message": "Terjadi Kesalahan"}, status=status.HTTP_400_BAD_REQUEST)

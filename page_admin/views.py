@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from page_siswa.views import convert_date
-from page_siswa.models import Siswa, list_events, list_notifikasi
+from page_siswa.models import Siswa, list_events, list_notifikasi, sekolah
 # Create your views here.
 
 
@@ -143,3 +143,30 @@ def events(request):
     return render(request=request,
                   template_name='page_admin/events.html',
                   context={'active': 'events', 'events': event})
+
+
+def setting_ppdb(request):
+    data_sekolah = sekolah.objects.first()
+    if request.method == 'POST':
+        print(request.POST)
+        if request.POST.get('dayaTampung'):
+            kuota = request.POST.get('dayaTampung')
+            data_sekolah.daya_tampung = kuota
+            data_sekolah.save()
+            messages.success(request, f'Daya Tampung Sekolah Berhasil di Ubah')
+            return redirect('admin_page:setting')
+        elif request.POST.get('status'):
+            status = request.POST.get('status')
+            data_sekolah.status_pendaftaran = status
+            data_sekolah.save()
+            messages.success(request, f'Status PPDB Berhasil diubah')
+            return redirect('admin_page:setting')
+        elif request.POST.get('nama_sekolah'):
+            nama = request.POST.get('nama_sekolah')
+            data_sekolah.nama = nama
+            data_sekolah.save()
+            messages.success(request, f'Nama Sekolah Berhasil Diubah')
+            return redirect('admin_page:setting')
+    return render(request=request,
+                  template_name='page_admin/settings.html',
+                  context={'active': 'setting', 'data_sekolah': data_sekolah})

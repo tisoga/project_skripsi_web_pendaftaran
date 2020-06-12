@@ -54,41 +54,10 @@
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link {%if active == 'register'%}active{%endif%}">
-                        <i class="nav-icon fas fa-user-shield"></i>
-                        <p>Tambah Admin</p>
-                    </a>
-                </li>
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link {%if active == 'pilih_soal'%}active{%endif%}">
-                        <i class="nav-icon fas fa-pen"></i>
-                        <p>Soal Test</p>
-                    </a>
-                </li>
-                <li
-                    class="nav-item has-treeview {%if active == 'set_tahun' or active == 'tambah_tahun'%}menu-open{%endif%}">
-                    <a href="#"
-                        class="nav-link {%if active == 'set_tahun' or active == 'tambah_tahun'%}active{%endif%}">
+                    <a href="{% url 'admin_page:setting'%}" class="nav-link {%if active == 'setting'%}active{%endif%}">
                         <i class="nav-icon fas fa-cog"></i>
-                        <p>
-                            Tahun Ajaran
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
+                        <p>Setting PPDB</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link {%if active == 'set_tahun'%}active{%endif%}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Setting Tahun Ajaran</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link {%if active == 'tambah_tahun'%}active{%endif%}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Tahun Ajaran Baru</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
             </ul>
         </nav>
