@@ -1,9 +1,77 @@
+function pilihJalur(val) {
+    var textZonasi = `Jalur Zonasi adalah Jalur Pendaftaran untuk para calon siswa yang berdomisili dalam satu wilayah kabupaten/kota dengan sekolah berasal.`
+    var textAfirmasi = `Jalur Afirmasi adalah Jalur Pendaftaran untuk para calon siswa yang menerima program penanganan keluarga tidak mampu dari pemerintah pusat ataupun pemerintah daerah, harus menyertakan bukti mengikuti penanganan keluarga tidak mampu.`
+    var textPerpindahan = `Jalur Perpindahan Orangtua / Wali adalah Jalur Pendaftaran untuk para calon siswa yang baru pindah domisili dikarenakan mengikuti tugas atau pekerjaan orang tua / wali, harus menyertakan surat penugasan dari instansi atau perusahaan yang mengerjakan orang tua / wali.`
+    var textPrestasi = `Jalur Prestasi adalah Jalur Pendaftaran untuk para calon siswa yang mimiliki prestasi yang ditentukan berdasarkan hasil nilai ujian sekolah atau UN (ujian nasional), hasil perlombaan  atau penghargaan di bidang akademik atau non-akademik.`
+    var kabupatenSiswa = '{{request.user.DetailUser.get_kabupaten_siswa}}'
+    var alamatSekolah = JSON.parse('{{sekolah.split_alamat|safe}}')
+    $('#cardPenjelasan').show();
+    $('#fileUpload').show();
+    switch (val) {
+        case 'zonasi':
+            $('#hiddenID').val('zonasi');
+            $('#textPengertian').text(textZonasi);
+            $('#btnZonasi').removeClass('btn-primary').addClass('btn-success');
+            $('#btnAfirmasi').removeClass('btn-success').addClass('btn-primary');
+            $('#btnPerpindahan').removeClass('btn-success').addClass('btn-primary');
+            $('#btnPrestasi').removeClass('btn-success').addClass('btn-primary');
+            $('#fileUpload').hide();
+            if (kabupatenSiswa != alamatSekolah.kabupaten) {
+                $('#btn_yes2').attr('disabled', true);
+                $('#zonasiPeringatan').show()
+            }
+            break;
+        case 'afirmasi':
+            $('#inputUpload').val('');
+            $('#hiddenID').val('afirmasi');
+            $('#textPengertian').text(textAfirmasi);
+            $('#btnZonasi').removeClass('btn-success').addClass('btn-primary');
+            $('#btnAfirmasi').removeClass('btn-primary').addClass('btn-success');
+            $('#btnPerpindahan').removeClass('btn-success').addClass('btn-primary');
+            $('#btnPrestasi').removeClass('btn-success').addClass('btn-primary');
+            $('#labelUpload').text('Upload Bukti Mengikuti Penanganan Keluarga Tidak Mampu')
+            $('#inputUpload').attr('name', 'afirmasi');
+            $('#inputUpload').attr('required', true);
+            $('#btn_yes2').attr('disabled', false);
+            $('#zonasiPeringatan').hide();
+            break;
+        case 'perpindahan':
+            $('#inputUpload').val('');
+            $('#hiddenID').val('perpindahan');
+            $('#textPengertian').text(textPerpindahan);
+            $('#btnZonasi').removeClass('btn-success').addClass('btn-primary');
+            $('#btnAfirmasi').removeClass('btn-success').addClass('btn-primary');
+            $('#btnPerpindahan').removeClass('btn-primary').addClass('btn-success');
+            $('#btnPrestasi').removeClass('btn-success').addClass('btn-primary');
+            $('#labelUpload').text('Upload Surat Penugasan dari Instansi atau Perusahaan')
+            $('#inputUpload').attr('name', 'perpindahan');
+            $('#inputUpload').attr('required', true);
+            $('#btn_yes2').attr('disabled', false);
+            $('#zonasiPeringatan').hide();
+            break;
+        case 'prestasi':
+            $('#inputUpload').val('');
+            $('#hiddenID').val('prestasi');
+            $('#textPengertian').text(textPrestasi);
+            $('#btnZonasi').removeClass('btn-success').addClass('btn-primary');
+            $('#btnAfirmasi').removeClass('btn-success').addClass('btn-primary');
+            $('#btnPerpindahan').removeClass('btn-success').addClass('btn-primary');
+            $('#btnPrestasi').removeClass('btn-primary').addClass('btn-success');
+            $('#labelUpload').text('Upload Sertifikat Penghargaan *Optional')
+            $('#inputUpload').attr('name', 'prestasi');
+            $('#inputUpload').attr('required', false);
+            $('#btn_yes2').attr('disabled', false);
+            $('#zonasiPeringatan').hide();
+            break;
+    }
+}
+
 function open_modal(val) {
     var html_pendaftaran = `
         <h5>Harap Periksa Kembali Data-data Anda Sebelum Mengirimkan Pengajuan.</h5>
         <h5>Dikarenakan <b>Jika Anda Sudah Mengirimkan Pengajuan, Anda TIdak Dapat Merubah Kembali Data Anda.</b></h5>
     `
-    if (val == 'first'){
+    if (val == 'first') {
         document.getElementById('ModalLongTitle').innerHTML = 'Peringatan';
         document.getElementById('modal-body').innerHTML = html_pendaftaran;
         document.getElementById('btn_no').innerHTML = 'Ya';
@@ -20,15 +88,15 @@ function open_modal(val) {
         document.getElementById('btn_yes').innerHTML = 'Ya';
         $('#ModalCenter').modal({ backdrop: 'static', keyboard: true });
     }
-    else if (val == 'Send')
-    {
-        document.getElementById('ModalLongTitle').innerHTML = 'Peringatan';
-        document.getElementById('modal-body').innerHTML = html_pendaftaran;
-        document.getElementById('btn_no').innerHTML = 'Tidak';
-        document.getElementById('btn_no').className = 'btn btn-secondary';
-        document.getElementById('btn_yes').style.display = 'block'
-        document.getElementById('btn_yes').innerHTML = 'Ajukan Pendaftaran';
-        $('#ModalCenter').modal({ backdrop: 'static', keyboard: true });
+    else if (val == 'Send') {
+        $('#modalPilihJalur').modal('hide')
+        document.getElementById('ModalLongTitle2').innerHTML = 'Peringatan';
+        document.getElementById('modal-body2').innerHTML = html_pendaftaran;
+        document.getElementById('btn2_no').innerHTML = 'Tidak';
+        document.getElementById('btn2_no').className = 'btn btn-secondary';
+        document.getElementById('btn2_yes').style.display = 'block'
+        document.getElementById('btn2_yes').innerHTML = 'Ajukan Pendaftaran';
+        $('#modalPengajuan').modal({ backdrop: 'static', keyboard: true });
     }
 }
 function split_alamat() {

@@ -167,6 +167,16 @@ def setting_ppdb(request):
             data_sekolah.save()
             messages.success(request, f'Nama Sekolah Berhasil Diubah')
             return redirect('admin_page:setting')
+        elif request.POST.get('desa'):
+            prov = request.POST['prov']
+            kab = request.POST['kab']
+            kec = request.POST['kec']
+            desa = request.POST['desa']
+            alamat = f'provinsi: {prov}, kabupaten: {kab}, kecamatan: {kec}, desa: {desa}'
+            data_sekolah.alamat = alamat
+            data_sekolah.save()
+            messages.success(request, f'Alamat Sekolah Berhasil Diubah')
+            return redirect('admin_page:setting')
     return render(request=request,
                   template_name='page_admin/settings.html',
                   context={'active': 'setting', 'data_sekolah': data_sekolah})

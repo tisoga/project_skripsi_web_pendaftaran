@@ -225,10 +225,71 @@
                     <label class="custom-file-label" for="input_kesehatan">Choose file</label>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary mt-2 float-right" id="btn_pendaftaran"
-                onclick="open_modal('Send')">Ajukan Pendaftaran</button>
+            <button type="button" class="btn btn-primary mt-2 float-right" id="btn_pendaftaran" data-toggle="modal"
+                data-target="#modalPilihJalur">Ajukan Pendaftaran</button>
         </form>
     </div>
+
+    <div class="modal fade" id="modalPilihJalur" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalLongTitle2">Pilih Jalur Pendaftaran</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id='modal-body2'>
+                    <div class="d-flex justify-content-around">
+                        <button class="btn btn-primary" id="btnZonasi" onclick="pilihJalur('zonasi')">Zonasi
+                        </button>
+                        <button class="btn btn-primary" id="btnAfirmasi" onclick="pilihJalur('afirmasi')">Afirmasi
+                        </button>
+                        <button class="btn btn-primary" id="btnPerpindahan" onclick="pilihJalur('perpindahan')">
+                            Perpindahan Orang Tua
+                        </button>
+                        <button class="btn btn-primary" id="btnPrestasi" onclick="pilihJalur('prestasi')">Prestasi
+                        </button>
+                    </div>
+                    <hr>
+                    <div class="form-row">
+                        <div class="card col-12" id="cardPenjelasan" style="display: none;">
+                            <div class="card-header bg-secondary">
+                                <h4 class="text-center">Penjelasan Jalur Pendaftaran</h4>
+                            </div>
+                            <div class="card-body bg-dark">
+                                <b>
+                                    <p class="text-justify" id="textPengertian"></p>
+                                </b>
+                            </div>
+                        </div>
+                        <div id="zonasiPeringatan" style="display: none;">
+                            <h4><b>Maaf Anda Tidak Bisa Mengambil Jalur Zonasi, dikarenakan alamat anda tidak satu
+                                    domisili dengan sekolah ini</b></h4>
+                        </div>
+                        <form id="formPengajuan" method="POST" action="{% url 'siswa:proses_pengajuan'%}"
+                            enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" id="hiddenID" name='pengajuan'>
+                            <div id="fileUpload" style="display: none;">
+                                <label id="labelUpload"></label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="inputUpload">
+                                    <label class="custom-file-label" for="input_kesehatan">Choose file</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btn_no2" data-dismiss="modal">Tidak</button>
+                    <button type="submit" form="formPengajuan" id="btn_yes2" class="btn btn-primary">Ya</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="ModalCenter" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -249,4 +310,3 @@
             </div>
         </div>
     </div>
-</div>

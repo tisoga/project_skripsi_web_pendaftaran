@@ -12,83 +12,85 @@
     <div class="card-body">
         <div class="row">
             <div class="col-3">
-                {% if request.user.DetailUser.status == 0 %}
+                {% with status=request.user.DetailUser.status %}
+                {% if status == 0 %}
                 <a href="{% url 'siswa:tahapan_pendaftaran' %}">
                     <div class='bg-primary text-center' style="height: 100px;">
-                {% else %}
-                    <div class='bg-success text-center' style="height: 100px;">
-                {% endif %}
-                        <i class="fas fa-user fa-2x pt-4"></i>
-                        <p class="pt-1">Identitas Diri</p>
-                    </div>
+                        {% else %}
+                        <div class='bg-success text-center' style="height: 100px;">
+                            {% endif %}
+                            <i class="fas fa-user fa-2x pt-4"></i>
+                            <p class="pt-1">Identitas Diri</p>
+                        </div>
                 </a>
             </div>
             <div class="col-3">
-                {% if request.user.DetailUser.status == 0 %}
-                    <div class='bg-secondary text-center' style="height: 100px;">
-                {% elif request.user.DetailUser.status == 1 %}
-                <a href="{% url 'siswa:tahapan_pendaftaran' %}">
-                    <div class='bg-primary text-center' style="height: 100px;">
-                {% else %}
-                    <div class='bg-success text-center' style="height: 100px;">
-                {% endif %}
-                        <i class="fas fa-file fa-2x pt-4"></i>
-                        <p class="pt-1">Berkas-Berkas</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-3">
-                {% if request.user.DetailUser.status == 0 or request.user.DetailUser.status == 1 %}
-                    <div class='bg-secondary text-center' style="height: 100px;">
-                {% elif request.user.DetailUser.status == 2 %}
-                <a href="{% url 'siswa:tahapan_pendaftaran' %}">
-                    <div class='bg-primary text-center' style="height: 100px;">
-                {% elif request.user.DetailUser.status == 4 %}
-                <a href="{% url 'siswa:tahapan_pendaftaran' %}">
-                    <div class='bg-danger text-center' style="height: 100px;">
-                {% else %}
-                    <div class='bg-success text-center' style="height: 100px;">
-                {% endif %}
-                {% if request.user.DetailUser.status == 4 %}
-                    <i class="fas fa-clipboard fa-2x pt-4"></i>
-                    <p class="pt-1 h6">Pengajuan Pendaftaran Ulang</p>
-                {% else %}
-                    <i class="fas fa-clipboard fa-2x pt-4"></i>
-                    <p class="pt-1">Pengajuan Pendaftaran</p>
-                {% endif %}
+                {% if status == 0 %}
+                <div class='bg-secondary text-center' style="height: 100px;">
+                    {% elif status == 1 %}
+                    <a href="{% url 'siswa:tahapan_pendaftaran' %}">
+                        <div class='bg-primary text-center' style="height: 100px;">
+                            {% else %}
+                            <div class='bg-success text-center' style="height: 100px;">
+                                {% endif %}
+                                <i class="fas fa-file fa-2x pt-4"></i>
+                                <p class="pt-1">Berkas-Berkas</p>
+                            </div>
+                    </a>
                 </div>
-                </a>
-            </div>
-            <div class="col-3">
-                {% if request.user.DetailUser.status == 0 or request.user.DetailUser.status == 1 or request.user.DetailUser.status == 2 or request.user.DetailUser.status == 4%}
+                <div class="col-3">
+                    {% if status == 0 or status == 1 %}
                     <div class='bg-secondary text-center' style="height: 100px;">
-                {% elif request.user.DetailUser.status == 3 or request.user.DetailUser.status == 6 %}
-                    <div class='bg-secondary text-center' style="height: 100px;">
-                {% elif request.user.DetailUser.status == 5 %}
-                <a href="{% url 'siswa:tahapan_pendaftaran' %}">
-                    <div class='bg-primary text-center' style="height: 100px;">
-                {% else %}
-                    <div class='bg-success text-center' style="height: 100px;">
-                {% endif %}
-                    <i class="fas fa-retweet fa-2x pt-4"></i>
-                    <p class="pt-1">Daftar Ulang</p>
+                        {% elif status == 2 %}
+                        <a href="{% url 'siswa:tahapan_pendaftaran' %}">
+                            <div class='bg-primary text-center' style="height: 100px;">
+                                {% elif status == 4 %}
+                                <a href="{% url 'siswa:tahapan_pendaftaran' %}">
+                                    <div class='bg-danger text-center' style="height: 100px;">
+                                        {% else %}
+                                        <div class='bg-success text-center' style="height: 100px;">
+                                            {% endif %}
+                                            {% if status == 4 %}
+                                            <i class="fas fa-clipboard fa-2x pt-4"></i>
+                                            <p class="pt-1 h6">Pengajuan Pendaftaran Ulang</p>
+                                            {% else %}
+                                            <i class="fas fa-clipboard fa-2x pt-4"></i>
+                                            <p class="pt-1">Pengajuan Pendaftaran</p>
+                                            {% endif %}
+                                        </div>
+                                </a>
+                            </div>
+                    <div class="col-3">
+                        {% if 0 or 1 or 2 or 4 or 10 or 11 or 12 or 13 in status %}
+                        <div class='bg-secondary text-center' style="height: 100px;">
+                            {% elif status == 3 or status == 6 %}
+                            <div class='bg-secondary text-center' style="height: 100px;">
+                                {% elif status == 5 %}
+                                <a href="{% url 'siswa:tahapan_pendaftaran' %}">
+                                    <div class='bg-primary text-center' style="height: 100px;">
+                                        {% else %}
+                                        <div class='bg-success text-center' style="height: 100px;">
+                                            {% endif %}
+                                            <i class="fas fa-retweet fa-2x pt-4"></i>
+                                            <p class="pt-1">Daftar Ulang</p>
+                                        </div>
+                                        {% endwith %}
+                                </a>
+                            </div>
+                        </div>
+                        <!-- <a href="#" class="btn btn-primary">Profile</a> -->
+                    </div>
                 </div>
-                </a>
-            </div>
-        </div>
-        <!-- <a href="#" class="btn btn-primary">Profile</a> -->
-    </div>
-</div>
 
 <div class="card card-primary card-outline">
     <div class="card-header d-flex justify-content-center">
-    <h5 class="card-title m-0">List Jadwal</h5>
-  </div>
-  <div class="card-body">
-    <script>
-        {% include 'page_siswa/js/list_events.js'%}
-    </script>
-    <div id='calendar'></div>
-  </div>
+        <h5 class="card-title m-0">List Jadwal</h5>
+    </div>
+    <div class="card-body">
+        <script>
+            {% include 'page_siswa/js/list_events.js' %}
+        </script>
+        <div id='calendar'></div>
+    </div>
 </div>
 {% endblock %}

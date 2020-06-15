@@ -103,34 +103,45 @@
                             </div>
                             <div id="divAlamat" style="display: none;">
                                 <label>Pilih Lokasi Alamat Sekolah</label>
-                                <form method="POST" id="fformSekolah">
+                                <form method="POST" id="formSekolah">
                                     <div class="form-row">
                                         {% csrf_token %}
                                         <div class="form-group col-md-6">
                                             <label for="provinsi">Provinsi</label>
                                             <select id="provinsi" class="form-control" required disabled>
-                                                <option selected disabled value>Silahkan Pilih</option>
+                                                <option class="default_op" selected disabled value>
+                                                    Silahkan Pilih
+                                                </option>
                                             </select>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="kabupaten">Kabupaten/Kota</label>
                                             <select id="kabupaten" class="form-control" required disabled>
-                                                <option selected disabled value>Silahkan Pilih</option>
+                                                <option class="default_op" selected disabled value>
+                                                    Silahkan Pilih
+                                                </option>
                                             </select>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="kecamatan">Kecamatan</label>
                                             <select id="kecamatan" class="form-control" required disabled>
-                                                <option selected disabled value>Silahkan Pilih</option>
+                                                <option class="default_op" selected disabled value>
+                                                    Silahkan Pilih
+                                                </option>
                                             </select>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="desa">Desa/Kelurahan</label>
                                             <select id="desa" name="desa" class="form-control" required disabled>
-                                                <option selected disabled value>Silahkan Pilih</option>
+                                                <option class="default_op" selected disabled value>
+                                                    Silahkan Pilih
+                                                </option>
                                             </select>
                                         </div>
                                     </div>
+                                    <input type="hidden" id='prov' name="prov">
+                                    <input type="hidden" id='kab' name="kab">
+                                    <input type="hidden" id='kec' name="kec">
                                     <input type="button" class="form-control btn-primary mt-2" value="Simpan"
                                         data-toggle="modal" data-target="#modalAlamat">
                                 </form>
@@ -177,7 +188,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal">Tidak</button>
-                <button type="submit" form="formStatus" class="btn btn-primary">Ya</button>
+                <button type="submit" form="formSekolah" class="btn btn-primary">Ya</button>
             </div>
         </div>
     </div>
@@ -220,10 +231,12 @@
         </div>
     </div>
 </div>
-{{data_sekolah.pembagian_kuota}}
 {% endblock %}
 
 {% block script %}
+<script>
+    {% include 'page_siswa/js/alamatLengkap.js' %}
+</script>
 {% if data_sekolah.daya_tampung != 0 %}
 <script>
     $(document).ready(function () {
@@ -235,6 +248,20 @@
     })
 </script>
 {% endif %}
+
+{% if data_sekolah.alamat %}
+<script>
+    $(document).ready(function () {
+        var data = JSON.parse('{{data_sekolah.split_alamat|safe}}')
+        var op = document.getElementsByClassName('default_op')
+        op[0].text = data.provinsi
+        op[1].text = data.kabupaten
+        op[2].text = data.kecamatan
+        op[3].text = data.desa
+    })
+</script>
+{% endif %}
+
 <script>
     $('#dayaTampung').keyup(function () {
         this.value = this.value.replace(/[^0-9\.]/g, '');

@@ -1,21 +1,13 @@
 import requests
+import json
 from django.shortcuts import render, redirect
 from django.db import IntegrityError
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .models import CustomUser, Siswa, list_events, list_notifikasi
-
-from datetime import datetime
-
-
-def convert_date(date):
-    date = datetime.strptime(date, '%d-%m-%Y')
-    converted = date.strftime('%Y-%m-%d')
-
-    return converted
+from page_siswa.functions import CompressImage, convert_date
+from .models import CustomUser, Siswa, list_events, list_notifikasi, sekolah
 
 # Create your views here.
-
 
 def login_views(request):
     if request.method == 'POST':
@@ -74,7 +66,7 @@ def redirect_sites(request):
 def homepage(request):
     if request.user.is_authenticated and request.user.is_staff:
         return redirect('admin_page:home')
-    print(request.user.DetailUser.get_jenis_kelamin_display())
+    # print(request.user.DetailUser.get_jenis_kelamin_display())
     page = 'home'
     events = list_events.objects.all()
     notifikasi = list_notifikasi.objects.filter(siswa=request.user.id)
@@ -95,6 +87,7 @@ def homepage(request):
 def tahapan_pendaftaran_views(request):
     if request.user.is_authenticated and request.user.is_staff:
         return redirect('admin_page:home')
+    data_sekolah = sekolah.objects.first()
     data = Siswa.object.get(user=request.user)
     status = data.status
     if status == 0:
@@ -103,13 +96,16 @@ def tahapan_pendaftaran_views(request):
         page = 'Berkas-Berkas'
     elif status == 2 or status == 4:
         page = 'Pengajuan Pendaftaran'
-    elif status == 3 or status == 6 or status == 7 or status == 8 or status == 9:
+    elif 3 or 6 or 7 or 8 or 9 or 10 or 11 or 12 or 13 in status:
         # page = 'Pengajuan Pendaftaran'
         return redirect('siswa:home')
     elif status == 5:
         page = 'Daftar Ulang'
     if request.method == 'POST':
         if request.POST.get('first_name'):
+            if request.user.DetailUser.status != 0:
+                messages.error(request, f'Terjadi Kesalahn')
+                return redirect('siswa:home')
             lengkap = request.POST.get('alamat')
             provinsi = request.POST.get('prov')
             kabupaten = request.POST.get('kab')
@@ -125,28 +121,34 @@ def tahapan_pendaftaran_views(request):
             data.umur = request.POST.get('umur')
             data.alamat = '{}, {}, {}, {}, {}'.format(
                 lengkap, desa, kecamatan, kabupaten, provinsi)
-            data.foto_diri = request.FILES.get('foto')
+            data.foto_diri = CompressImage(request.FILES.get('foto'))
             data.save()
             messages.success(request, f'Identitas Diri Berhasil disimpan')
             return redirect('siswa:home')
         elif request.POST.get('mtk'):
+            if request.user.DetailUser.status != 1:
+                messages.error(request, f'Terjadi Kesalahn')
+                return redirect('siswa:home')
             data.nilai_matematika = request.POST.get('mtk')
             data.nilai_indonesia = request.POST.get('indo')
             data.nilai_inggris = request.POST.get('ing')
             data.nilai_ipa = request.POST.get('ipa')
             data.status = 2
-            data.berkas_ijazah = request.FILES.get('skhun')
-            data.berkas_akta = request.FILES.get('akta')
-            data.berkas_kesehatan = request.FILES.get('kesehatan')
+            data.berkas_ijazah = CompressImage(request.FILES.get('skhun'))
+            data.berkas_akta = CompressImage(request.FILES.get('akta'))
+            data.berkas_kesehatan = CompressImage(request.FILES.get('kesehatan'))
             data.save()
             messages.success(request, f'Berkas-Berkas Berhasil disimpan')
             return redirect('siswa:home')
     return render(request=request,
                   template_name='page_siswa/tahapan_pendaftaran.html',
-                  context={'page': page})
+                  context={'page': page, 'sekolah': data_sekolah})
 
 
 def proses_ajukan_pendaftaran(request):
+    if request.user.DetailUser.status != 2:
+        messages.error(request, f'Terjadi Kesalahn')
+        return redirect('siswa:home')
     if request.method == 'POST':
         data_siswa = Siswa.object.get(pk=request.user)
         if request.POST.get('decision') == 'edit':
@@ -155,9 +157,9 @@ def proses_ajukan_pendaftaran(request):
             kabupaten = request.POST.get('kab')
             kecamatan = request.POST.get('kec')
             desa = request.POST.get('desa')
-            foto = request.FILES.get('foto')
-            ijazah = request.FILES.get('skhun')
-            akta = request.FILES.get('akta')
+            foto = CompressImage(request.FILES.get('foto'))
+            ijazah = CompressImage(request.FILES.get('skhun'))
+            akta = CompressImage(request.FILES.get('akta'))
             kesehatan = request.FILES.get('kesehatan')
             request.user.first_name = request.POST.get('first_name')
             request.user.last_name = request.POST.get('last_name')
@@ -186,7 +188,27 @@ def proses_ajukan_pendaftaran(request):
             messages.success(request, f'Identitas Diri Berhasil diedit')
             return redirect('siswa:tahapan_pendaftaran')
         else:
-            data_siswa.status = 3
+            if request.POST.get('pengajuan') == 'zonasi':
+                check = json.loads(sekolah.objects.first().split_alamat())
+                if check['kabupaten'] != data_siswa.get_kabupaten_siswa():
+                    messages.error(request, f'Terjadi Kesalahan')
+                    return redirect('siswa:home')
+                pengajuan = 10
+                tambahan = None
+            elif request.POST.get('pengajuan') == 'afirmasi':
+                pengajuan = 11
+                tambahan = CompressImage(request.FILES.get('afirmasi'),'file_afirmasi')
+            elif request.POST.get('pengajuan') == 'perpindahan':
+                pengajuan = 12
+                tambahan = CompressImage(request.FILES.get('perpindahan'),'file_perpindahan')
+            elif request.POST.get('pengajuan') == 'prestasi':
+                pengajuan = 13
+                if 'prestasi' in request.FILES:
+                    tambahan = CompressImage(request.FILES.get('prestasi'),'file_prestasi')
+                else:
+                    tambahan = None
+            data_siswa.status = pengajuan
+            data_siswa.berkas_tambahan = tambahan
             data_siswa.save()
             messages.success(
                 request, f'Pengajuan Pendaftaran Berhasil, Silahkan Tunggu Proses Verifikasi. Maksimal 3 x 24 Jam')

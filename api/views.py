@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .serializer import ListSiswaSerializer, LoginSerializer, \
     UserSerializer, RegisterSerializer, PelengkapanIdentitasSerializer, \
-        PelengkapanBerkasSerializer, KegiatanSerializer, NotifikasiSerializer
+    PelengkapanBerkasSerializer, KegiatanSerializer, NotifikasiSerializer, PengajuanPendaftaranSerializer
 
 from knox.auth import AuthToken
 
@@ -48,7 +48,7 @@ def RegisterAPI(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def ProfileSiswaAPI(request):
     siswa = get_object_or_404(Siswa, nis=request.user.DetailUser.nis)
@@ -57,6 +57,12 @@ def ProfileSiswaAPI(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
     elif request.method == 'PUT':
         serializer = PelengkapanIdentitasSerializer(siswa, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'PATCH':
+        serializer = ListSiswaSerializer(siswa, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -75,6 +81,19 @@ def UploadBerkasAPI(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def PengajuanAPI(request):
+    siswa = get_object_or_404(Siswa, nis=request.user.DetailUser.nis)
+    if request.method == 'PUT':
+        serializer = PengajuanPendaftaranSerializer(siswa, data=request.data)
+        print(serializer)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def ListKegiatanAPI(request):
@@ -83,6 +102,7 @@ def ListKegiatanAPI(request):
         serializer = KegiatanSerializer(events, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

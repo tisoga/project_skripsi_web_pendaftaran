@@ -10,6 +10,7 @@ urlpatterns = [
     path('auth/register/', views.RegisterAPI, name='register'),
     path('profile/', views.ProfileSiswaAPI, name='profile'),
     path('profile/berkas/', views.UploadBerkasAPI),
+    path('profile/pengajuan/', views.PengajuanAPI),
     path('list_events/', views.ListKegiatanAPI, name='event'),
     path('notifikasi/', views.NotifikasiAPI, name='notifikasi'),
     path('siswa/<int:nis>', views.ProfileAPI, name='profileAPI'),

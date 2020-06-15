@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from page_siswa.models import Siswa, CustomUser, list_events, list_notifikasi
-
+from page_siswa.functions import CompressImage
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,10 +11,32 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ListSiswaSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    first_name = serializers.CharField(write_only=True, required=False)
+    last_name = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = Siswa
-        fields = '__all__'
+        exclude = ['status']
+
+    def update(self, instance, validated_data):
+        # if instance.user.DetailUser.status != 0:
+        #     raise serializers.ValidationError(
+        #         'Terjadi Kesalahan, Silahkan Coba Lagi!')
+        # validated_data['status'] = 1
+        user = CustomUser.object.get(pk=instance.user.id)
+        if 'first_name' in validated_data:
+            first_name = validated_data.pop('first_name')
+            user.first_name = first_name
+            instance.user.first_name = first_name
+        if 'last_name' in validated_data:
+            last_name = validated_data.pop('last_name')
+            user.last_name = last_name
+            instance.user.last_name = last_name
+        instance.__dict__.update(**validated_data)
+        user.save()
+        instance.save()
+
+        return instance
 
 
 class LoginSerializer(serializers.Serializer):
@@ -52,7 +74,7 @@ class PelengkapanIdentitasSerializer(serializers.ModelSerializer):
     class Meta:
         model = Siswa
         fields = ('user', 'first_name', 'last_name', 'nis', 'jenis_kelamin', 'tanggal_lahir',
-                  'tempat_lahir', 'umur', 'alamat','foto_diri', 'status')
+                  'tempat_lahir', 'umur', 'alamat', 'foto_diri', 'status')
         read_only_fields = ['nis']
         extra_kwargs = {
             'jenis_kelamin': {'required': True},
@@ -64,7 +86,11 @@ class PelengkapanIdentitasSerializer(serializers.ModelSerializer):
         }
 
     def update(self, instance, validated_data):
+        if instance.user.DetailUser.status != 0:
+            raise serializers.ValidationError(
+                'Terjadi Kesalahan, Silahkan Coba Lagi!')
         validated_data['status'] = 1
+        validated_data['foto_diri'] = CompressImage(validated_data.pop('foto_diri'))
         first_name = validated_data.pop('first_name')
         last_name = validated_data.pop('last_name')
         user = CustomUser.object.get(pk=instance.user.id)
@@ -97,11 +123,36 @@ class PelengkapanBerkasSerializer(serializers.ModelSerializer):
         }
 
     def update(self, instance, validated_data):
+        if instance.user.DetailUser.status != 1:
+            raise serializers.ValidationError(
+                'Terjadi Kesalahan, Silahkan Coba Lagi!')
         validated_data['status'] = 2
+        validated_data['berkas_ijazah'] = CompressImage(validated_data.pop('berkas_ijazah'))
+        validated_data['berkas_akta'] = CompressImage(validated_data.pop('berkas_akta'))
+        validated_data['berkas_kesehatan'] = CompressImage(validated_data.pop('berkas_kesehatan'))
         instance.__dict__.update(**validated_data)
         instance.save()
 
         return instance
+
+
+class PengajuanPendaftaranSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Siswa
+        fields = ['nis', 'status']
+        read_only_fields = ['nis']
+        extra_kwargs = {'status': {'required': True}}
+
+    def update(self, instance, validated_data):
+        if instance.user.DetailUser.status != 2:
+            raise serializers.ValidationError(
+                'Terjadi Kesalahan, Silahkan Coba Lagi!')
+        instance.status = validated_data['status']
+        instance.save()
+
+        return instance
+
 
 class KegiatanSerializer(serializers.ModelSerializer):
 
@@ -114,4 +165,4 @@ class NotifikasiSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = list_notifikasi
-        fields = ['notifikasi','tanggal_notifikasi']
+        fields = ['notifikasi', 'tanggal_notifikasi']

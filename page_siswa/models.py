@@ -87,6 +87,20 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         detail = user.siswa
         return detail
 
+def ijazah_image_path(instance, filename):
+    return 'images/{0}/file_ijazah.jpg'.format(instance.nis)
+
+def akta_image_path(instance, filename):
+    return 'images/{0}/file_akta.jpg'.format(instance.nis)
+
+def kesehatan_image_path(instance, filename):
+    return 'images/{0}/file_kesehatan.jpg'.format(instance.nis)
+
+def tambahan_image_path(instance, filename):
+    return 'images/{0}/{1}'.format(instance.nis, filename)
+
+def foto_image_path(instance, filename):
+    return 'images/{0}/foto_diri.jpg'.format(instance.nis)
 
 class Siswa(models.Model):
 
@@ -133,15 +147,15 @@ class Siswa(models.Model):
         default=None, null=True, max_digits=4, decimal_places=2)
     nilai_ipa = models.DecimalField(
         default=None, null=True, max_digits=4, decimal_places=2)
-    foto_diri = models.ImageField(upload_to='images/', null=True, default=None)
+    foto_diri = models.ImageField(upload_to=foto_image_path, null=True, default=None)
     berkas_ijazah = models.ImageField(
-        upload_to='images/', null=True, default=None)
+        upload_to=ijazah_image_path, null=True, default=None)
     berkas_akta = models.ImageField(
-        upload_to='images/', null=True, default=None)
+        upload_to=akta_image_path, null=True, default=None)
     berkas_kesehatan = models.ImageField(
-        upload_to='images/', null=True, default=None)
+        upload_to=kesehatan_image_path, null=True, default=None)
     berkas_tambahan = models.ImageField(
-        upload_to='images/', null=True, default=None)
+        upload_to=tambahan_image_path, null=True, default=None)
 
     object = SiswaManager()
 
@@ -151,6 +165,11 @@ class Siswa(models.Model):
 
     def __str__(self):
         return self.nis
+
+    def get_kabupaten_siswa(self):
+        data = self.alamat
+        data = data.split(',')
+        return data[2].strip()
 
     def check_progress(self):
         if not (self.jenis_kelamin and self.tanggal_lahir and self.tempat_lahir
@@ -249,6 +268,10 @@ class sekolah(models.Model):
     nama = models.CharField(max_length=255, default=None)
     alamat = models.TextField(default=None)
     daya_tampung = models.PositiveIntegerField(default=0)
+    sisa_zonasi = models.PositiveIntegerField(default=0)
+    sisa_afirmasi = models.PositiveIntegerField(default=0)
+    sisa_perpindahan = models.PositiveIntegerField(default=0)
+    sisa_prestasi = models.PositiveIntegerField(default=0)
     status_pendaftaran = models.BooleanField(choices=StatusPendaftaran.choices, default=0)
 
     class Meta:
@@ -267,4 +290,13 @@ class sekolah(models.Model):
         sisa = jumlah_siswa - (zonasi + afirmasi + perpindahan + prestasi)
 
         data = {'zonasi': zonasi, 'afirmasi': afirmasi, 'perpindahan': perpindahan, 'prestasi': prestasi+sisa}
+        return json.dumps(data)
+
+    def split_alamat(self):
+        data = {}
+        alamat_str = self.alamat
+        alamat_list = alamat_str.split(',')
+        for cut in alamat_list:
+            alamat = cut.split(':')
+            data[alamat[0].strip()] = alamat[1].strip()
         return json.dumps(data)
