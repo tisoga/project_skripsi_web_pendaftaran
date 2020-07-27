@@ -9,6 +9,7 @@ from .models import CustomUser, Siswa, list_events, list_notifikasi, sekolah
 
 # Create your views here.
 
+
 def login_views(request):
     if request.method == 'POST':
         if request.POST.get('email'):
@@ -90,6 +91,7 @@ def tahapan_pendaftaran_views(request):
     data_sekolah = sekolah.objects.first()
     data = Siswa.object.get(user=request.user)
     status = data.status
+    print(data)
     if status == 0:
         page = 'Identitas Diri'
     elif status == 1:
@@ -106,6 +108,10 @@ def tahapan_pendaftaran_views(request):
             if request.user.DetailUser.status != 0:
                 messages.error(request, f'Terjadi Kesalahn')
                 return redirect('siswa:home')
+            if int(request.POST.get('umur')) > 21:
+                messages.error(
+                    request, f'Maaf Umur Anda Sudah Melebihi Batas Maksimal untuk Melakukan PPDB tingkat SMA. Batas Umur Maksimal melakukan PPDB Tingkat SMA Adalah 21 Tahun')
+                return redirect('siswa:tahapan_pendaftaran')
             lengkap = request.POST.get('alamat')
             provinsi = request.POST.get('prov')
             kabupaten = request.POST.get('kab')
@@ -136,7 +142,8 @@ def tahapan_pendaftaran_views(request):
             data.status = 2
             data.berkas_ijazah = CompressImage(request.FILES.get('skhun'))
             data.berkas_akta = CompressImage(request.FILES.get('akta'))
-            data.berkas_kesehatan = CompressImage(request.FILES.get('kesehatan'))
+            data.berkas_kesehatan = CompressImage(
+                request.FILES.get('kesehatan'))
             data.save()
             messages.success(request, f'Berkas-Berkas Berhasil disimpan')
             return redirect('siswa:home')
@@ -197,14 +204,17 @@ def proses_ajukan_pendaftaran(request):
                 tambahan = None
             elif request.POST.get('pengajuan') == 'afirmasi':
                 pengajuan = 11
-                tambahan = CompressImage(request.FILES.get('afirmasi'),'file_afirmasi')
+                tambahan = CompressImage(
+                    request.FILES.get('afirmasi'), 'file_afirmasi')
             elif request.POST.get('pengajuan') == 'perpindahan':
                 pengajuan = 12
-                tambahan = CompressImage(request.FILES.get('perpindahan'),'file_perpindahan')
+                tambahan = CompressImage(request.FILES.get(
+                    'perpindahan'), 'file_perpindahan')
             elif request.POST.get('pengajuan') == 'prestasi':
                 pengajuan = 13
                 if 'prestasi' in request.FILES:
-                    tambahan = CompressImage(request.FILES.get('prestasi'),'file_prestasi')
+                    tambahan = CompressImage(
+                        request.FILES.get('prestasi'), 'file_prestasi')
                 else:
                     tambahan = None
             data_siswa.status = pengajuan

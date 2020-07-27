@@ -2,7 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-
+from django.core.management import execute_from_command_line
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_pendaftaran.settings')
@@ -16,6 +16,8 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
+    if len(sys.argv) == 2 and sys.argv[1] == 'migrate':
+        execute_from_command_line(['manage.py', 'loaddata','initial.json'])
 
 if __name__ == '__main__':
     main()

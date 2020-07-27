@@ -1,0 +1,79 @@
+{% extends 'page_admin/base.html'%}
+
+{% block judul%}Seleski Siswa{% endblock %}
+
+{% block konten %}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="text-center">Seleksi Siswa</h4>
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-around">
+                <div class="col-lg-4 col-6">
+                    <h3 class="text-center">Jalur Zonasi</h3>
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3>{{data.0.jumlah}} <small style="font-size: x-large;">Jumlah Pendaftar</small></h3>
+                            <hr class='bg-dark'>
+                            <h3>{{data.0.kuota}} <small style="font-size: x-large;">Kuota Pendaftar</small></h3>
+                            <hr class='bg-dark'>
+                            <a href="{% url 'admin_page:list_seleksi' 'zonasi'%}">
+                                <button class="btn bg-white form-control">Mulai Seleksi</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <h3 class="text-center">Jalur Afirmasi</h3>
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>{{data.1.jumlah}} <small style="font-size: x-large;">Jumlah Pendaftar</small></h3>
+                            <hr class='bg-dark'>
+                            <h3>{{data.1.kuota}} <small style="font-size: x-large;">Kuota Pendaftar</small></h3>
+                            <hr class='bg-dark'>
+                            <a href="{% url 'admin_page:list_seleksi' 'afirmasi'%}">
+                                <button class="btn bg-white form-control">Mulai Seleksi</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-around">
+                <div class="col-lg-4 col-6">
+                    <h3 class="text-center">Jalur Perpindahan</h3>
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3>{{data.2.jumlah}} <small style="font-size: x-large;">Jumlah Pendaftar</small></h3>
+                            <hr class='bg-dark'>
+                            <h3>{{data.2.kuota}} <small style="font-size: x-large;">Kuota Pendaftar</small></h3>
+                            <hr class='bg-dark'>
+                            <a href="{% url 'admin_page:list_seleksi' 'perpindahan'%}">
+                                <button class="btn bg-white form-control">Mulai Seleksi</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <h3 class="text-center">Jalur Prestasi</h3>
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>{{data.3.jumlah}} <small style="font-size: x-large;">Jumlah Pendaftar</small></h3>
+                            <hr class='bg-dark'>
+                            <h3>{{data.3.kuota}} <small style="font-size: x-large;">Kuota Pendaftar</small></h3>
+                            <hr class='bg-dark'>
+                            <a href="{% url 'admin_page:list_seleksi' 'prestasi'%}">
+                                <button class="btn bg-white form-control">Mulai Seleksi</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

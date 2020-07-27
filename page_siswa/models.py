@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here
 
 
@@ -69,11 +70,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
-    object = CustomUserManager()
-    objects = CustomUserManager()
-
     class Meta:
         db_table = 'tabel_user'
+
+    object = CustomUserManager()
+    objects = CustomUserManager()
 
     def __str__(self):
         return self.email
@@ -87,20 +88,26 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         detail = user.siswa
         return detail
 
+
 def ijazah_image_path(instance, filename):
     return 'images/{0}/file_ijazah.jpg'.format(instance.nis)
+
 
 def akta_image_path(instance, filename):
     return 'images/{0}/file_akta.jpg'.format(instance.nis)
 
+
 def kesehatan_image_path(instance, filename):
     return 'images/{0}/file_kesehatan.jpg'.format(instance.nis)
+
 
 def tambahan_image_path(instance, filename):
     return 'images/{0}/{1}'.format(instance.nis, filename)
 
+
 def foto_image_path(instance, filename):
     return 'images/{0}/foto_diri.jpg'.format(instance.nis)
+
 
 class Siswa(models.Model):
 
@@ -140,14 +147,18 @@ class Siswa(models.Model):
     status = models.IntegerField(
         choices=StatusPendaftaran.choices, null=True, default=0)
     nilai_matematika = models.DecimalField(
-        default=None, null=True, max_digits=4, decimal_places=2)
+        default=None, null=True, max_digits=5, decimal_places=2, validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100)
+        ])
     nilai_indonesia = models.DecimalField(
         default=None, null=True, max_digits=4, decimal_places=2)
     nilai_inggris = models.DecimalField(
         default=None, null=True, max_digits=4, decimal_places=2)
     nilai_ipa = models.DecimalField(
         default=None, null=True, max_digits=4, decimal_places=2)
-    foto_diri = models.ImageField(upload_to=foto_image_path, null=True, default=None)
+    foto_diri = models.ImageField(
+        upload_to=foto_image_path, null=True, default=None)
     berkas_ijazah = models.ImageField(
         upload_to=ijazah_image_path, null=True, default=None)
     berkas_akta = models.ImageField(
@@ -249,21 +260,21 @@ class list_notifikasi(models.Model):
     siswa = models.ForeignKey(
         Siswa, on_delete=models.CASCADE, related_name='notifikasi', default=None)
     notifikasi = models.CharField(max_length=255)
-    tanggal_notifikasi = models.DateTimeField(auto_now=True)
+    tanggal_notifikasi = models.DateField(auto_now=True)
 
     def __str__(self):
         return str(self.tanggal_notifikasi)
 
     class Meta:
         db_table = 'tabel_notifikasi'
-        ordering = ['-tanggal_notifikasi']
+        ordering = ['-tanggal_notifikasi', '-id']
 
 
 class sekolah(models.Model):
 
     class StatusPendaftaran(models.IntegerChoices):
-        buka = 0,_('Pendaftaran diBuka')
-        tutup = 1,_('Pendaftaran diTutup')
+        buka = 0, _('Pendaftaran dibuka')
+        tutup = 1, _('Pendaftaran ditutup')
 
     nama = models.CharField(max_length=255, default=None)
     alamat = models.TextField(default=None)
@@ -272,14 +283,15 @@ class sekolah(models.Model):
     sisa_afirmasi = models.PositiveIntegerField(default=0)
     sisa_perpindahan = models.PositiveIntegerField(default=0)
     sisa_prestasi = models.PositiveIntegerField(default=0)
-    status_pendaftaran = models.BooleanField(choices=StatusPendaftaran.choices, default=0)
+    status_pendaftaran = models.BooleanField(
+        choices=StatusPendaftaran.choices, default=0)
 
     class Meta:
         db_table = 'tabel_sekolah'
 
     def __str__(self):
         return self.nama
-    
+
     def pembagian_kuota(self):
         jumlah_siswa = self.daya_tampung
 
@@ -289,13 +301,16 @@ class sekolah(models.Model):
         prestasi = int(self.daya_tampung * 0.30)
         sisa = jumlah_siswa - (zonasi + afirmasi + perpindahan + prestasi)
 
-        data = {'zonasi': zonasi, 'afirmasi': afirmasi, 'perpindahan': perpindahan, 'prestasi': prestasi+sisa}
+        data = {'zonasi': zonasi, 'afirmasi': afirmasi,
+                'perpindahan': perpindahan, 'prestasi': prestasi+sisa}
         return json.dumps(data)
 
     def split_alamat(self):
         data = {}
         alamat_str = self.alamat
         alamat_list = alamat_str.split(',')
+        # print(alamat_str)
+        # print(alamat_list)
         for cut in alamat_list:
             alamat = cut.split(':')
             data[alamat[0].strip()] = alamat[1].strip()

@@ -1,0 +1,23 @@
+[
+    {
+        "model": "page_siswa.sekolah",
+        "pk": 1,
+        "fields":{
+            "nama": "",
+            "alamat": "",
+            "status_pendaftaran": 0
+        }
+    },
+    {
+        "model": "page_siswa.CustomUser",
+        "pk": 1,
+        "fields":{
+            "email": "admin@gmail.com",
+            "password": "pbkdf2_sha256$180000$R5wmbmGyZOsv$h9pXLxUGCJ6GU8E5Z87IHjQFGfOBI4iltSDXnEscjGw=",
+            "first_name": "admin",
+            "last_name": "user",
+            "is_active": true,
+            "is_staff": true
+        }
+    }
+]

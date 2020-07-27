@@ -3,6 +3,7 @@ from rest_framework import serializers
 from page_siswa.models import Siswa, CustomUser, list_events, list_notifikasi
 from page_siswa.functions import CompressImage
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -16,7 +17,7 @@ class ListSiswaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Siswa
-        exclude = ['status']
+        fields = '__all__'
 
     def update(self, instance, validated_data):
         # if instance.user.DetailUser.status != 0:
@@ -82,15 +83,15 @@ class PelengkapanIdentitasSerializer(serializers.ModelSerializer):
             'tempat_lahir': {'required': True},
             'umur': {'required': True},
             'alamat': {'required': True},
-            'foto_diri': {'required': True},
-        }
+            'foto_diri': {'required': True}}
 
     def update(self, instance, validated_data):
         if instance.user.DetailUser.status != 0:
             raise serializers.ValidationError(
                 'Terjadi Kesalahan, Silahkan Coba Lagi!')
         validated_data['status'] = 1
-        validated_data['foto_diri'] = CompressImage(validated_data.pop('foto_diri'))
+        validated_data['foto_diri'] = CompressImage(
+            validated_data.pop('foto_diri'))
         first_name = validated_data.pop('first_name')
         last_name = validated_data.pop('last_name')
         user = CustomUser.object.get(pk=instance.user.id)
@@ -101,7 +102,6 @@ class PelengkapanIdentitasSerializer(serializers.ModelSerializer):
         instance.__dict__.update(**validated_data)
         user.save()
         instance.save()
-
         return instance
 
 
@@ -127,9 +127,12 @@ class PelengkapanBerkasSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Terjadi Kesalahan, Silahkan Coba Lagi!')
         validated_data['status'] = 2
-        validated_data['berkas_ijazah'] = CompressImage(validated_data.pop('berkas_ijazah'))
-        validated_data['berkas_akta'] = CompressImage(validated_data.pop('berkas_akta'))
-        validated_data['berkas_kesehatan'] = CompressImage(validated_data.pop('berkas_kesehatan'))
+        validated_data['berkas_ijazah'] = CompressImage(
+            validated_data.pop('berkas_ijazah'))
+        validated_data['berkas_akta'] = CompressImage(
+            validated_data.pop('berkas_akta'))
+        validated_data['berkas_kesehatan'] = CompressImage(
+            validated_data.pop('berkas_kesehatan'))
         instance.__dict__.update(**validated_data)
         instance.save()
 
@@ -154,6 +157,46 @@ class PengajuanPendaftaranSerializer(serializers.ModelSerializer):
         return instance
 
 
+class EditPengajuanSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    first_name = serializers.CharField(write_only=True, required=False)
+    last_name = serializers.CharField(write_only=True, required=False)
+
+    class Meta:
+        model = Siswa
+        fields = ('user', 'first_name', 'last_name', 'nis', 'jenis_kelamin', 'tanggal_lahir',
+                  'tempat_lahir', 'umur', 'alamat', 'status', 'nilai_matematika',
+                  'nilai_inggris', 'nilai_ipa', 'nilai_indonesia', 'foto_diri', 'berkas_akta',
+                  'berkas_kesehatan', 'berkas_ijazah')
+        read_only_fields = ['nis']
+
+    def update(self, instance, validated_data):
+        if instance.user.DetailUser.status != 2:
+            raise serializers.ValidationError(
+                'Terjadi Kesalahan, Silahkan Coba Lagi!')
+        user = CustomUser.object.get(pk=instance.user.id)
+        if validated_data.get('first_name'):
+            first_name = validated_data.pop('first_name')
+            last_name = validated_data.pop('last_name')
+            user.first_name = first_name
+            user.last_name = last_name
+            instance.user.first_name = first_name
+            instance.user.last_name = last_name
+        if validated_data.get('berkas_ijazah') or validated_data.get('berkas_akta') or validated_data.get('berkas_kesehatan') or validated_data.get('foto_diri'):
+            validated_data['foto_diri'] = CompressImage(
+                validated_data.pop('foto_diri'))
+            validated_data['berkas_ijazah'] = CompressImage(
+                validated_data.pop('berkas_ijazah'))
+            validated_data['berkas_akta'] = CompressImage(
+                validated_data.pop('berkas_akta'))
+            validated_data['berkas_kesehatan'] = CompressImage(
+                validated_data.pop('berkas_kesehatan'))
+        instance.__dict__.update(**validated_data)
+        user.save()
+        instance.save()
+        return instance
+
+
 class KegiatanSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -165,4 +208,4 @@ class NotifikasiSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = list_notifikasi
-        fields = ['notifikasi', 'tanggal_notifikasi']
+        fields = ['id', 'notifikasi', 'tanggal_notifikasi']

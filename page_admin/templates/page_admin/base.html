@@ -21,7 +21,7 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.0-alpha14/css/tempusdominus-bootstrap-4.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
     {% block header %}
-    
+
     {% endblock %}
 </head>
 
@@ -40,7 +40,8 @@
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a href="{% url 'siswa:logout' %}" class="nav-link btn btn-default btn-flat" style="cursor: pointer;">Logout</a>
+                    <a href="{% url 'siswa:logout' %}" class="nav-link btn btn-default btn-flat"
+                        style="cursor: pointer;">Logout</a>
                 </li>
             </ul>
         </nav>
@@ -71,16 +72,29 @@
                 {% endblock %}
             </section>
             <!-- /.content -->
+
         </div>
         <!-- /.content-wrapper -->
-
-        <!-- <footer class="main-footer">
-            <div class="float-right d-none d-sm-block">
-                <b>Version</b> 3.0.1
+        <div class="modal fade bd-example-modal-sm" id="modalSetting" tabindex="-1" role="dialog"
+            aria-labelledby="mySmallModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="modal-title">
+                            <h4 class="text-center">Peringatan</h4>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <h2>Settingan PPDB belum dilengkapi, Silahkan Lengkapi Terlebih Dahulu.</h2>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{% url 'admin_page:setting' %}">
+                            <button type="button" form="formKuota" class="btn btn-primary">Ya</button>
+                        </a>
+                    </div>
+                </div>
             </div>
-            <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong> All rights
-            reserved.
-        </footer> -->
+        </div>
     </div>
     <!-- ./wrapper -->
 
@@ -99,117 +113,6 @@
     <!-- <script src="{% static 'js/adminlte/pages/dashboard.js'%}"></script> -->
     <!-- AdminLTE for demo purposes -->
     <script src="{% static 'js/adminlte/demo.js' %}"></script>
-    <script>
-        var salesChartCanvas = document.getElementById('revenue-chart-canvas').getContext('2d');
-        //$('#revenue-chart').get(0).getContext('2d');
-
-        // Donut Chart
-        var pieChartCanvas = $('#sales-chart-canvas').get(0).getContext('2d')
-        var labelData = {{ data.tahun }}
-        var dataLaki = {{ data.laki_all }}
-        var dataPerempuan = {{ data.perempuan_all }}
-        var pieData = {
-            labels: [
-                "Laki-Laki",
-                "Perempuan"
-            ],
-            datasets: [
-                {
-                    data: [{{ data.laki | safe }}, {{ data.perempuan | safe }}],
-            backgroundColor: ['#00a65a', '#f0ad4e'],
-            }
-        ]
-        }
-        var pieOptions = {
-            legend: {
-                display: true
-            },
-            maintainAspectRatio: false,
-            responsive: true,
-        }
-        //Create pie or douhnut chart
-        // You can switch between pie and douhnut using the method below.
-        var salesChart = new Chart(salesChartCanvas, {
-            type: 'doughnut',
-            data: pieData,
-            options: pieOptions
-        });
-
-        // Sales graph chart
-        var salesGraphChartCanvas = $('#line-chart').get(0).getContext('2d');
-        //$('#revenue-chart').get(0).getContext('2d');
-
-        var salesGraphChartData = {
-            labels: labelData,
-            datasets: [
-                {
-                    label: 'Laki-Laki',
-                    fill: false,
-                    borderWidth: 2,
-                    lineTension: 0,
-                    spanGaps: true,
-                    borderColor: '#80ffa6',
-                    pointRadius: 3,
-                    pointHoverRadius: 7,
-                    pointColor: '#efefef',
-                    pointBackgroundColor: '#efefef',
-                    data: dataLaki
-                },
-                {
-                    label: 'Perempuan',
-                    fill: false,
-                    borderWidth: 2,
-                    lineTension: 0,
-                    spanGaps: true,
-                    borderColor: '#f0ad4e',
-                    pointRadius: 3,
-                    pointHoverRadius: 7,
-                    pointColor: '#efefef',
-                    pointBackgroundColor: '#efefef',
-                    data: dataPerempuan
-                }
-            ]
-        }
-
-        var salesGraphChartOptions = {
-            maintainAspectRatio: false,
-            responsive: true,
-            legend: {
-                display: false,
-            },
-            scales: {
-                xAxes: [{
-                    ticks: {
-                        fontColor: '#efefef',
-                    },
-                    gridLines: {
-                        display: false,
-                        color: '#efefef',
-                        drawBorder: false,
-                    }
-                }],
-                yAxes: [{
-                    ticks: {
-                        stepSize: 5000,
-                        fontColor: '#efefef',
-                    },
-                    gridLines: {
-                        display: true,
-                        color: '#efefef',
-                        drawBorder: false,
-                    }
-                }]
-            }
-        }
-
-        // This will get the first returned node in the jQuery collection.
-        var salesGraphChart = new Chart(salesGraphChartCanvas, {
-            type: 'line',
-            data: salesGraphChartData,
-            options: salesGraphChartOptions
-        }
-        )
-    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
         integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
@@ -222,6 +125,11 @@
             });
         });
     </script>
+    {% if setting %}
+    <script>
+        $('#modalSetting').modal({ backdrop: 'static', keyboard: false });
+    </script>
+    {% endif %}
 
     <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
     {% block script %}

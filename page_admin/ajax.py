@@ -39,3 +39,11 @@ def pembagian_kuota(request):
             return Response(data)
         except:
             return Response({"message": "Terjadi Kesalahan"}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({"message": "Terjadi Kesalahan"}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def getSiswaSeleksi(request):
+    if request.method == 'GET':
+        daftar_siswa = Siswa.object.all()
+        serializer = ListSiswaSerializer(daftar_siswa, many=True)
+        return Response(serializer.data)

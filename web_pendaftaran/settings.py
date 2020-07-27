@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     'page_siswa',
     'page_admin',
     'api',
+    'rest_framework',
     'knox',
-    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -96,7 +96,7 @@ DATABASES = {
         'ENGINE' : 'django.db.backends.mysql',
         'USER' : 'root',
         'PASSWORD':'',
-        'NAME' : 'project_skripsi',
+        'NAME' : 'db_ppdb_online',
         'HOST':'localhost',
         'PORT' : '3306',
         'OPTIONS': {

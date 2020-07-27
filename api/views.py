@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .serializer import ListSiswaSerializer, LoginSerializer, \
     UserSerializer, RegisterSerializer, PelengkapanIdentitasSerializer, \
-    PelengkapanBerkasSerializer, KegiatanSerializer, NotifikasiSerializer, PengajuanPendaftaranSerializer
+    PelengkapanBerkasSerializer, KegiatanSerializer, NotifikasiSerializer, PengajuanPendaftaranSerializer, EditPengajuanSerializer
 
 from knox.auth import AuthToken
 
@@ -50,6 +50,7 @@ def RegisterAPI(request):
 
 @api_view(['GET', 'PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
+@parser_classes([FormParser, MultiPartParser])
 def ProfileSiswaAPI(request):
     siswa = get_object_or_404(Siswa, nis=request.user.DetailUser.nis)
     if request.method == 'GET':
@@ -81,12 +82,19 @@ def UploadBerkasAPI(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['PUT'])
+@api_view(['PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def PengajuanAPI(request):
     siswa = get_object_or_404(Siswa, nis=request.user.DetailUser.nis)
     if request.method == 'PUT':
         serializer = PengajuanPendaftaranSerializer(siswa, data=request.data)
+        print(serializer)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'PATCH':
+        serializer = EditPengajuanSerializer(siswa, data=request.data)
         print(serializer)
         if serializer.is_valid():
             serializer.save()

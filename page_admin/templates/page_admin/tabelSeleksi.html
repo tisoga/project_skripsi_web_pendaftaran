@@ -113,6 +113,27 @@
     </div>
 </div>
 
+<div class="modal fade bd-example-modal-sm" id="modalPeringatan" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h2>Settingan PPDB belum dilengkapi, Silahkan Lengkapi Terlebih Dahulu.</h2>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'admin_page:setting' %}">
+                    <button type="button" form="formKuota" class="btn btn-primary">Ya</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -222,27 +243,6 @@
     </div>
 </div>
 
-<div class="modal fade bd-example-modal-sm" id="peringatan" tabindex="-1" role="dialog"
-    aria-labelledby="mySmallModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">
-                    <h4 class="text-center">Peringatan</h4>
-                </div>
-            </div>
-            <div class="modal-body" id="modalPeringatan">
-                Apakah Anda ingin menyeleksi Siswa secara manual ?
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                <button type="button" form="dataSiswa" class="btn btn-primary" id="btn_manual"
-                    onclick="confirmManual()">Ya</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="modal fade bd-example-modal-sm" id="modalOtomatis" tabindex="-1" role="dialog"
     aria-labelledby="mySmallModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -283,6 +283,7 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block script %}
@@ -290,10 +291,10 @@
 <script>
     $(document).ready(function () {
         var error = '{{error}}'
-        if (error === 'otomatis'){
+        if (error === 'otomatis') {
             confirmOtomatis()
         }
-        else if (error === 'manual'){
+        else if (error === 'manual') {
             confirmManual()
         }
     })

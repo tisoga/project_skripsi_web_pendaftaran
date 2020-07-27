@@ -1,0 +1,514 @@
+{% extends 'page_admin/base.html' %}
+
+{%block judul%}List Siswa{%endblock%}
+
+{% block konten %}
+{% load static%}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    {% comment %}
+                    {% if list_siswa %}
+                    {% endcomment %}
+                    <div class="form-row">
+                        <div class="col-12">
+                            Action
+                        </div>
+                        <div class="col-6">
+                            <button type="button" id="otomatisSeleksi" form="dataSiswa" class="btn btn-success"
+                                onclick="seleksiOtomatis()">
+                                Seleksi Otomatis
+                            </button>
+                            <button type="button" id="fdhg" form="dataSiswa" class="btn btn-danger"
+                                onclick="seleksiOtomatis()">
+                                Selesai Seleksi
+                            </button>
+                        </div>
+                        <div class="col">
+                            <h3 class="float-right">Sisa Kuota untuk Jalur Afirmasi : {{data_sekolah.sisa_afirmasi}}</h3>
+                        </div>
+                    </div>
+                    {% comment %}
+                    {% endif %}
+                    {% endcomment %}
+                    <div class="form-row mt-4 d-flex justify-content-center">
+                        <div class="col-7 border" id="divOtomatis" hidden>
+                            <div class="col-12">
+                                <p class="text-center"><b>Setting Seleksi Otomatis</b></p>
+                                <p class="text-center" style="margin-top: -20px;"><b>Berdasarkan Nilai Rata-Rata Ujian
+                                        Nasional</b></p>
+                            </div>
+                            <div class="col-12">
+                                <form id="seleksiOtomatis" method="POST">
+                                    {% csrf_token %}
+                                    <div class="form-row">
+                                        <div class="col-sm-12 col-lg-6">
+                                            <label for="jumlahSiswa">Masukan Jumlah Siswa Yang ingin Diterima</label>
+                                            <input id="jumlahSiswa" type="text" name="jumlahSiswa" id="jumlahSIswa"
+                                                class="form-control" />
+                                        </div>
+                                        <div class="col-sm-12 col-lg-6">
+                                            <label for="jumlahSiswa">Jumlah Siswa yang sudah Mendaftar </label>
+                                            <input id="jumlahSiswa" type="text" class="form-control"
+                                                id="siswaVerifikasi" value="{{list_siswa|length}}" disabled />
+                                        </div>
+                                        <button type="button" data-toggle="modal" data-target='#konfirmasiOtomatis'
+                                            class="btn btn-primary form-control mt-2">Konfirmasi</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-bordered table-hover" id="data">
+                        {% csrf_token %}
+                        <thead class="thead-dark">
+                            <tr>
+                                <th class="text-center align-middle" style="width: 9%" rowspan="2">NIS</th>
+                                <th class="text-center align-middle" style="width: 20%" rowspan="2">Nama</th>
+                                <th class="text-center align-middle" style="width: 29%" colspan="4">Nilai Ujian
+                                    Nasional</th>
+                                <th class="text-center align-middle" style="width: 10%" rowspan="2">Rata-Rata Nilai
+                                </th>
+                                <th class="text-center align-middle manualSeleksi" style="width: 9%;" rowspan="2">
+                                    Action
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="text-center align-middle">Bhs.Indonesia</th>
+                                <th class="text-center align-middle">Bhs.Inggris</th>
+                                <th class="text-center align-middle">Matematika</th>
+                                <th class="text-center align-middle" style="width: 9%">IPA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for siswa in list_siswa%}
+                            <tr>
+                                <td class="text-center align-middle">{{siswa.nis}}</td>
+                                <td class="align-middle text-center">{{siswa.user.get_full_name}}</td>
+                                <td class="align-middle text-center">{{siswa.nilai_indonesia}}</td>
+                                <td class="align-middle text-center">{{siswa.nilai_inggris}}</td>
+                                <td class="align-middle text-center">{{siswa.nilai_matematika}}</td>
+                                <td class="align-middle text-center">{{siswa.nilai_ipa}}</td>
+                                <td class="align-middle text-center">{{siswa.check_rata_rata}}</td>
+                                <th class="manualSeleksi">
+                                    <button class="btn btn-primary" style="width: 100px;"
+                                        onclick="openModalTerima('{{siswa.nis}}','{{siswa.user.get_full_name}}')">Terima</button>
+                                    <button class="btn btn-danger mt-2" style="width: 100px;"
+                                        onclick="openModalTolak('{{siswa.nis}}','{{siswa.user.get_full_name}}')">Tolak</button>
+                                    <button class="btn btn-success mt-2" style="width: 100px;"
+                                        onclick="openDetail('{{siswa.nis}}')">Detail</button>
+                                </th>
+                            </tr>
+                            {% endfor %}
+                            <td class="text-center align-middle" colspan="8">
+                                Tidak Ada Siswa yang perlu diseleksi
+                            </td>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% if list_siswa.has_other_pages %}
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+                    {% if list_siswa.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{list_siswa.previous_page_number}}">«</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">«</span>
+                    </li>
+                    {% endif %}
+                    {% for page in list_siswa.paginator.page_range%}
+                    {% if page == list_siswa.number %}
+                    <li class="page-item active">
+                        <span class="page-link">{{page}}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{page}}">{{page}}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if list_siswa.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{list_siswa.next_page_number}}">»</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">»</span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="modalPeringatan" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h2>Settingan PPDB belum dilengkapi, Silahkan Lengkapi Terlebih Dahulu.</h2>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'admin_page:setting' %}">
+                    <button type="button" form="formKuota" class="btn btn-primary">Ya</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="detail-siswa" style="display: block;">
+                    <h3 class="text-center">Detail Siswa</h3>
+                    <div class="text-center">
+                        <img class="img-fluid img-thumbnail" id="detailFoto" style="height: 250px;display: none;"
+                            onerror="this.src='{% static 'assets/Network-Profile.png'%}'">
+                    </div>
+                    <table class="table">
+                        <tr>
+                            <th style="width: 18%">NIS</th>
+                            <td id="detailNIS" style="width: 32%"></td>
+                            <th style="width: 18%">Email</th>
+                            <td id="detailEmail" style="width: 32%"></td>
+                        </tr>
+                        <tr>
+                            <th>Nama Lengkap</th>
+                            <td id="detailNama"></td>
+                            <th>Jenis Kelamin</th>
+                            <td id="detailJK">Data Belum Dilengkapi</td>
+                        </tr>
+                        <tr>
+                            <th>Tanggal Lahir</th>
+                            <td id="detailTanggal">Data Belum Dilengkapi</td>
+                            <th>Umur</th>
+                            <td id="detailUmur">Data Belum Dilengkapi</td>
+                        </tr>
+                        <tr>
+                            <th colspan="1">Alamat</th>
+                            <td colspan="3" id="detailAlamat">Data Belum Dilengkapi</td>
+                        </tr>
+                    </table>
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h3><u>Hasil Nilai Ujian Nasional</u></h3>
+                        </div>
+                        <table class="table">
+                            <tr>
+                                <th style="width: 10%">Bahasa Indonesia</th>
+                                <td id="detailIndo" class="align-middle" style="width: 32%">Data Belum Dilengkapi</td>
+                                <th style="width: 10%">Bahasa Inggris</th>
+                                <td id="detailIng" class="align-middle" style="width: 32%">Data Belum Dilengkapi</td>
+                            </tr>
+                            <tr>
+                                <th>Matematika</th>
+                                <td id="detailMtk">Data Belum Dilengkapi</td>
+                                <th>IPA</th>
+                                <td id="detailIpa">Data Belum Dilengkapi</td>
+                            </tr>
+                        </table>
+                        <div class="row" id="detailBerkas">
+                            <div class="col-12 text-center">
+                                <h3><u>Berkas-Berkas</u></h3>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-xs-6 text-center hidden">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label>Ijazah</label>
+                                    </div>
+                                    <div class="col-12">
+                                        <a class="berkasIjazah" href="#" data-fancybox data-caption="Ijazah">
+                                            <img class="img-fluid berkasIjazah" src="#" style="height: 250px;">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-xs-6 text-center hidden">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label>Akta Kelahiran</label>
+                                    </div>
+                                    <div class="col-12">
+                                        <a class="berkasAkta" href="#" data-fancybox data-caption="Akta Kelahiran">
+                                            <img class="img-fluid berkasAkta" src="#" style="height: 250px;">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-xs-6 text-center hidden">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label>Surat Kesehatan</label>
+                                </div>
+                                <div class="col-12">
+                                    <a class="berkasKesehatan" href="#" data-fancybox data-caption="Surat Kesehatan">
+                                        <img class="img-fluid berkasKesehatan" src="#" style="height: 250px;">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-xs-6 text-center hidden">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label>Berkas Afirmasi</label>
+                                </div>
+                                <div class="col-12">
+                                    <a class="berkasTambahan" href="#" data-fancybox data-caption="Berkas Afirmasi">
+                                        <img class="img-fluid berkasTambahan" src="#" style="height: 250px;">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="modalOtomatis" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body" id="modalPeringatan">
+                Apakah Anda ingin menyeleksi Siswa secara Otomatis ?
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <button type="button" form="dataSiswa" class="btn btn-primary" id="btn_manual"
+                    onclick="confirmOtomatis()">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="konfirmasiOtomatis" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body" id="modalPeringatan">
+                <h5><b>Periksa Kembali Setingan untuk Seleksi Otomatis</b>, Jika Sudah Yakin Klik Ya</h5>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <button type="submit" form="seleksiOtomatis" class="btn btn-primary">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="tolakSeleksi" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h3>Apakah Anda Yakin Akan Menolak Seleksi Siswa Ini ?</h3>
+                <hr>
+                <table>
+                    <tr>
+                        <th>Nis</th>
+                        <td>:</td>
+                        <td class="modalNis"></td>
+                    </tr>
+                    <tr>
+                        <th>Nama Siswa</th>
+                        <td>:</td>
+                        <td class="modalNama"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <form method="POST" action="{% url 'admin_page:proses_seleksi' 'afirmasi'%}">
+                    {% csrf_token %}
+                    <input type="hidden" class="idNis" name='nis'>
+                    <input type="hidden" name='hasilSeleksi' value='tolak'>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Tidak</button>
+                    <input type='submit' class="btn btn-primary" value="Ya">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="terimaSeleksi" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h3>Apakah Anda Yakin Akan Menerima Seleksi Siswa Ini ?</h3>
+                <hr>
+                <table>
+                    <tr>
+                        <th>Nis</th>
+                        <td>:</td>
+                        <td class="modalNis"></td>
+                    </tr>
+                    <tr>
+                        <th>Nama Siswa</th>
+                        <td>:</td>
+                        <td class="modalNama"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <form method="POST" action="{% url 'admin_page:proses_seleksi' 'afirmasi'%}">
+                    {% csrf_token %}
+                    <input type="hidden" class="idNis" name='nis'>
+                    <input type="hidden" name='hasilSeleksi' value='terima'>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Tidak</button>
+                    <input type='submit' class="btn btn-primary" value="Ya">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+    function openModalTerima(nis, nama) {
+        $('#terimaSeleksi').modal('show');
+        $('.idNis').val(nis);
+        $('.modalNis').text(nis);
+        $('.modalNama').text(nama);
+    }
+    function openModalTolak(nis, nama) {
+        $('#tolakSeleksi').modal('show');
+        $('.idNis').val(nis);
+        $('.modalNis').text(nis);
+        $('.modalNama').text(nama);
+    }
+</script>
+
+<script>
+    function openDetail(val) {
+        var modal = document.getElementById('modalBody');
+        var fotoProfile = document.getElementById('detailFoto');
+        var nis = document.getElementById('detailNIS')
+        var email = document.getElementById('detailEmail')
+        var nama = document.getElementById('detailNama')
+        var jk = document.getElementById('detailJK')
+        var tanggal = document.getElementById('detailTanggal')
+        var umur = document.getElementById('detailUmur')
+        var alamat = document.getElementById('detailAlamat')
+        var indo = document.getElementById('detailIndo')
+        var ing = document.getElementById('detailIng')
+        var mtk = document.getElementById('detailMtk')
+        var ipa = document.getElementById('detailIpa')
+        var berkas = document.getElementById('detailBerkas')
+        var ijazah = document.getElementsByClassName('berkasIjazah')
+        var akta = document.getElementsByClassName('berkasAkta')
+        var kesehatan = document.getElementsByClassName('berkasKesehatan')
+        var tambahan = document.getElementsByClassName('berkasTambahan')
+        if (val) {
+            $.ajax({
+                type: 'GET',
+                url: '{% url "api:profileAPI" 1234%}'.replace(/1234/, val),
+                dataType: 'json',
+                success: function (data) {
+                    nis.innerHTML = data.nis
+                    email.innerHTML = data.user.email
+                    nama.innerHTML = data.user.first_name + ' ' + data.user.last_name
+                    if (data.status === 0 || data.status === 1) {
+                        berkas.parentNode.removeChild(berkas)
+                    }
+                    if (data.jenis_kelamin == 'L') {
+                        var kelamin = 'Laki-Laki'
+                    }
+                    else if (data.jenis_kelamin == 'P') {
+                        var kelamin = 'Perempuan'
+                    }
+                    if (data.status !== 0) {
+                        fotoProfile.src = data.foto_diri
+                        fotoProfile.style = 'height: 250px'
+                        jk.innerHTML = kelamin
+                        tanggal.innerHTML = data.tanggal_lahir
+                        umur.innerHTML = data.umur
+                        alamat.innerHTML = data.alamat
+                    }
+                    if (data.status !== 0 && data.status !== 1) {
+                        indo.innerHTML = data.nilai_indonesia
+                        ing.innerHTML = data.nilai_inggris
+                        mtk.innerHTML = data.nilai_matematika
+                        ipa.innerHTML = data.nilai_ipa
+                        ijazah[0].setAttribute('href', data.berkas_ijazah)
+                        ijazah[1].src = data.berkas_ijazah
+                        akta[0].setAttribute('href', data.berkas_akta)
+                        akta[1].src = data.berkas_akta
+                        kesehatan[0].setAttribute('href', data.berkas_kesehatan)
+                        kesehatan[1].src = data.berkas_kesehatan
+                        tambahan[0].setAttribute('href', data.berkas_tambahan)
+                        tambahan[1].src = data.berkas_tambahan
+                    }
+                }
+            })
+            $('#modalDetail').modal();
+        }
+        else {
+            $('#notifikasi').modal();
+        }
+    }
+</script>
+
+<script>
+    function seleksiOtomatis() {
+        $('#modalOtomatis').modal();
+    }
+    function confirmOtomatis() {
+        document.getElementById('otomatisSeleksi').innerHTML = 'Seleksi Otomatis'
+        $('#modalOtomatis').modal('hide');
+        $('#divOtomatis').removeAttr('hidden');
+        $('#otomatisSeleksi').removeAttr('onclick')
+    }
+</script>
+
+{% endblock %}
