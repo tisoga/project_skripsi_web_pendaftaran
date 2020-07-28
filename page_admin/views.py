@@ -1,7 +1,7 @@
 import json
 
 from django.shortcuts import render, redirect
-from django.db.models import F, Q
+from django.db.models import F, Q, Avg
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import JsonResponse
@@ -83,51 +83,156 @@ def pageSeleksi(request):
                   template_name='page_admin/seleksi_siswa.html',
                   context={'active': 'seleksi', 'data': [zonasi, afirmasi, perpindahan, prestasi]})
 
+
 def tabelSeleksi2(request, data):
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
     data_sekolah = sekolah.objects.first()
+    first_time = False
+    seleksi = {
+        'nama': data.title()
+    }
+    alamat_sekolah = json.loads(data_sekolah.split_alamat())
     setting = False
     if data_sekolah.nama == '' or data_sekolah.alamat == '' or data_sekolah.daya_tampung == 0:
         setting = True
-    if data == 'zonasi':
-        list_siswa = Siswa.object.filter(status = 10)
-    elif data == 'afirmasi':
-        list_siswa = Siswa.object.filter(status = 11)
-    elif data == 'perpindahan':
-        list_siswa = Siswa.object.filter(status = 12)
-    elif data == 'prestasi':
-        list_siswa = Siswa.object.filter(status = 13)
+    if data == 'zonasii' or data == 'afirmasii' or data == 'perpiindahan' or data == 'prestasii':
+        first_time = True
+    if data == 'zonasi' or data == 'zonasii':
+        list_siswa = Siswa.object.filter(status=10).annotate(
+            avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
+        seleksi['kuota'] = data_sekolah.sisa_zonasi
+        seleksi['jumlah_siswa'] = len(list_siswa)
+        seleksi['sisa_kuota'] = data_sekolah.sisa_zonasi - len(list_siswa)
+        kab = []
+        kec = []
+        des = []
+        for x in list_siswa:
+            if x.get_desa_siswa() == alamat_sekolah['desa']:
+                des.append(x)
+            elif x.get_kecamatan_siswa() == alamat_sekolah['kecamatan']:
+                kec.append(x)
+            elif x.get_kabupaten_siswa() == alamat_sekolah['kabupaten']:
+                kab.append(x)
+        list_siswa = {}
+        list_siswa['kabupaten'] = kab
+        list_siswa['kecamatan'] = kec
+        list_siswa['desa'] = des
+    elif data == 'afirmasi' or data == 'afirmasii':
+        list_siswa = Siswa.object.filter(status=11).annotate(
+            avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
+        seleksi['kuota'] = data_sekolah.sisa_afirmasi
+        seleksi['jumlah_siswa'] = len(list_siswa)
+        seleksi['sisa_kuota'] = data_sekolah.sisa_afirmasi - len(list_siswa)
+    elif data == 'perpindahan' or data == 'perpiindahan':
+        list_siswa = Siswa.object.filter(status=12).annotate(
+            avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
+        seleksi['kuota'] = data_sekolah.sisa_perpindahan
+        seleksi['jumlah_siswa'] = len(list_siswa)
+        seleksi['sisa_kuota'] = data_sekolah.sisa_perpindahan - len(list_siswa)
+    elif data == 'prestasi' or data == 'prestasii':
+        list_siswa = Siswa.object.filter(status=13).annotate(
+            avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
+        seleksi['kuota'] = data_sekolah.sisa_prestasi
+        seleksi['jumlah_siswa'] = len(list_siswa)
+        seleksi['sisa_kuota'] = data_sekolah.sisa_prestasi - len(list_siswa)
     else:
         messages.error(request, f'Terjadi Kesalahan')
         return redirect('admin_page:seleksi')
-    paginator = Paginator(list_siswa, 2)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return render(request = request,
-                  template_name='page_admin/tabelSeleksi2.html',
-                  context = {'list_siswa': page_obj, 'active': 'seleksi', 'data_sekolah': data_sekolah})
+    if request.method == 'POST':
+        data = request.POST.get('data')
+        if data == 'Zonasi' or data == 'Zonasii':
+            count = seleksi['kuota']
+            for x in list_siswa['desa']:
+                if(count >= 0):
+                    # print('desa')
+                    count -= 1
+                    x.status = 5
+                    x.save()
+            for x in list_siswa['kecamatan']:
+                if(count >= 0):
+                    # print('kecamatan')
+                    count -= 1
+                    x.status = 5
+                    x.save()
+            for x in list_siswa['kabupaten']:
+                if(count >= 0):
+                    # print('kabupaten')
+                    count -= 1
+                    x.status = 5
+                    x.save()
+            if count > 0:
+                data_sekolah.sisa_zonasi = 0
+                data_sekolah.sisa_prestasi = data_sekolah.sisa_prestasi + count
+                data_sekolah.save()
+            messages.success(request,f'Seleksi Untuk Jalur Zonasi Berhasil Di selesaikan')
+            return redirect('admin_page:seleksi')
+        elif data == 'Afirmasi' or data == 'Afirmasii':
+            count = seleksi['kuota']
+            for x in list_siswa:
+                if(count >= 0):
+                    count -= 1
+                    x.status = 5
+                    x.save()
+            if count > 0:
+                data_sekolah.sisa_afirmasi = 0
+                data_sekolah.sisa_prestasi = data_sekolah.sisa_prestasi + count
+                data_sekolah.save()
+            messages.success(request,f'Seleksi Untuk Jalur Afirmasi Berhasil Di selesaikan')
+            return redirect('admin_page:seleksi')
+        elif data == 'Perpindahan' or data == 'Perpiindahan':
+            count = seleksi['kuota']
+            for x in list_siswa:
+                if(count >= 0):
+                    count -= 1
+                    x.status = 5
+                    x.save()
+            if count > 0:
+                data_sekolah.sisa_perpindahan = 0
+                data_sekolah.sisa_prestasi = data_sekolah.sisa_prestasi + count
+                data_sekolah.save()
+            messages.success(request,f'Seleksi Untuk Jalur Perpindahan Orang Tua Berhasil Di selesaikan')
+            return redirect('admin_page:seleksi')
+        elif data == 'Prestasi' or data == 'Prestasii':
+            count = seleksi['kuota']
+            for x in list_siswa:
+                if(count >= 0):
+                    count -= 1
+                    x.status = 5
+                    x.save()
+            if count > 0:
+                data_sekolah.sisa_perpindahan = 0
+                data_sekolah.sisa_prestasi = data_sekolah.sisa_prestasi + count
+                data_sekolah.save()
+            messages.success(request,f'Seleksi Untuk Jalur Prestasi Berhasil Di selesaikan')
+            return redirect('admin_page:seleksi')
 
-def prosesSeleksi(request, data):
+    return render(request=request,
+                  template_name='page_admin/tabelSeleksi2.html',
+                  context={'list_siswa': list_siswa, 'active': 'seleksi', 'data_sekolah': data_sekolah, 'seleksi': seleksi, 'first_time': first_time})
+
+
+def prosesSeleksi(request):
     data_sekolah = sekolah.objects.first()
     if request.method == 'POST':
         nis = request.POST.get('nis')
+        data = request.POST.get('data').lower()
         hasil = request.POST.get('hasilSeleksi')
-        siswa = Siswa.object.get(nis = nis)
+        alasan = "Pendaftaran di Tolak : " + request.POST.get('alasan')
+        siswa = Siswa.object.get(nis=nis)
         if hasil == 'tolak':
             siswa.status = 7
         elif hasil == 'terima':
             siswa.status = 5
         siswa.save()
         if data == 'afirmasi':
-            if hasil == 'terima':
-                data_sekolah.sisa_afirmasi = data_sekolah.sisa_afirmasi - 1
-                data_sekolah.save()
-            messages.success(request, f'Seleksi Berhasil')
-            return redirect('admin_page:list_seleksi', data)
-        elif data == 'zonasi':
-            messages.success(request, f'Seleksi Berhasil')
-            return redirect('admin_page:list_seleksi', data)
+            list_notifikasi.objects.create(siswa=siswa, notifikasi=alasan)
+            messages.error(request, f'Seleksi untuk calon siswa {nis}, Berhasil ditolak')
+            return redirect('admin_page:list_seleksi', 'afirmasi')
+        elif data == 'zonasi' or data == 'zonasii':
+            list_notifikasi.objects.create(siswa=siswa, notifikasi=alasan)
+            messages.error(request, f'Seleksi untuk calon siswa {nis}, Berhasil ditolak')
+            return redirect('admin_page:list_seleksi', 'zonasi')
         elif data == 'perpindahan':
             messages.success(request, f'Seleksi Berhasil')
             return redirect('admin_page:list_seleksi', data)

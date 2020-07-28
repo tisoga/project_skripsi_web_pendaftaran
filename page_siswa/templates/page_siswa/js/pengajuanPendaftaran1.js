@@ -4,7 +4,11 @@ function pilihJalur(val) {
     var textPerpindahan = `Jalur Perpindahan Orangtua / Wali adalah Jalur Pendaftaran untuk para calon siswa yang baru pindah domisili dikarenakan mengikuti tugas atau pekerjaan orang tua / wali, harus menyertakan surat penugasan dari instansi atau perusahaan yang mengerjakan orang tua / wali.`
     var textPrestasi = `Jalur Prestasi adalah Jalur Pendaftaran untuk para calon siswa yang mimiliki prestasi yang ditentukan berdasarkan hasil nilai ujian sekolah atau UN (ujian nasional), hasil perlombaan  atau penghargaan di bidang akademik atau non-akademik.`
     var kabupatenSiswa = '{{request.user.DetailUser.get_kabupaten_siswa}}'
+    var kecamatanSiswa = '{{request.user.DetailUser.get_kecamatan_siswa}}'
+    var desaSiswa = '{{request.user.DetailUser.get_desa_siswa}}'
     var alamatSekolah = JSON.parse('{{sekolah.split_alamat|safe}}')
+    console.log(kabupatenSiswa);
+    console.log(alamatSekolah);
     $('#cardPenjelasan').show();
     $('#fileUpload').show();
     switch (val) {
@@ -16,7 +20,9 @@ function pilihJalur(val) {
             $('#btnPerpindahan').removeClass('btn-success').addClass('btn-primary');
             $('#btnPrestasi').removeClass('btn-success').addClass('btn-primary');
             $('#fileUpload').hide();
-            if (kabupatenSiswa != alamatSekolah.kabupaten) {
+            $('#inputUpload').attr('required', false);
+            if (kabupatenSiswa != alamatSekolah.kabupaten || kecamatanSiswa != alamatSekolah.kecamatan ||
+                desaSiswa != alamatSekolah.desa) {
                 $('#btn_yes2').attr('disabled', true);
                 $('#zonasiPeringatan').show()
             }

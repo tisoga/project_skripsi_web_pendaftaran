@@ -106,12 +106,15 @@ class PelengkapanIdentitasSerializer(serializers.ModelSerializer):
 
 
 class PelengkapanBerkasSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = Siswa
-        fields = ['nis', 'berkas_ijazah', 'berkas_akta', 'berkas_kesehatan',
-                  'nilai_indonesia', 'nilai_ipa', 'nilai_inggris', 'nilai_matematika']
-        read_only_fields = ['nis']
+        fields = ['user', 'nis', 'berkas_ijazah', 'berkas_akta', 'berkas_kesehatan',
+                  'nilai_indonesia', 'nilai_ipa', 'nilai_inggris', 'nilai_matematika', 'status',
+                  'jenis_kelamin', 'tanggal_lahir', 'foto_diri']
+        read_only_fields = ['nis', 'status', 'status',
+                            'jenis_kelamin', 'tanggal_lahir', 'foto_diri']
         extra_kwargs = {
             'berkas_ijazah': {'required': True},
             'berkas_akta': {'required': True},
@@ -143,7 +146,7 @@ class PengajuanPendaftaranSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Siswa
-        fields = ['nis', 'status']
+        fields = ['nis', 'status','berkas_tambahan']
         read_only_fields = ['nis']
         extra_kwargs = {'status': {'required': True}}
 
@@ -182,13 +185,16 @@ class EditPengajuanSerializer(serializers.ModelSerializer):
             user.last_name = last_name
             instance.user.first_name = first_name
             instance.user.last_name = last_name
-        if validated_data.get('berkas_ijazah') or validated_data.get('berkas_akta') or validated_data.get('berkas_kesehatan') or validated_data.get('foto_diri'):
+        if validated_data.get('foto_diri'):
             validated_data['foto_diri'] = CompressImage(
                 validated_data.pop('foto_diri'))
+        if validated_data.get('berkas_ijazah'):
             validated_data['berkas_ijazah'] = CompressImage(
                 validated_data.pop('berkas_ijazah'))
+        if validated_data.get('berkas_akta'):
             validated_data['berkas_akta'] = CompressImage(
                 validated_data.pop('berkas_akta'))
+        if validated_data.get('berkas_kesehatan'):
             validated_data['berkas_kesehatan'] = CompressImage(
                 validated_data.pop('berkas_kesehatan'))
         instance.__dict__.update(**validated_data)

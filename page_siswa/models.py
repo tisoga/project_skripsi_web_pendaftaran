@@ -59,6 +59,7 @@ class SiswaManager(BaseUserManager):
         return user
 
 
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=255)
@@ -152,11 +153,20 @@ class Siswa(models.Model):
             MaxValueValidator(100)
         ])
     nilai_indonesia = models.DecimalField(
-        default=None, null=True, max_digits=4, decimal_places=2)
+        default=None, null=True, max_digits=5, decimal_places=2, validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100)
+        ])
     nilai_inggris = models.DecimalField(
-        default=None, null=True, max_digits=4, decimal_places=2)
+        default=None, null=True, max_digits=5, decimal_places=2, validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100)
+        ])
     nilai_ipa = models.DecimalField(
-        default=None, null=True, max_digits=4, decimal_places=2)
+        default=None, null=True, max_digits=5, decimal_places=2, validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100)
+        ])
     foto_diri = models.ImageField(
         upload_to=foto_image_path, null=True, default=None)
     berkas_ijazah = models.ImageField(
@@ -180,7 +190,18 @@ class Siswa(models.Model):
     def get_kabupaten_siswa(self):
         data = self.alamat
         data = data.split(',')
+        print(data)
+        return data[3].strip()
+
+    def get_kecamatan_siswa(self):
+        data = self.alamat
+        data = data.split(',')
         return data[2].strip()
+
+    def get_desa_siswa(self):
+        data = self.alamat
+        data = data.split(',')
+        return data[1].strip()
 
     def check_progress(self):
         if not (self.jenis_kelamin and self.tanggal_lahir and self.tempat_lahir

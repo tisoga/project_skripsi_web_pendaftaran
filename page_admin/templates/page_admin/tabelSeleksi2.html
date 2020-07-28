@@ -19,15 +19,15 @@
                         <div class="col-6">
                             <button type="button" id="otomatisSeleksi" form="dataSiswa" class="btn btn-success"
                                 onclick="seleksiOtomatis()">
-                                Seleksi Otomatis
-                            </button>
-                            <button type="button" id="fdhg" form="dataSiswa" class="btn btn-danger"
-                                onclick="seleksiOtomatis()">
-                                Selesai Seleksi
+                                Selesai Seleksi Calon Siswa Jalur {{seleksi.nama}}
                             </button>
                         </div>
                         <div class="col">
-                            <h3 class="float-right">Sisa Kuota untuk Jalur Afirmasi : {{data_sekolah.sisa_afirmasi}}</h3>
+                            <h4 class="float-left">Jumlah Siswa Seleksi Jalur {{seleksi.nama}} :
+                                {{seleksi.jumlah_siswa}}
+                            </h4>
+                            <h3 class="float-left">Kuota untuk Jalur {{seleksi.nama}} : {{seleksi.kuota}}
+                            </h3>
                         </div>
                     </div>
                     {% comment %}
@@ -85,67 +85,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for siswa in list_siswa%}
-                            <tr>
-                                <td class="text-center align-middle">{{siswa.nis}}</td>
-                                <td class="align-middle text-center">{{siswa.user.get_full_name}}</td>
-                                <td class="align-middle text-center">{{siswa.nilai_indonesia}}</td>
-                                <td class="align-middle text-center">{{siswa.nilai_inggris}}</td>
-                                <td class="align-middle text-center">{{siswa.nilai_matematika}}</td>
-                                <td class="align-middle text-center">{{siswa.nilai_ipa}}</td>
-                                <td class="align-middle text-center">{{siswa.check_rata_rata}}</td>
-                                <th class="manualSeleksi">
-                                    <button class="btn btn-primary" style="width: 100px;"
-                                        onclick="openModalTerima('{{siswa.nis}}','{{siswa.user.get_full_name}}')">Terima</button>
-                                    <button class="btn btn-danger mt-2" style="width: 100px;"
-                                        onclick="openModalTolak('{{siswa.nis}}','{{siswa.user.get_full_name}}')">Tolak</button>
-                                    <button class="btn btn-success mt-2" style="width: 100px;"
-                                        onclick="openDetail('{{siswa.nis}}')">Detail</button>
-                                </th>
-                            </tr>
-                            {% endfor %}
-                            <td class="text-center align-middle" colspan="8">
-                                Tidak Ada Siswa yang perlu diseleksi
-                            </td>
+                            {% if seleksi.nama == 'Zonasi' or seleksi.nama == 'Zonasii' %}
+                                {% include 'page_admin/tabel_zonasi.html' %}
+                            {% else %}
+                                {% include 'page_admin/tabel_lainnya.html' %}
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
             </div>
-            {% if list_siswa.has_other_pages %}
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-end">
-                    {% if list_siswa.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{list_siswa.previous_page_number}}">«</a>
-                    </li>
-                    {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">«</span>
-                    </li>
-                    {% endif %}
-                    {% for page in list_siswa.paginator.page_range%}
-                    {% if page == list_siswa.number %}
-                    <li class="page-item active">
-                        <span class="page-link">{{page}}</span>
-                    </li>
-                    {% else %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{page}}">{{page}}</a>
-                    </li>
-                    {% endif %}
-                    {% endfor %}
-                    {% if list_siswa.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{list_siswa.next_page_number}}">»</a>
-                    </li>
-                    {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">»</span>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
+
         </div>
     </div>
 </div>
@@ -291,7 +240,6 @@
         </div>
     </div>
 </div>
-</div>
 
 <div class="modal fade bd-example-modal-sm" id="modalOtomatis" tabindex="-1" role="dialog"
     aria-labelledby="mySmallModalLabel" aria-hidden="true">
@@ -302,17 +250,131 @@
                     <h4 class="text-center">Peringatan</h4>
                 </div>
             </div>
-            <div class="modal-body" id="modalPeringatan">
-                Apakah Anda ingin menyeleksi Siswa secara Otomatis ?
+            <div class="modal-body" id="modalKonfirmasi">
+                <!-- <h3><b>Siswa Yang Lolos Seleksi : {{seleksi.jumlah_siswa}}</b></h3> -->
+                <h3><b>Sisa Kuota Untuk Jalur {{seleksi.nama}} : {{seleksi.sisa_kuota}}</b></h3>
+                <h3>Sisa Kuota Jalur {{seleksi.nama}} akan dipindahkan ke jalur prestasi.</h3>
+                <h4>Apakah Anda yakin, ingin menyelesaikan seleksi untuk Jalur {{seleksi.nama}} ?</h4>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                <button type="button" form="dataSiswa" class="btn btn-primary" id="btn_manual"
-                    onclick="confirmOtomatis()">Ya</button>
+                <form method="POST">
+                    {% csrf_token%}
+                    <input type="hidden" name="data" value="{{seleksi.nama}}" />
+                    <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btn_manual">Ya</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+{% if seleksi.nama == 'Zonasi' or seleksi.nama == 'Zonasii' %}
+<div class="modal fade bd-example-modal-sm" id="modalPemberitahuan" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Pemberitahuan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h5>Harap Cek Berkas Dan Data-Data Yang Dikirimkan Oleh Calon Siswa, Dengan Cara Menekan Tombol
+                    <b>Detail</b>.</h5>
+                <h5>Bila Data atau berkas yang dikirimkan tidak sesuai, Tekan Tombol <b>Tolak</b> Untuk Menolak
+                    Pendaftaran.</h5>
+                <h5>Jika Telah Selesai mencek seluruh berkas dan data siswa, klik tombol <b>Selesai Verifikasi</b>.</h5>
+                <h5>Secara Otomatis Seluruh Calon Siswa, yang pengajuan pendaftarannya tidak ditolak akan diterima dalam
+                    jalur zonasi, <b>hingga memenuhi sisa quota</b>.</h5>
+                <h4>Prioritas yang dipilih dalam Jalur Zonasi</h4>
+                <h3><b>Berdasarkan Domisili yang sama dengan Sekolah : </b></h3>
+                <h5><b>1. Desa/Kelurahan</b></h5>
+                <h5><b>2. Kecamatan</b></h5>
+                <h5><b>3. Kabupaten</b></h5>
+                <h5>Jika Siswa Berada di domisili yang sama, akan ditentukan oleh <b>Rata-Rata Nilai UN</b></h5>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-dismiss="modal">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% elif seleksi.nama == 'Afirmasi' or seleksi.nama == 'Afirmasii' %}
+<div class="modal fade bd-example-modal-sm" id="modalPemberitahuan" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Pemberitahuan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h5>Harap Cek Berkas Dan Data-Data Yang Dikirimkan Oleh Calon Siswa, Dengan Cara Menekan Tombol
+                    <b>Detail</b>.</h5>
+                <h5>Bila Data atau berkas yang dikirimkan tidak sesuai, Tekan Tombol <b>Tolak</b> Untuk Menolak
+                    Pendaftaran.</h5>
+                <h5>Jika Telah Selesai mencek seluruh berkas dan data siswa, klik tombol <b>Selesai Verifikasi</b>.</h5>
+                <h5>Secara Otomatis Seluruh Calon Siswa, yang pengajuan pendaftarannya tidak ditolak akan diterima dalam
+                    jalur afirmasi, <b>hingga memenuhi sisa quota</b>.</h5>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-dismiss="modal">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% elif seleksi.nama == 'Perpindahan' or seleksi.nama == 'Perpiindahan' %}
+<div class="modal fade bd-example-modal-sm" id="modalPemberitahuan" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Pemberitahuan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h5>Harap Cek Berkas Dan Data-Data Yang Dikirimkan Oleh Calon Siswa, Dengan Cara Menekan Tombol
+                    <b>Detail</b>.</h5>
+                <h5>Bila Data atau berkas yang dikirimkan tidak sesuai, Tekan Tombol <b>Tolak</b> Untuk Menolak
+                    Pendaftaran.</h5>
+                <h5>Jika Telah Selesai mencek seluruh berkas dan data siswa, klik tombol <b>Selesai Verifikasi</b>.</h5>
+                <h5>Secara Otomatis Seluruh Calon Siswa, yang pengajuan pendaftarannya tidak ditolak akan diterima dalam
+                    jalur Perpindahan Orangtua, <b>hingga memenuhi sisa quota</b>.</h5>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-dismiss="modal">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% elif seleksi.nama == 'Prestasi' or seleksi.nama == 'Prestasii' %}
+<div class="modal fade bd-example-modal-sm" id="modalPemberitahuan" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Pemberitahuan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h5>Harap Cek Berkas Dan Data-Data Yang Dikirimkan Oleh Calon Siswa, Dengan Cara Menekan Tombol
+                    <b>Detail</b>.</h5>
+                <h5>Bila Data atau berkas yang dikirimkan tidak sesuai, Tekan Tombol <b>Tolak</b> Untuk Menolak
+                    Pendaftaran.</h5>
+                <h5>Jika Telah Selesai mencek seluruh berkas dan data siswa, klik tombol <b>Selesai Verifikasi</b>.</h5>
+                <h5>Secara Otomatis Seluruh Calon Siswa, yang pengajuan pendaftarannya tidak ditolak akan diterima dalam
+                    jalur Prestasi, <b>hingga memenuhi sisa quota</b>.</h5>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-dismiss="modal">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <div class="modal fade bd-example-modal-sm" id="konfirmasiOtomatis" tabindex="-1" role="dialog"
     aria-labelledby="mySmallModalLabel" aria-hidden="true">
@@ -323,7 +385,7 @@
                     <h4 class="text-center">Peringatan</h4>
                 </div>
             </div>
-            <div class="modal-body" id="modalPeringatan">
+            <div class="modal-body" id="modalKonfirmasi">
                 <h5><b>Periksa Kembali Setingan untuk Seleksi Otomatis</b>, Jika Sudah Yakin Klik Ya</h5>
             </div>
             <div class="modal-footer">
@@ -358,14 +420,24 @@
                         <td class="modalNama"></td>
                     </tr>
                 </table>
-            </div>
-            <div class="modal-footer">
-                <form method="POST" action="{% url 'admin_page:proses_seleksi' 'afirmasi'%}">
+                <form method="POST" id="form_seleksi" action="{% url 'admin_page:proses_seleksi' %}">
                     {% csrf_token %}
                     <input type="hidden" class="idNis" name='nis'>
+                    <input type="hidden" name="data" value="{{seleksi.nama}}">
                     <input type="hidden" name='hasilSeleksi' value='tolak'>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Tidak</button>
-                    <input type='submit' class="btn btn-primary" value="Ya">
+                    <select class="form-control" onChange='pilihAlasan(this.value)'>
+                        <option disabled selected>Pilih Alasan Menolak Calon Siswa</option>
+                        <option>Data Tidak Sesuai Dokumen</option>
+                        <option>Foto Tidak Jelas</option>
+                        <option>Dokumen Tidak Jelas</option>
+                        <option value='0'>Lainnya ...</option>
+                    </select>
+            </div>
+            <div class="modal-footer">
+                <input type="text" name='alasan' class="form-control" id="alasanLainnya" style='display: none' required>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Tidak</button>
+                <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Tidak</button> -->
+                <input type='submit' class="btn btn-primary" value="Ya">
                 </form>
             </div>
         </div>
@@ -398,7 +470,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <form method="POST" action="{% url 'admin_page:proses_seleksi' 'afirmasi'%}">
+                <form method="POST" action="{% url 'admin_page:proses_seleksi'%}">
                     {% csrf_token %}
                     <input type="hidden" class="idNis" name='nis'>
                     <input type="hidden" name='hasilSeleksi' value='terima'>
@@ -414,6 +486,12 @@
 
 {% block script %}
 
+{% if first_time %}
+<script>
+    $('#modalPemberitahuan').modal({ backdrop: 'static', keyboard: false });
+</script>
+{% endif %}
+
 <script>
     function openModalTerima(nis, nama) {
         $('#terimaSeleksi').modal('show');
@@ -426,6 +504,21 @@
         $('.idNis').val(nis);
         $('.modalNis').text(nis);
         $('.modalNama').text(nama);
+    }
+</script>
+
+<script>
+    function pilihAlasan(val) {
+        alasanText = document.getElementById('alasanLainnya')
+        if (val === '0') {
+            alasanText.value = ''
+            alasanText.placeholder = 'Silahkan Masukan Alasan Gagalnya Verifikasi'
+            alasanText.style.display = 'block'
+        }
+        else {
+            alasanText.value = val
+            alasanText.style.display = 'none'
+        }
     }
 </script>
 

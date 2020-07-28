@@ -2,6 +2,10 @@
 
 {% block judul%}Seleski Siswa{% endblock %}
 
+{% block header%}
+
+{% endblock %}
+
 {% block konten %}
 <div class="container-fluid">
     <div class="card">
@@ -18,7 +22,7 @@
                             <hr class='bg-dark'>
                             <h3>{{data.0.kuota}} <small style="font-size: x-large;">Kuota Pendaftar</small></h3>
                             <hr class='bg-dark'>
-                            <a href="{% url 'admin_page:list_seleksi' 'zonasi'%}">
+                            <a href="{% url 'admin_page:list_seleksi' 'zonasii'%}">
                                 <button class="btn bg-white form-control">Mulai Seleksi</button>
                             </a>
                         </div>
@@ -32,7 +36,7 @@
                             <hr class='bg-dark'>
                             <h3>{{data.1.kuota}} <small style="font-size: x-large;">Kuota Pendaftar</small></h3>
                             <hr class='bg-dark'>
-                            <a href="{% url 'admin_page:list_seleksi' 'afirmasi'%}">
+                            <a href="{% url 'admin_page:list_seleksi' 'afirmasii'%}">
                                 <button class="btn bg-white form-control">Mulai Seleksi</button>
                             </a>
                         </div>

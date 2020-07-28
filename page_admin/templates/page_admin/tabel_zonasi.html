@@ -1,0 +1,74 @@
+{% if list_siswa.desa%}
+<td class="text-center align-middle bg-info" colspan="8">
+    Satu domisili Kelurahan / Desa
+</td>
+{% for siswa in list_siswa.desa %}
+<tr>
+    <td class="text-center align-middle">{{siswa.nis}}</td>
+    <td class="align-middle text-center">{{siswa.user.get_full_name}}</td>
+    <td class="align-middle text-center">{{siswa.nilai_indonesia}}</td>
+    <td class="align-middle text-center">{{siswa.nilai_inggris}}</td>
+    <td class="align-middle text-center">{{siswa.nilai_matematika}}</td>
+    <td class="align-middle text-center">{{siswa.nilai_ipa}}</td>
+    <td class="align-middle text-center">{{siswa.check_rata_rata}}</td>
+    <th class="manualSeleksi">
+        <button class="btn btn-danger mt-2" style="width: 100px;"
+            onclick="openModalTolak('{{siswa.nis}}','{{siswa.user.get_full_name}}')">Tolak</button>
+        <button class="btn btn-success mt-2" style="width: 100px;" onclick="openDetail('{{siswa.nis}}')">Detail</button>
+    </th>
+</tr>
+{% endfor %}
+{% endif %}
+{% if list_siswa.kecamatan %}
+<tr>
+    <td class="text-center align-middle bg-info" colspan="8">
+        Satu domisili Kecamatan
+    </td>
+</tr>
+{% for siswa in list_siswa.kecamatan %}
+<tr>
+    <td class="text-center align-middle">{{siswa.nis}}</td>
+    <td class="align-middle text-center">{{siswa.user.get_full_name}}</td>
+    <td class="align-middle text-center">{{siswa.nilai_indonesia}}</td>
+    <td class="align-middle text-center">{{siswa.nilai_inggris}}</td>
+    <td class="align-middle text-center">{{siswa.nilai_matematika}}</td>
+    <td class="align-middle text-center">{{siswa.nilai_ipa}}</td>
+    <td class="align-middle text-center">{{siswa.check_rata_rata}}</td>
+    <th class="manualSeleksi">
+        <button class="btn btn-danger mt-2" style="width: 100px;"
+            onclick="openModalTolak('{{siswa.nis}}','{{siswa.user.get_full_name}}')">Tolak</button>
+        <button class="btn btn-success mt-2" style="width: 100px;" onclick="openDetail('{{siswa.nis}}')">Detail</button>
+    </th>
+</tr>
+{% endfor %}
+{% endif %}
+{% if list_siswa.kabupaten %}
+<tr>
+    <td class="text-center align-middle bg-info" colspan="8">
+        Satu domisili Kabupaten / Kota
+    </td>
+</tr>
+{% for siswa in list_siswa.kabupaten %}
+<tr>
+    <td class="text-center align-middle">{{siswa.nis}}</td>
+    <td class="align-middle text-center">{{siswa.user.get_full_name}}</td>
+    <td class="align-middle text-center">{{siswa.nilai_indonesia}}</td>
+    <td class="align-middle text-center">{{siswa.nilai_inggris}}</td>
+    <td class="align-middle text-center">{{siswa.nilai_matematika}}</td>
+    <td class="align-middle text-center">{{siswa.nilai_ipa}}</td>
+    <td class="align-middle text-center">{{siswa.check_rata_rata}}</td>
+    <th class="manualSeleksi">
+        <button class="btn btn-danger mt-2" style="width: 100px;"
+            onclick="openModalTolak('{{siswa.nis}}','{{siswa.user.get_full_name}}')">Tolak</button>
+        <button class="btn btn-success mt-2" style="width: 100px;" onclick="openDetail('{{siswa.nis}}')">Detail</button>
+    </th>
+</tr>
+{% endfor %}
+{% endif %}
+{% if not list_siswa.desa or list_siswa.kecamatan or list_siswa.kabupaten %}
+<tr>
+    <td class="text-center align-middle" colspan="8">
+        Tidak Ada Siswa yang perlu diseleksi
+    </td>
+</tr>
+{% endif %}
