@@ -323,9 +323,33 @@ def verifikasi_siswa(request):
             messages.success(request, f'Pesan berhasil dikirimkan')
             return redirect('admin_page:verifikasi_siswa')
     return render(request=request,
-                  template_name='page_admin/tabelVerifikasiSiswa.html',
+                  template_name='page_admin/daftar_ulang.html',
                   context={'list_siswa': page_obj, 'active': 'verifikasi', 'setting': setting})
 
+def daftar_ulang(request):
+    if request.user.is_authenticated and not request.user.is_staff:
+        return redirect('siswa:home')
+    if request.method == 'POST':
+        check = request.POST.get('check')
+        nis = request.POST.get('nis_siswa')
+        siswa = Siswa.object.get(nis = nis)
+        if(check == 'terima'):
+            alasan = 'Proses Daftar Ulang Berhasil'
+            siswa.status = 8
+            siswa.save()
+            list_notifikasi.objects.create(siswa=siswa, notifikasi=alasan)
+            messages.error(request, f'Proses Daftar ulang untuk calon siswa {nis}, Diterima.')
+            return redirect('admin_page:daftar_ulang')
+        elif(check == 'tolak'):
+            siswa.status = 7
+            siswa.save()
+            alasan = 'Proses Daftar Ulang ditolak : ' + request.POST.get('alasan')
+            list_notifikasi.objects.create(siswa=siswa, notifikasi=alasan)
+            messages.error(request, f'Proses Daftar ulang untuk calon siswa {nis}, Ditolak.')
+            return redirect('admin_page:daftar_ulang')
+    return render(request = request,
+                  template_name = 'page_admin/daftar_ulang.html',
+                  context={'active': 'daftar_ulang'})
 
 def events(request):
     if request.user.is_authenticated and not request.user.is_staff:

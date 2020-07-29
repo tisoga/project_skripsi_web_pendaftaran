@@ -154,6 +154,7 @@ class PengajuanPendaftaranSerializer(serializers.ModelSerializer):
         if instance.user.DetailUser.status != 2:
             raise serializers.ValidationError(
                 'Terjadi Kesalahan, Silahkan Coba Lagi!')
+        instance.berkas_tambahan = CompressImage(validated_data['berkas_tambahan'])
         instance.status = validated_data['status']
         instance.save()
 

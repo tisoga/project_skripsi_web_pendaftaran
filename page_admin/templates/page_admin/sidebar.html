@@ -35,16 +35,16 @@
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
-                    <a href="{% url 'admin_page:verifikasi_siswa'%}"
-                        class="nav-link {%if active == 'verifikasi'%}active{%endif%}">
-                        <i class="nav-icon fas fa-clipboard-list"></i>
-                        <p>Verifikasi Siswa</p>
-                    </a>
-                </li>
-                <li class="nav-item has-treeview">
                     <a href="{% url 'admin_page:seleksi'%}" class="nav-link {%if active == 'seleksi'%}active{%endif%}">
                         <i class="nav-icon fas fa-clipboard-check"></i>
                         <p>Seleksi Siswa</p>
+                    </a>
+                </li>
+                <li class="nav-item has-treeview">
+                    <a href="{% url 'admin_page:daftar_ulang'%}"
+                        class="nav-link {%if active == 'daftar_ulang'%}active{%endif%}">
+                        <i class="nav-icon fas fa-clipboard-list"></i>
+                        <p>Daftar Ulang</p>
                     </a>
                 </li>
                 <li class="nav-item has-treeview">

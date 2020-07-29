@@ -195,6 +195,7 @@ def proses_ajukan_pendaftaran(request):
             messages.success(request, f'Identitas Diri Berhasil diedit')
             return redirect('siswa:tahapan_pendaftaran')
         else:
+            print(request.FILES)
             if request.POST.get('pengajuan') == 'zonasi':
                 check = json.loads(sekolah.objects.first().split_alamat())
                 if check['kabupaten'] != data_siswa.get_kabupaten_siswa():

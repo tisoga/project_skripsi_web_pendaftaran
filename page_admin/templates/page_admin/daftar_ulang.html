@@ -1,0 +1,280 @@
+{% extends 'page_admin/base.html' %}
+
+{%block judul%}Verifikasi Siswa{%endblock%}
+
+{% block konten %}
+{% load static%}
+<div class="container-fluid">
+    <div class="card">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card" style="height: 600px;">
+                    <div class="card-header">
+                        <h3 style="text-align: center;">Proses Daftar Ulang</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-11">
+                                <div class="input-group input-group ml-5">
+                                    <input type="number" name="table_search" id="table_search"
+                                        class="form-control float-right" placeholder="Masukan NIS Siswa">
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-default"
+                                            onclick="SearchSiswa(table_search.value)">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="col-sm-12 col-md-3">
+                                <button class="btn btn-primary float-right">List Siswa</button>
+                            </div> -->
+                        </div>
+                        <div class="row">
+                            <div class="col-12" id="divData" hidden>
+                                <h5 class="text-center mt-2">Data diri Siswa</h5>
+                                <div class="ml-5 mr-5">
+                                    <table class="table table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <th style="width: 34%">Nis</th>
+                                                <th style="width: 10%" class="text-center">:</th>
+                                                <td style="width: 56%" id="table_nis">17160120</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Nama</th>
+                                                <th class="text-center">:</th>
+                                                <td id="table_nama">Ryan Afrizal</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Tanggal Lahir</th>
+                                                <th class="text-center">:</th>
+                                                <td id="table_tgl">20/04/1997</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Jenis Kelamin</th>
+                                                <th class="text-center">:</th>
+                                                <td id="table_jk">Laki-Laki</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Alamat</th>
+                                                <th class="text-center">:</th>
+                                                <td id="table_alamat">Alamat Lengkap</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Jalur Pendaftaran</th>
+                                                <th class="text-center">:</th>
+                                                <td id="table_jalur">Zonasi</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Berkas-Berkas</th>
+                                                <th class="text-center">:</th>
+                                                <td>
+                                                    <a class="berkasData" href="#" data-fancybox
+                                                        data-caption="Foto Diri">Foto Diri</a><br>
+                                                    <a class="berkasData" href="#" data-fancybox
+                                                        data-caption="Akta Kelahiran">Akta Kelahiran</a><br>
+                                                    <a class="berkasData" href="#" data-fancybox
+                                                        data-caption="Ijazah / SKHUN">Ijazah / SKHUN</a><br>
+                                                    <a class="berkasData" href="#" data-fancybox
+                                                        data-caption="Surat Kesehatan">Surat Kesehatan</a><br>
+                                                    <a class="berkasData" href="#" data-fancybox
+                                                        data-caption="File Afirmasi">File Afirmasi</a><br>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="d-flex justify-content-around">
+                                        <button class="btn btn-danger" onclick="openPeringatan('tolak',table_nis.innerHTML)">
+                                            Tolak Pendaftaran
+                                        </button>
+                                        <button class="btn btn-success" onclick="openPeringatan('terima',table_nis.innerHTML)">
+                                            Terima Pendaftaran
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.col -->
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="notifikasi" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h3>Calon siswa tidak ditemukan atau belum lolos tahap seleksi.</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="kosong" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h3>Harap isi NIS Siswa terlebih dahulu.</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="peringatan" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body" id="modalPeringatan">
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <button type="submit" form="kirim" class="btn btn-primary">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    function SearchSiswa(val) {
+        if (val) {
+            const div = document.getElementById('divData');
+            const nis = document.getElementById('table_nis');
+            const nama = document.getElementById('table_nama');
+            const tgl = document.getElementById('table_tgl');
+            const jk = document.getElementById('table_jk');
+            const alamat = document.getElementById('table_alamat');
+            const jalur = document.getElementById('table_jalur');
+            const berkasData = document.getElementsByClassName('berkasData')
+            $.ajax({
+                type: 'GET',
+                url: '{% url "api:profileAPI" 1234%}'.replace(/1234/, val),
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data)
+                    if (data.status === 5) {
+                        div.hidden = false
+                        nis.innerHTML = data.nis
+                        nama.innerHTML = data.user.first_name + ' ' + data.user.last_name
+                        tgl.innerHTML = data.tanggal_lahir
+                        if (data.jenis_kelamin === 'L') {
+                            jk.innerHTML = 'Laki-Laki'
+                        }
+                        else if (data.jenis_kelamin === 'P') {
+                            jk.innerHTML = 'Perempuan'
+                        }
+                        alamat.innerHTML = data.alamat
+                        jalur.innerHTML = data.status
+                        berkasData[0].setAttribute('href', data.foto_diri)
+                        berkasData[1].setAttribute('href', data.berkas_akta)
+                        berkasData[2].setAttribute('href', data.berkas_ijazah)
+                        berkasData[3].setAttribute('href', data.berkas_kesehatan)
+                        berkasData[4].setAttribute('href', data.berkas_tambahan)
+                    }
+                    else{
+                        $('#notifikasi').modal();    
+                    }
+                },
+                error: function (request, status, error) {
+                    $('#notifikasi').modal();
+                }
+            })
+        }
+        else {
+            $('#kosong').modal();
+        }
+    }
+</script>
+
+<script>
+    function openPeringatan(check, nis) {
+        html = (peringatan) => `
+            <p><b>${peringatan}</b></p>
+        `
+        body = document.getElementById('modalPeringatan')
+        if (check === 'terima') {
+            msg = `
+                <form method="POST" id="kirim">
+                    {% csrf_token %}
+                    <input type="hidden" name='nis_siswa' class="form-control" value='${nis}' required>
+                    <input type="hidden" name='check' class="form-control" value='terima'>
+                </form>
+            `
+            pesan = html(`Apakah Anda Akan Menerima Pendaftaran Ulang dari Siswa ini : <br>
+            NIS : ${nis} <br>
+            Nama : Ryn Afrizal`) + msg
+            body.innerHTML = html(pesan)
+        }
+        else if (check === 'tolak') {
+            msg = `
+                <form method="POST" id="kirim">
+                    {% csrf_token %}
+                    <select class="form-control" onChange='pilihAlasan(this.value)'>
+                        <option disabled selected>Pilih Alasan</option>
+                        <option>Data Tidak Sesuai Dokumen</option>
+                        <option>Foto Tidak Jelas</option>
+                        <option>Dokumen Tidak Jelas</option>
+                        <option value='0'>Lainnya ...</option>
+                    </select>
+                    <input type="hidden" name='nis_siswa' class="form-control" value='${nis}' required>
+                    <input type="hidden" name='check' class="form-control" value='tolak'>
+                    <input type="text" name='alasan' class="form-control" id="alasanLainnya" style='display: none' required>
+                </form>
+            `
+            pesan = html('Silahkan Pilih Alasan Anda Menolak Verifikasi ini ?') + msg
+            body.innerHTML = html(pesan)
+        }
+        else if (check === 'pesan') {
+            msg = `
+                <form method="POST" id="kirim">
+                    {% csrf_token %}
+                    <input type="hidden" name='nis_siswa' class="form-control" value='${nis}' required>
+                    <input type="hidden" name='check' class="form-control" value='pesan'>
+                    <input type="text" name='alasan' class="form-control" id="alasanLainnya" placeholder='Masukan Pesan yang ingin anda kirim' required>
+                </form>
+            `
+            pesan = html('Silahkan Masukan Pesan yang ingin dikirimkan untuk Siswa ini') + msg
+            body.innerHTML = html(pesan)
+        }
+        $('#peringatan').modal();
+    }
+</script>
+
+<script>
+    function pilihAlasan(val) {
+        alasanText = document.getElementById('alasanLainnya')
+        if (val === '0') {
+            alasanText.value = ''
+            alasanText.placeholder = 'Silahkan Masukan Alasan Siswa ini gagal Pendaftaran ulang.'
+            alasanText.style.display = 'block'
+        }
+        else {
+            alasanText.value = val
+            alasanText.style.display = 'none'
+        }
+    }
+</script>
+
+{% endblock %}
