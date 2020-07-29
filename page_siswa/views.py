@@ -11,6 +11,7 @@ from .models import CustomUser, Siswa, list_events, list_notifikasi, sekolah
 
 
 def login_views(request):
+    data_sekolah = sekolah.objects.first()
     if request.method == 'POST':
         if request.POST.get('email'):
             email = request.POST['email']
@@ -27,7 +28,8 @@ def login_views(request):
                     request, f'Cek Kembali Email atau Password anda')
                 return redirect('siswa:login')
     return render(request=request,
-                  template_name='page_siswa/login.html')
+                  template_name='page_siswa/login.html',
+                  context={'data_sekolah': data_sekolah})
 
 
 def logout_views(request):
@@ -36,6 +38,7 @@ def logout_views(request):
 
 
 def register_views(request):
+    data_sekolah = sekolah.objects.first()
     if request.method == 'POST':
         if request.POST.get('email'):
             if request.POST['pass'] != request.POST['pass2']:
@@ -52,7 +55,8 @@ def register_views(request):
             except IntegrityError:
                 messages.error(request, 'Kesalahan : Email Sudah Terdaftar')
     return render(request=request,
-                  template_name='page_siswa/register.html')
+                  template_name='page_siswa/register.html',
+                  context={'data_sekolah': data_sekolah})
 
 
 def redirect_sites(request):
@@ -91,18 +95,30 @@ def tahapan_pendaftaran_views(request):
     data_sekolah = sekolah.objects.first()
     data = Siswa.object.get(user=request.user)
     status = data.status
-    print(data)
-    if status == 0:
-        page = 'Identitas Diri'
-    elif status == 1:
-        page = 'Berkas-Berkas'
-    elif status == 2 or status == 4:
-        page = 'Pengajuan Pendaftaran'
-    elif 3 or 6 or 7 or 8 or 9 or 10 or 11 or 12 or 13 in status:
-        # page = 'Pengajuan Pendaftaran'
+    # print(data_sekolah.status_pendaftaran)
+    # print(status)
+    if data_sekolah.status_pendaftaran == 1:
+        if status == 0:
+            page = 'Identitas Diri'
+        elif status == 1:
+            page = 'Berkas-Berkas'
+        elif status == 2 or status == 4:
+            page = 'Pengajuan Pendaftaran'
+        elif status == 3 or status == 6 or status == 7 or status == 8 or status == 9 or status == 10 or status == 11 or status == 12 or status == 13:
+            # page = 'Pengajuan Pendaftaran'
+            # print('why')
+            return redirect('siswa:home')
+        elif status == 5:
+            data_sekolah.lengkap = json.loads(data_sekolah.split_alamat())
+            page = 'Daftar Ulang'
+    elif data_sekolah.status_pendaftaran == 3:
+        if status == 5:
+            page = 'Daftar Ulang'
+    else:
+        messages.error(
+            request, f'Pendaftaran sudah ditutup, anda tidak bisa lagi untuk mengajukan pendaftaran!')
         return redirect('siswa:home')
-    elif status == 5:
-        page = 'Daftar Ulang'
+    print(page)
     if request.method == 'POST':
         if request.POST.get('first_name'):
             if request.user.DetailUser.status != 0:
@@ -202,23 +218,28 @@ def proses_ajukan_pendaftaran(request):
                     messages.error(request, f'Terjadi Kesalahan')
                     return redirect('siswa:home')
                 pengajuan = 10
+                jalur = 'Zonasi'
                 tambahan = None
             elif request.POST.get('pengajuan') == 'afirmasi':
                 pengajuan = 11
+                jalur = 'Afirmasi'
                 tambahan = CompressImage(
                     request.FILES.get('afirmasi'), 'file_afirmasi')
             elif request.POST.get('pengajuan') == 'perpindahan':
                 pengajuan = 12
+                jalur = 'Perpindahan OrangTua'
                 tambahan = CompressImage(request.FILES.get(
                     'perpindahan'), 'file_perpindahan')
             elif request.POST.get('pengajuan') == 'prestasi':
                 pengajuan = 13
+                jalur = 'Prestasi'
                 if 'prestasi' in request.FILES:
                     tambahan = CompressImage(
                         request.FILES.get('prestasi'), 'file_prestasi')
                 else:
                     tambahan = None
             data_siswa.status = pengajuan
+            data_siswa.jalur_pendaftaran = jalur
             data_siswa.berkas_tambahan = tambahan
             data_siswa.save()
             messages.success(

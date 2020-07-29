@@ -59,7 +59,6 @@ class SiswaManager(BaseUserManager):
         return user
 
 
-
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=255)
@@ -144,7 +143,7 @@ class Siswa(models.Model):
     tempat_lahir = models.CharField(max_length=255, default=None, null=True)
     umur = models.IntegerField(default=None, null=True)
     alamat = models.TextField(default=None, null=True)
-    asal_sekolah = models.CharField(max_length=255, default=None, null=True)
+    jalur_pendaftaran = models.CharField(max_length=255, default=None, null=True)
     status = models.IntegerField(
         choices=StatusPendaftaran.choices, null=True, default=0)
     nilai_matematika = models.DecimalField(
@@ -235,7 +234,7 @@ class Siswa(models.Model):
         elif self.status == 2:
             color = 'text-secondary'
             text = 'Pengajuan Pendaftaran'
-        elif self.status == 3 or self.status == 10 or self.status == 11 or self.status == 12 or self.status == 13:
+        elif self.status == 3:
             color = 'text-primary'
             text = 'Sedang Diverifikasi'
         elif self.status == 4:
@@ -244,7 +243,7 @@ class Siswa(models.Model):
         elif self.status == 5:
             color = 'text-primary'
             text = 'Proses Daftar Ulang'
-        elif self.status == 6:
+        elif self.status == 6 or self.status == 10 or self.status == 11 or self.status == 12 or self.status == 13:
             color = 'text-primary'
             text = 'Proses Seleksi Siswa'
         elif self.status == 7:
@@ -294,18 +293,24 @@ class list_notifikasi(models.Model):
 class sekolah(models.Model):
 
     class StatusPendaftaran(models.IntegerChoices):
-        buka = 0, _('Pendaftaran dibuka')
-        tutup = 1, _('Pendaftaran ditutup')
+        tutup = 0, _('Pendaftaran ditutup')
+        buka = 1, _('Pendaftaran dibuka')
+        seleksi = 2, _('Proses Seleksi')
+        ulang = 3, _('Proses Daftar Ulang')
+        pengumuman = 4, _('Pengumuman')
 
     nama = models.CharField(max_length=255, default=None)
     alamat = models.TextField(default=None)
+    alamat_lengkap = models.TextField(default=None, null=True)
     daya_tampung = models.PositiveIntegerField(default=0)
     sisa_zonasi = models.PositiveIntegerField(default=0)
     sisa_afirmasi = models.PositiveIntegerField(default=0)
     sisa_perpindahan = models.PositiveIntegerField(default=0)
     sisa_prestasi = models.PositiveIntegerField(default=0)
-    status_pendaftaran = models.BooleanField(
-        choices=StatusPendaftaran.choices, default=0)
+    status_pendaftaran = models.IntegerField(
+        choices=StatusPendaftaran.choices, default=1)
+    jam_daftar_ulang = models.TextField(default=None, null=True)
+    tanggal_daftar_ulang = models.TextField(default=None, null=True)
 
     class Meta:
         db_table = 'tabel_sekolah'
@@ -336,3 +341,15 @@ class sekolah(models.Model):
             alamat = cut.split(':')
             data[alamat[0].strip()] = alamat[1].strip()
         return json.dumps(data)
+
+    def split_tanggal_jam(self):
+        data = {}
+        tanggal_str = self.tanggal_daftar_ulang
+        jam_str = self.jam_daftar_ulang
+        tanggal_list = tanggal_str.split(',')
+        jam_list = jam_str.split(',')
+        data['tgl_mulai'] = tanggal_list[0]
+        data['tgl_akhir'] = tanggal_list[1]
+        data['jam_mulai'] = jam_list[0]
+        data['jam_akhir'] = jam_list[1]
+        return data

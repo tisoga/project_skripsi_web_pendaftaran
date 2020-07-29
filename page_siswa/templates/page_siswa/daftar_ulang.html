@@ -1,0 +1,53 @@
+<div class="card card-primary card-outline">
+    <div class="card-header d-flex justify-content-center">
+        <h3 class="card-title m-0" id='xxs'>Tata Cara Daftar Ulang</h3>
+    </div>
+    <div class="card-body">
+        <span style="font-size: 25px;">
+            Silahkan Calon Siswa Datang ke Sekolah <b>{{sekolah.nama}}</b> untuk melaksanakan daftar ulang,
+            berikut ini adalah jadwal dan hal-hal yang perlu di bawa dalam pendaftaran ulang :
+        </span>
+        <table class="table">
+            <tr>
+                <th style="width: 20%;">Alamat Sekolah</th>
+                <td>:</td>
+                <td style="width: 77%;">
+                    {{sekolah.alamat_lengkap}}, {{sekolah.lengkap.desa}}, {{sekolah.lengkap.kecamatan}}, 
+                    {{sekolah.lengkap.kabupaten}}, {{sekolah.lengkap.provinsi}}
+                </td>
+            </tr>
+            {% with split=sekolah.split_tanggal_jam %}
+            <tr>
+                <th>Tanggal Mulai</th>
+                <td>:</td>
+                <td>{{split.tgl_mulai}}</td>
+            </tr>
+            <tr>
+                <th>Tanggal Akhir</th>
+                <td>:</td>
+                <td>{{split.tgl_akhir}}</td>
+            </tr>
+            <tr>
+                <th>Jam Mulai</th>
+                <td>:</td>
+                <td>{{split.jam_mulai}}</td>
+            </tr>
+            <tr>
+                <th>Jam Akhir</th>
+                <td>:</td>
+                <td>{{split.jam_akhir}}</td>
+            </tr>
+            <tr>
+                <th>Berkas Yang Perlu Dibawa</th>
+                <td>:</td>
+                <td>
+                    Akta Kelahiran <br>
+                    Ijazah / SKHUN <br>
+                    Surat Kesehatan <br>
+                    Berkas Afirmasi
+                </td>
+            </tr>
+            {% endwith %}
+        </table>
+    </div>
+</div>

@@ -78,17 +78,19 @@
                                                         data-caption="Ijazah / SKHUN">Ijazah / SKHUN</a><br>
                                                     <a class="berkasData" href="#" data-fancybox
                                                         data-caption="Surat Kesehatan">Surat Kesehatan</a><br>
-                                                    <a class="berkasData" href="#" data-fancybox
-                                                        data-caption="File Afirmasi">File Afirmasi</a><br>
+                                                    <a class="berkasData" href="#" id="berkas_tambahan" data-fancybox
+                                                        data-caption="Berkas Pendukung">Berkas Pendukung</a><br>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                     <div class="d-flex justify-content-around">
-                                        <button class="btn btn-danger" onclick="openPeringatan('tolak',table_nis.innerHTML)">
+                                        <button class="btn btn-danger"
+                                            onclick="openPeringatan('tolak',table_nis.innerHTML)">
                                             Tolak Pendaftaran
                                         </button>
-                                        <button class="btn btn-success" onclick="openPeringatan('terima',table_nis.innerHTML)">
+                                        <button class="btn btn-success"
+                                            onclick="openPeringatan('terima',table_nis.innerHTML)">
                                             Terima Pendaftaran
                                         </button>
                                     </div>
@@ -168,6 +170,7 @@
             const alamat = document.getElementById('table_alamat');
             const jalur = document.getElementById('table_jalur');
             const berkasData = document.getElementsByClassName('berkasData')
+            const berkasTambahan = document.getElementById('berkas_tambahan')
             $.ajax({
                 type: 'GET',
                 url: '{% url "api:profileAPI" 1234%}'.replace(/1234/, val),
@@ -186,15 +189,21 @@
                             jk.innerHTML = 'Perempuan'
                         }
                         alamat.innerHTML = data.alamat
-                        jalur.innerHTML = data.status
+                        jalur.innerHTML = data.jalur_pendaftaran
                         berkasData[0].setAttribute('href', data.foto_diri)
                         berkasData[1].setAttribute('href', data.berkas_akta)
                         berkasData[2].setAttribute('href', data.berkas_ijazah)
                         berkasData[3].setAttribute('href', data.berkas_kesehatan)
-                        berkasData[4].setAttribute('href', data.berkas_tambahan)
+                        if (data.berkas_tambahan) {
+                            berkasData[4].setAttribute('href', data.berkas_tambahan)
+                        }
+                        else{
+                            $('#berkas_tambahan').hide()
+                        }
+
                     }
-                    else{
-                        $('#notifikasi').modal();    
+                    else {
+                        $('#notifikasi').modal();
                     }
                 },
                 error: function (request, status, error) {

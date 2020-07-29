@@ -71,16 +71,27 @@
                                 <button class="btn btn-warning" type="button" id="btnAlamat"
                                     onclick="showHideDiv('alamat')">Alamat Sekolah</button>
                             </div>
+                            <div class="d-flex justify-content-around mt-2">
+                                <button class="btn btn-secondary" type="button" id="btnStatus"
+                                    onclick="showHideDiv('desc')">Deskripsi Daftar Ulang</button>
+                            </div>
                             <hr>
                             <div id="divStatus" style="display: none;">
                                 <form method="POST" id="formStatus">
                                     {% csrf_token %}
-                                    <label>Status Pendaftaran PPDB</label>
+                                    <label>Status Pendaftaran PPDB :
+                                        {{data_sekolah.get_status_pendaftaran_display}}</label>
                                     <select class="form-control" name="status" required>
                                         <option value="0" {% if data_sekolah.status_pendaftaran == 0%}selected{%endif%}>
                                             Pendaftaran Ditutup</option>
                                         <option value="1" {% if data_sekolah.status_pendaftaran == 1%}selected{%endif%}>
                                             Pendaftaran Dibuka</option>
+                                        <option value="2" {% if data_sekolah.status_pendaftaran == 2%}selected{%endif%}>
+                                            Proses Seleksi Siswa</option>
+                                        <option value="3" {% if data_sekolah.status_pendaftaran == 3%}selected{%endif%}>
+                                            Proses Daftar Ulang</option>
+                                        <option value="4" {% if data_sekolah.status_pendaftaran == 4%}selected{%endif%}>
+                                            Pengumuman</option>
                                     </select>
                                     <input type="button" class="form-control btn-primary mt-2" value="Simpan"
                                         data-toggle="modal" data-target="#modalStatusPPDB">
@@ -106,6 +117,8 @@
                                 <form method="POST" id="formSekolah">
                                     <div class="form-row">
                                         {% csrf_token %}
+                                        <textarea class="form-control" placeholder="Alamat Lengkap"
+                                            name='alamat_lengkap' required>{{data_sekolah.alamat_lengkap}}</textarea>
                                         <div class="form-group col-md-6">
                                             <label for="provinsi">Provinsi</label>
                                             <select id="provinsi" class="form-control" required disabled>
@@ -144,6 +157,58 @@
                                     <input type="hidden" id='kec' name="kec">
                                     <input type="button" class="form-control btn-primary mt-2" value="Simpan"
                                         data-toggle="modal" data-target="#modalAlamat">
+                                </form>
+                            </div>
+                            <div id="divDesc" style="display: none;">
+                                <form method="POST" id="formDesc">
+                                    {% csrf_token %}
+                                    <label>Masukan Jam Mulai dan Tutup Daftar Ulang</label>
+                                    <div class="row">
+                                        <div class="col">
+                                            <h5 class="text-center">Jam Mulai</h5>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <input type="number" class="form-control" name="mulai_jam"
+                                                        placeholder="Jam" min="1" max="24" required>
+                                                </div>
+                                                <div class="col">
+                                                    <input type="number" class="form-control" name="mulai_menit"
+                                                        placeholder="Menit" min="0" max="60" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <h5 class="text-center">Jam Tutup</h5>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <input type="number" class="form-control" name="tutup_jam"
+                                                        placeholder="Jam" min="1" max="24" required>
+                                                </div>
+                                                <div class="col">
+                                                    <input type="number" class="form-control" name="tutup_menit"
+                                                        placeholder="Menit" min="0" max="60" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col mt-2">
+                                            <label>Pilih Tanggal Mulai</label>
+                                            <input type="text" class="form-control datetimepicker-input"
+                                                id="datetimepicker7" data-toggle="datetimepicker"
+                                                data-target="#datetimepicker7" name="mulai"
+                                                placeholder="Pilih Tanggal Mulai" required />
+                                        </div>
+                                        <div class="col mt-2">
+                                            <label>Pilih Tanggal Akhir</label>
+                                            <input type="text" class="form-control datetimepicker-input"
+                                                id="datetimepicker8" data-toggle="datetimepicker"
+                                                data-target="#datetimepicker8" name="akhir"
+                                                placeholder="Pilih Tanggal Akhir" required />
+                                        </div>
+                                    </div>
+                                    <input type="button" class="form-control btn-primary mt-2" value="Simpan"
+                                        data-toggle="modal" data-target="#modalDesc">
                                 </form>
                             </div>
                         </div>
@@ -231,6 +296,26 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade bd-example-modal-sm" id="modalDesc" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h5>Apakah Anda Yakin akan Mengganti deskripsi untuk pendaftaran ulang ?</h5>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+                <button type="submit" form="formDesc" class="btn btn-primary">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block script %}
@@ -294,20 +379,47 @@
             $('#divNama').hide();
             $('#divStatus').show();
             $('#divAlamat').hide();
+            $('#divDesc').hide();
         }
         else if (val == 'alamat') {
             $('#divNama').hide();
             $('#divStatus').hide();
             $('#divAlamat').show();
+            $('#divDesc').hide();
         }
         else if (val == 'nama') {
             $('#divNama').show();
             $('#divStatus').hide();
             $('#divAlamat').hide();
+            $('#divDesc').hide();
+        }
+        else if (val == 'desc') {
+            $('#divNama').hide();
+            $('#divStatus').hide();
+            $('#divAlamat').hide();
+            $('#divDesc').show();
         }
     }
     function showModal(id) {
         $('#notifikasi').modal();
     }
 </script>
+<script type="text/javascript">
+    $(function () {
+        $('#datetimepicker7').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+        $('#datetimepicker8').datetimepicker({
+            useCurrent: false,
+            format: 'DD-MM-YYYY'
+        });
+        $("#datetimepicker7").on("change.datetimepicker", function (e) {
+            $('#datetimepicker8').datetimepicker('minDate', e.date);
+        });
+        $("#datetimepicker8").on("change.datetimepicker", function (e) {
+            $('#datetimepicker7').datetimepicker('maxDate', e.date);
+        });
+    });
+</script>
+
 {% endblock %}

@@ -4,7 +4,7 @@
 {% load static %}
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Ars School | Pendaftaraan Siswa</title>
+  <title>PPDB Online | Pendaftaraan Siswa</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -24,7 +24,7 @@
 <body class="hold-transition register-page">
 <div class="register-box">
   <div class="register-logo">
-    <a href="#"><b>Ars</b>School</a>
+    <a href="#"><b>PPDB</b>Online</a>
   </div>
 
   <div class="card">
@@ -33,16 +33,16 @@
       <?php 
         if ($is_active == 1 ){ 
       ?> -->
-      {% if tahun_ajaran.is_active == 1%}
+      {% if data_sekolah.status_pendaftaran != 1%}
       <div id="close_pendaftaran">
-        <h1 class="text-center">Pendaftaran untuk tahun ajaran {{tahun_ajaran.tahun_aktif.tahun}} Telah Ditutup Silahkan tunggu tahun Ajaran baru untuk mendaftar ke <b>Ars School</b></h1>
+        <h1 class="text-center">Pendaftaran untuk tahun ajaran ini Telah Ditutup Silahkan tunggu tahun Ajaran Selanjutnya untuk mendaftar ke <b>{{data_sekolah.nama}}</b></h1>
       </div>
       {% else %}
     <!-- <?php } 
         elseif ($is_active == 0){
     ?> -->
       <div id="open_pendaftaran">
-          <p class="login-box-msg"><b>Pendaftaran Siswa untuk Tahun Ajaran {{tahun_ajaran.tahun_aktif.tahun}}</b></p>
+          <p class="login-box-msg"><b>Silahkan Daftar Akun Disini.</b></p>
           {% include 'page_siswa/messages.html'%}
         <form method="POST" enctype="multipart/form-data">
           {% csrf_token %}

@@ -18,8 +18,8 @@ def homepage(request):
     if data_sekolah.nama == '' or data_sekolah.alamat == '' or data_sekolah.daya_tampung == 0:
         setting = True
     siswa = Siswa.object.all()
-    laki = siswa.filter(jenis_kelamin='Laki-Laki')
-    perempuan = siswa.filter(jenis_kelamin='Perempuan')
+    laki = siswa.filter(jenis_kelamin='L')
+    perempuan = siswa.filter(jenis_kelamin='P')
     status = {
         'identitas': len(siswa.filter(status=0)),
         'upload_berkas': len(siswa.filter(status=1)),
@@ -56,8 +56,13 @@ def listsiswa(request):
 
 
 def pageSeleksi(request):
+    data_sekolah = sekolah.objects.first()
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
+    if data_sekolah.status_pendaftaran != 2:
+        messages.error(
+            request, f'Ubah Status PPDB di Setting PPDB, untuk memulai Proses Seleksi Siswa.')
+        return redirect('admin_page:setting')
     data_sekolah = sekolah.objects.first()
     data_siswa = Siswa.object.all()
     setting = False
@@ -85,8 +90,13 @@ def pageSeleksi(request):
 
 
 def tabelSeleksi2(request, data):
+    data_sekolah = sekolah.objects.first()
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
+    if data_sekolah.status_pendaftaran != 2:
+        messages.error(
+            request, f'Ubah Status PPDB di Setting PPDB, untuk memulai Proses Seleksi Siswa.')
+        return redirect('admin_page:setting')
     data_sekolah = sekolah.objects.first()
     first_time = False
     seleksi = {
@@ -165,7 +175,8 @@ def tabelSeleksi2(request, data):
                 data_sekolah.sisa_zonasi = 0
                 data_sekolah.sisa_prestasi = data_sekolah.sisa_prestasi + count
                 data_sekolah.save()
-            messages.success(request,f'Seleksi Untuk Jalur Zonasi Berhasil Di selesaikan')
+            messages.success(
+                request, f'Seleksi Untuk Jalur Zonasi Berhasil Di selesaikan')
             return redirect('admin_page:seleksi')
         elif data == 'Afirmasi' or data == 'Afirmasii':
             count = seleksi['kuota']
@@ -178,7 +189,8 @@ def tabelSeleksi2(request, data):
                 data_sekolah.sisa_afirmasi = 0
                 data_sekolah.sisa_prestasi = data_sekolah.sisa_prestasi + count
                 data_sekolah.save()
-            messages.success(request,f'Seleksi Untuk Jalur Afirmasi Berhasil Di selesaikan')
+            messages.success(
+                request, f'Seleksi Untuk Jalur Afirmasi Berhasil Di selesaikan')
             return redirect('admin_page:seleksi')
         elif data == 'Perpindahan' or data == 'Perpiindahan':
             count = seleksi['kuota']
@@ -191,7 +203,8 @@ def tabelSeleksi2(request, data):
                 data_sekolah.sisa_perpindahan = 0
                 data_sekolah.sisa_prestasi = data_sekolah.sisa_prestasi + count
                 data_sekolah.save()
-            messages.success(request,f'Seleksi Untuk Jalur Perpindahan Orang Tua Berhasil Di selesaikan')
+            messages.success(
+                request, f'Seleksi Untuk Jalur Perpindahan Orang Tua Berhasil Di selesaikan')
             return redirect('admin_page:seleksi')
         elif data == 'Prestasi' or data == 'Prestasii':
             count = seleksi['kuota']
@@ -204,7 +217,8 @@ def tabelSeleksi2(request, data):
                 data_sekolah.sisa_perpindahan = 0
                 data_sekolah.sisa_prestasi = data_sekolah.sisa_prestasi + count
                 data_sekolah.save()
-            messages.success(request,f'Seleksi Untuk Jalur Prestasi Berhasil Di selesaikan')
+            messages.success(
+                request, f'Seleksi Untuk Jalur Prestasi Berhasil Di selesaikan')
             return redirect('admin_page:seleksi')
 
     return render(request=request,
@@ -227,11 +241,13 @@ def prosesSeleksi(request):
         siswa.save()
         if data == 'afirmasi':
             list_notifikasi.objects.create(siswa=siswa, notifikasi=alasan)
-            messages.error(request, f'Seleksi untuk calon siswa {nis}, Berhasil ditolak')
+            messages.error(
+                request, f'Seleksi untuk calon siswa {nis}, Berhasil ditolak')
             return redirect('admin_page:list_seleksi', 'afirmasi')
         elif data == 'zonasi' or data == 'zonasii':
             list_notifikasi.objects.create(siswa=siswa, notifikasi=alasan)
-            messages.error(request, f'Seleksi untuk calon siswa {nis}, Berhasil ditolak')
+            messages.error(
+                request, f'Seleksi untuk calon siswa {nis}, Berhasil ditolak')
             return redirect('admin_page:list_seleksi', 'zonasi')
         elif data == 'perpindahan':
             messages.success(request, f'Seleksi Berhasil')
@@ -242,8 +258,13 @@ def prosesSeleksi(request):
 
 
 def tabelSeleksi(request, data):
+    data_sekolah = sekolah.objects.first()
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
+    if data_sekolah.status_pendaftaran != 6:
+        messages.error(
+            request, f'Ubah Status PPDB di Setting PPDB, untuk memulai Proses Seleksi Siswa.')
+        return redirect('admin_page:setting')
     error = ''
     data_sekolah = sekolah.objects.first()
     setting = False
@@ -326,30 +347,40 @@ def verifikasi_siswa(request):
                   template_name='page_admin/daftar_ulang.html',
                   context={'list_siswa': page_obj, 'active': 'verifikasi', 'setting': setting})
 
+
 def daftar_ulang(request):
+    data_sekolah = sekolah.objects.first()
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
+    if data_sekolah.status_pendaftaran != 3:
+        messages.error(
+            request, f'Ubah Status PPDB di Setting PPDB, untuk memulai Proses Daftar Ulang.')
+        return redirect('admin_page:setting')
     if request.method == 'POST':
         check = request.POST.get('check')
         nis = request.POST.get('nis_siswa')
-        siswa = Siswa.object.get(nis = nis)
+        siswa = Siswa.object.get(nis=nis)
         if(check == 'terima'):
-            alasan = 'Proses Daftar Ulang Berhasil'
+            alasan = 'Proses Daftar Ulang Berhasil.'
             siswa.status = 8
             siswa.save()
             list_notifikasi.objects.create(siswa=siswa, notifikasi=alasan)
-            messages.error(request, f'Proses Daftar ulang untuk calon siswa {nis}, Diterima.')
+            messages.success(
+                request, f'Proses Daftar ulang untuk calon siswa {nis}, Diterima.')
             return redirect('admin_page:daftar_ulang')
         elif(check == 'tolak'):
             siswa.status = 7
             siswa.save()
-            alasan = 'Proses Daftar Ulang ditolak : ' + request.POST.get('alasan')
+            alasan = 'Proses Daftar Ulang ditolak : ' + \
+                request.POST.get('alasan')
             list_notifikasi.objects.create(siswa=siswa, notifikasi=alasan)
-            messages.error(request, f'Proses Daftar ulang untuk calon siswa {nis}, Ditolak.')
+            messages.error(
+                request, f'Proses Daftar ulang untuk calon siswa {nis}, Ditolak.')
             return redirect('admin_page:daftar_ulang')
-    return render(request = request,
-                  template_name = 'page_admin/daftar_ulang.html',
+    return render(request=request,
+                  template_name='page_admin/daftar_ulang.html',
                   context={'active': 'daftar_ulang'})
+
 
 def events(request):
     if request.user.is_authenticated and not request.user.is_staff:
@@ -386,8 +417,10 @@ def setting_ppdb(request):
         return redirect('siswa:home')
     if request.method == 'POST':
         if request.POST.get('dayaTampung'):
+            if data_sekolah.status_pendaftaran == 2 or data_sekolah.status_pendaftaran == 3 or data_sekolah.status_pendaftaran == 4:
+                messages.error(request, f'Gagal Merubah daya tampung, dikarenakan status pendaftaran PPDB sudah sampai {data_sekolah.get_status_pendaftaran_display()}') 
+                return redirect('admin_page:setting')
             sisa = json.loads(data_sekolah.pembagian_kuota())
-            # siswa_update = Siswa.object.filter(Q(status=10) | Q(status=11) | Q(status=12) | Q(status=13))
             kuota = request.POST.get('dayaTampung')
             zonasi = request.POST.get('zonasi')
             afirmasi = request.POST.get('afirmasi')
@@ -406,6 +439,22 @@ def setting_ppdb(request):
             messages.success(request, f'Daya Tampung Sekolah Berhasil di Ubah')
             return redirect('admin_page:setting')
         elif request.POST.get('status'):
+            jumlah_siswa = {
+                'zonasi': len(Siswa.object.filter(status=10)),
+                'afirmasi': len(Siswa.object.filter(status=11)),
+                'perpindahan': len(Siswa.object.filter(status=12)),
+                'prestasi': len(Siswa.object.filter(status=13)),
+            }
+            # print(data_sekolah.jam_daftar_ulang)
+            if data_sekolah.nama == '' or data_sekolah.alamat == '' or data_sekolah.daya_tampung == 0 or data_sekolah.jam_daftar_ulang == None or data_sekolah.tanggal_daftar_ulang == None:
+                messages.error(
+                    request, f'Harap Isi seluruh settingan PPDB terlebih dahulu, untuk dapat membuka pendaftaran PPDB')
+                return redirect('admin_page:setting')
+            elif data_sekolah.status_pendaftaran != 1:
+                if jumlah_siswa['zonasi'] != 0 or jumlah_siswa['afirmasi'] != 0 or jumlah_siswa['perpindahan'] != 0 or jumlah_siswa['prestasi'] != 0 and data_sekolah.status_pendaftaran != 2:
+                    messages.error(
+                        request, f'Harap Seleksi seluruh siswa terlebih dahulu, untuk dapat merubah status pendaftaran ke Daftar Ulang')
+                    return redirect('admin_page:seleksi')
             status = request.POST.get('status')
             data_sekolah.status_pendaftaran = status
             data_sekolah.save()
@@ -418,14 +467,40 @@ def setting_ppdb(request):
             messages.success(request, f'Nama Sekolah Berhasil Diubah')
             return redirect('admin_page:setting')
         elif request.POST.get('desa'):
+            if data_sekolah.status_pendaftaran == 2 or data_sekolah.status_pendaftaran == 3 or data_sekolah.status_pendaftaran == 4:
+                messages.error(request, f'Gagal Merubah Alamat Sekolah, dikarenakan status pendaftaran PPDB sudah sampai {data_sekolah.get_status_pendaftaran_display()}') 
+                return redirect('admin_page:setting')
+            lengkap = request.POST['alamat_lengkap']
             prov = request.POST['prov']
             kab = request.POST['kab']
             kec = request.POST['kec']
             desa = request.POST['desa']
             alamat = f'provinsi: {prov}, kabupaten: {kab}, kecamatan: {kec}, desa: {desa}'
+            data_sekolah.alamat_lengkap = lengkap
             data_sekolah.alamat = alamat
             data_sekolah.save()
             messages.success(request, f'Alamat Sekolah Berhasil Diubah')
+            return redirect('admin_page:setting')
+        elif request.POST.get('mulai_jam'):
+            mulai_jam = request.POST['mulai_jam']
+            mulai_menit = request.POST['mulai_menit']
+            tutup_jam = request.POST['tutup_jam']
+            tutup_menit = request.POST['tutup_menit']
+            x = mulai_jam + mulai_menit
+            y = tutup_jam + tutup_menit
+            if (int(x) > int(y)):
+                messages.error(
+                    request, f'Kesalahan, Jam Tutup tidak boleh kurang dari Jam Mulai')
+                return redirect('admin_page:setting')
+            tgl_mulai = request.POST.get('mulai')
+            tgl_akhir = request.POST.get('akhir')
+            jam = f'{mulai_jam}:{mulai_menit},{tutup_jam}:{tutup_menit}'
+            tgl = f'{tgl_mulai},{tgl_akhir}'
+            data_sekolah.jam_daftar_ulang = jam
+            data_sekolah.tanggal_daftar_ulang = tgl
+            data_sekolah.save()
+            messages.success(
+                request, f'Deskripsi Daftar Ulang Berhasil Diubah')
             return redirect('admin_page:setting')
     return render(request=request,
                   template_name='page_admin/settings.html',
