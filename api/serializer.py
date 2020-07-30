@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from page_siswa.models import Siswa, CustomUser, list_events, list_notifikasi
+from page_siswa.models import Siswa, CustomUser, list_events, list_notifikasi, sekolah
 from page_siswa.functions import CompressImage
 
 
@@ -60,6 +60,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
+        data_sekolah = sekolah.objects.first()
+        if data_sekolah.status_pendaftaran != 1:
+            raise serializers.ValidationError(
+                'Pendaftaran PPDB , Sudah Ditutup.')
         user = Siswa.object.create_user(
             email=validated_data['email'], password=validated_data['password'],
             first_name=validated_data['first_name'], last_name=validated_data['last_name'])
@@ -86,6 +90,10 @@ class PelengkapanIdentitasSerializer(serializers.ModelSerializer):
             'foto_diri': {'required': True}}
 
     def update(self, instance, validated_data):
+        data_sekolah = sekolah.objects.first()
+        if data_sekolah.status_pendaftaran != 1:
+            raise serializers.ValidationError(
+                'Pendaftaran PPDB Sudah masuk proses seleksi, Anda Tidak Dapat lagi melengkapi identitas atau berkas-berkas.')
         if instance.user.DetailUser.status != 0:
             raise serializers.ValidationError(
                 'Terjadi Kesalahan, Silahkan Coba Lagi!')
@@ -126,6 +134,10 @@ class PelengkapanBerkasSerializer(serializers.ModelSerializer):
         }
 
     def update(self, instance, validated_data):
+        data_sekolah = sekolah.objects.first()
+        if data_sekolah.status_pendaftaran != 1:
+            raise serializers.ValidationError(
+                'Pendaftaran PPDB Sudah masuk proses seleksi, Anda Tidak Dapat lagi melengkapi identitas atau berkas-berkas.')
         if instance.user.DetailUser.status != 1:
             raise serializers.ValidationError(
                 'Terjadi Kesalahan, Silahkan Coba Lagi!')
@@ -146,15 +158,21 @@ class PengajuanPendaftaranSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Siswa
-        fields = ['nis', 'status','berkas_tambahan']
+        fields = ['nis', 'status', 'berkas_tambahan']
         read_only_fields = ['nis']
         extra_kwargs = {'status': {'required': True}}
 
     def update(self, instance, validated_data):
+        data_sekolah = sekolah.objects.first()
+        if data_sekolah.status_pendaftaran != 1:
+            raise serializers.ValidationError(
+                'Pendaftaran PPDB Sudah masuk proses seleksi, Anda Tidak Dapat lagi mengajukan pendaftaran.')
         if instance.user.DetailUser.status != 2:
             raise serializers.ValidationError(
                 'Terjadi Kesalahan, Silahkan Coba Lagi!')
-        instance.berkas_tambahan = CompressImage(validated_data['berkas_tambahan'])
+        if validated_data.get('berkas_tambahan'):
+            instance.berkas_tambahan = CompressImage(
+                validated_data['berkas_tambahan'])
         instance.status = validated_data['status']
         instance.save()
 
@@ -216,3 +234,13 @@ class NotifikasiSerializer(serializers.ModelSerializer):
     class Meta:
         model = list_notifikasi
         fields = ['id', 'notifikasi', 'tanggal_notifikasi']
+
+
+class SekolahSerializer(serializers.ModelSerializer):
+    alamat_lengkap_split = serializers.CharField(read_only=True)
+    jam_tanggal_ulang = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = sekolah
+        exclude = ['alamat', 'alamat_lengkap', 
+                   'jam_daftar_ulang', 'tanggal_daftar_ulang']

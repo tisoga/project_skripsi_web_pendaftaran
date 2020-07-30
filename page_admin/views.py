@@ -113,7 +113,10 @@ def tabelSeleksi2(request, data):
             avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
         seleksi['kuota'] = data_sekolah.sisa_zonasi
         seleksi['jumlah_siswa'] = len(list_siswa)
-        seleksi['sisa_kuota'] = data_sekolah.sisa_zonasi - len(list_siswa)
+        if (data_sekolah.sisa_zonasi - len(list_siswa)) >= 0:
+            seleksi['sisa_kuota'] = data_sekolah.sisa_zonasi - len(list_siswa)
+        else:
+            seleksi['sisa_kuota'] = 0
         kab = []
         kec = []
         des = []
@@ -133,19 +136,28 @@ def tabelSeleksi2(request, data):
             avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
         seleksi['kuota'] = data_sekolah.sisa_afirmasi
         seleksi['jumlah_siswa'] = len(list_siswa)
-        seleksi['sisa_kuota'] = data_sekolah.sisa_afirmasi - len(list_siswa)
+        if (data_sekolah.sisa_afirmasi - len(list_siswa)) >= 0:
+            seleksi['sisa_kuota'] = data_sekolah.sisa_afirmasi - len(list_siswa)
+        else:
+            seleksi['sisa_kuota'] = 0
     elif data == 'perpindahan' or data == 'perpiindahan':
         list_siswa = Siswa.object.filter(status=12).annotate(
             avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
         seleksi['kuota'] = data_sekolah.sisa_perpindahan
         seleksi['jumlah_siswa'] = len(list_siswa)
-        seleksi['sisa_kuota'] = data_sekolah.sisa_perpindahan - len(list_siswa)
+        if (data_sekolah.sisa_perpindahan - len(list_siswa)) >= 0:
+            seleksi['sisa_kuota'] = data_sekolah.sisa_perpindahan - len(list_siswa)
+        else:
+            seleksi['sisa_kuota'] = 0
     elif data == 'prestasi' or data == 'prestasii':
         list_siswa = Siswa.object.filter(status=13).annotate(
             avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
         seleksi['kuota'] = data_sekolah.sisa_prestasi
         seleksi['jumlah_siswa'] = len(list_siswa)
-        seleksi['sisa_kuota'] = data_sekolah.sisa_prestasi - len(list_siswa)
+        if (data_sekolah.sisa_prestasi - len(list_siswa)) >= 0:
+            seleksi['sisa_kuota'] = data_sekolah.sisa_prestasi - len(list_siswa)
+        else:
+            seleksi['sisa_kuota'] = 0
     else:
         messages.error(request, f'Terjadi Kesalahan')
         return redirect('admin_page:seleksi')
@@ -154,22 +166,31 @@ def tabelSeleksi2(request, data):
         if data == 'Zonasi' or data == 'Zonasii':
             count = seleksi['kuota']
             for x in list_siswa['desa']:
-                if(count >= 0):
+                if(count > 0):
                     # print('desa')
                     count -= 1
                     x.status = 5
                     x.save()
+                else:
+                    x.status = 7
+                    x.save()
             for x in list_siswa['kecamatan']:
-                if(count >= 0):
+                if(count > 0):
                     # print('kecamatan')
                     count -= 1
                     x.status = 5
                     x.save()
+                else:
+                    x.status = 7
+                    x.save()
             for x in list_siswa['kabupaten']:
-                if(count >= 0):
+                if(count > 0):
                     # print('kabupaten')
                     count -= 1
                     x.status = 5
+                    x.save()
+                else:
+                    x.status = 7
                     x.save()
             if count > 0:
                 data_sekolah.sisa_zonasi = 0
@@ -181,9 +202,12 @@ def tabelSeleksi2(request, data):
         elif data == 'Afirmasi' or data == 'Afirmasii':
             count = seleksi['kuota']
             for x in list_siswa:
-                if(count >= 0):
+                if(count > 0):
                     count -= 1
                     x.status = 5
+                    x.save()
+                else:
+                    x.status = 7
                     x.save()
             if count > 0:
                 data_sekolah.sisa_afirmasi = 0
@@ -195,9 +219,12 @@ def tabelSeleksi2(request, data):
         elif data == 'Perpindahan' or data == 'Perpiindahan':
             count = seleksi['kuota']
             for x in list_siswa:
-                if(count >= 0):
+                if(count > 0):
                     count -= 1
                     x.status = 5
+                    x.save()
+                else:
+                    x.status = 7
                     x.save()
             if count > 0:
                 data_sekolah.sisa_perpindahan = 0
@@ -209,9 +236,12 @@ def tabelSeleksi2(request, data):
         elif data == 'Prestasi' or data == 'Prestasii':
             count = seleksi['kuota']
             for x in list_siswa:
-                if(count >= 0):
+                if(count > 0):
                     count -= 1
                     x.status = 5
+                    x.save()
+                else:
+                    x.status = 7
                     x.save()
             if count > 0:
                 data_sekolah.sisa_perpindahan = 0

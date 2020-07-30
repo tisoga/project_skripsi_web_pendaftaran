@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 from rest_framework import status
 from rest_framework.response import Response
@@ -7,11 +8,11 @@ from rest_framework.permissions import IsAuthenticated
 
 from .serializer import ListSiswaSerializer, LoginSerializer, \
     UserSerializer, RegisterSerializer, PelengkapanIdentitasSerializer, \
-    PelengkapanBerkasSerializer, KegiatanSerializer, NotifikasiSerializer, PengajuanPendaftaranSerializer, EditPengajuanSerializer
+    PelengkapanBerkasSerializer, KegiatanSerializer, NotifikasiSerializer, PengajuanPendaftaranSerializer, EditPengajuanSerializer, SekolahSerializer
 
 from knox.auth import AuthToken
 
-from page_siswa.models import Siswa, list_events, list_notifikasi
+from page_siswa.models import Siswa, list_events, list_notifikasi, sekolah
 # Create your views here.
 
 
@@ -118,5 +119,23 @@ def NotifikasiAPI(request):
     notif = get_list_or_404(list_notifikasi, siswa=request.user.id)
     if request.method == 'GET':
         serializer = NotifikasiSerializer(notif, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def SekolahAPI(request):
+    data_sekolah = sekolah.objects.first()
+    split_alamat = json.loads(data_sekolah.split_alamat()) 
+    data_sekolah.alamat_lengkap_split = {
+        'lengkap': data_sekolah.alamat_lengkap,
+        'desa': split_alamat['desa'],
+        'kecamatan': split_alamat['kecamatan'],
+        'kabupaten': split_alamat['kabupaten'],
+        'provinsi': split_alamat['provinsi'],
+
+    }
+    data_sekolah.jam_tanggal_ulang = data_sekolah.split_tanggal_jam()
+    if request.method == 'GET':
+        serializer = SekolahSerializer(data_sekolah)
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

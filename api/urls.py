@@ -13,5 +13,6 @@ urlpatterns = [
     path('profile/pengajuan/', views.PengajuanAPI, name='pengajuan'),
     path('list_events/', views.ListKegiatanAPI, name='event'),
     path('notifikasi/', views.NotifikasiAPI, name='notifikasi'),
+    path('sekolah/', views.SekolahAPI, name='sekolah'),
     path('siswa/<int:nis>', views.ProfileAPI, name='profileAPI'),
 ]
