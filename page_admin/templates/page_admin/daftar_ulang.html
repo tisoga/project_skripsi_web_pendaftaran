@@ -44,7 +44,7 @@
                                             <tr>
                                                 <th>Nama</th>
                                                 <th class="text-center">:</th>
-                                                <td id="table_nama">Ryan Afrizal</td>
+                                                <td id="table_nama" id='table_nama'>Ryan Afrizal</td>
                                             </tr>
                                             <tr>
                                                 <th>Tanggal Lahir</th>
@@ -86,11 +86,11 @@
                                     </table>
                                     <div class="d-flex justify-content-around">
                                         <button class="btn btn-danger"
-                                            onclick="openPeringatan('tolak',table_nis.innerHTML)">
+                                            onclick="openPeringatan('tolak',table_nis.innerHTML, table_nama.innerHTML)">
                                             Tolak Pendaftaran
                                         </button>
                                         <button class="btn btn-success"
-                                            onclick="openPeringatan('terima',table_nis.innerHTML)">
+                                            onclick="openPeringatan('terima',table_nis.innerHTML, table_nama.innerHTML)">
                                             Terima Pendaftaran
                                         </button>
                                     </div>
@@ -218,7 +218,7 @@
 </script>
 
 <script>
-    function openPeringatan(check, nis) {
+    function openPeringatan(check, nis, nama) {
         html = (peringatan) => `
             <p><b>${peringatan}</b></p>
         `
@@ -233,7 +233,7 @@
             `
             pesan = html(`Apakah Anda Akan Menerima Pendaftaran Ulang dari Siswa ini : <br>
             NIS : ${nis} <br>
-            Nama : Ryn Afrizal`) + msg
+            Nama : ${nama}`) + msg
             body.innerHTML = html(pesan)
         }
         else if (check === 'tolak') {

@@ -242,5 +242,12 @@ class SekolahSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = sekolah
-        exclude = ['alamat', 'alamat_lengkap', 
+        exclude = ['alamat', 'alamat_lengkap',
                    'jam_daftar_ulang', 'tanggal_daftar_ulang']
+
+
+class PengumumanSerializer(serializers.Serializer):
+    zonasi = ListSiswaSerializer(read_only = True)
+    afirmasi = serializers.CharField(read_only=True)
+    perpindahan = serializers.CharField(read_only=True)
+    prestasi = serializers.CharField(read_only=True)

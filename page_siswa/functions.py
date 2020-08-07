@@ -11,7 +11,7 @@ def CompressImage(f, filename=None):
         image = Image.open(f)
         thumbnail = BytesIO()
         # Default quality is quality=75
-        image.save(thumbnail, format='JPEG', quality=65)
+        image.save(thumbnail, format='JPEG', quality=30)
         thumbnail.seek(0)
         newImage = InMemoryUploadedFile(thumbnail,
                                    None,

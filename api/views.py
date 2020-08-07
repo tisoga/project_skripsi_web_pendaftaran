@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .serializer import ListSiswaSerializer, LoginSerializer, \
     UserSerializer, RegisterSerializer, PelengkapanIdentitasSerializer, \
-    PelengkapanBerkasSerializer, KegiatanSerializer, NotifikasiSerializer, PengajuanPendaftaranSerializer, EditPengajuanSerializer, SekolahSerializer
+    PelengkapanBerkasSerializer, KegiatanSerializer, NotifikasiSerializer, PengajuanPendaftaranSerializer, EditPengajuanSerializer, SekolahSerializer, PengumumanSerializer
 
 from knox.auth import AuthToken
 
@@ -122,10 +122,11 @@ def NotifikasiAPI(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET'])
 def SekolahAPI(request):
     data_sekolah = sekolah.objects.first()
-    split_alamat = json.loads(data_sekolah.split_alamat()) 
+    split_alamat = json.loads(data_sekolah.split_alamat())
     data_sekolah.alamat_lengkap_split = {
         'lengkap': data_sekolah.alamat_lengkap,
         'desa': split_alamat['desa'],
@@ -137,5 +138,24 @@ def SekolahAPI(request):
     data_sekolah.jam_tanggal_ulang = data_sekolah.split_tanggal_jam()
     if request.method == 'GET':
         serializer = SekolahSerializer(data_sekolah)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def Pengumuman_LolosAPI(reqeust, sort='all'):
+    if reqeust.method == 'GET':
+        if sort == 'all':
+            data_siswa = Siswa.object.filter(status = 8)
+        elif sort == 'zonasi':
+            data_siswa = Siswa.object.filter(status = 8).filter(jalur_pendaftaran = 'Zonasi')
+        elif sort == 'afirmasi':
+            data_siswa = Siswa.object.filter(status = 8).filter(jalur_pendaftaran = 'Afirmasi')
+        elif sort == 'perpindahan':
+            data_siswa = Siswa.object.filter(status = 8).filter(jalur_pendaftaran = 'Perpindahan')
+        elif sort == 'prestasi':
+            data_siswa = Siswa.object.filter(status = 8).filter(jalur_pendaftaran = 'Prestasi')
+        # serializer = PengumumanSerializer(data_siswa, many=False)
+        serializer = ListSiswaSerializer(data_siswa, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

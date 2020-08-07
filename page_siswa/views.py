@@ -2,6 +2,7 @@ import requests
 import json
 from django.shortcuts import render, redirect
 from django.db import IntegrityError
+from django.db.models import F
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from page_siswa.functions import CompressImage, convert_date
@@ -245,6 +246,29 @@ def proses_ajukan_pendaftaran(request):
             messages.success(
                 request, f'Pengajuan Pendaftaran Berhasil, Silahkan Tunggu Proses Verifikasi. Maksimal 3 x 24 Jam')
             return redirect('siswa:home')
+
+
+def pengumuman_penerimaan(request):
+    lolos_zonasi = Siswa.object.filter(status=8).filter(jalur_pendaftaran='Zonasi').annotate(
+        avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
+    lolos_afirmasi = Siswa.object.filter(
+        status=8).filter(jalur_pendaftaran='Afirmasi').annotate(
+            avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
+    lolos_perpindahan = Siswa.object.filter(
+        status=8).filter(jalur_pendaftaran='Perpindahan').annotate(
+            avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
+    lolos_prestasi = Siswa.object.filter(
+        status=8).filter(jalur_pendaftaran='Prestasi').annotate(
+            avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
+    data_siswa = {
+        'lolos_zonasi': lolos_zonasi,
+        'lolos_afirmasi': lolos_afirmasi,
+        'lolos_perpindahan': lolos_perpindahan,
+        'lolos_prestas': lolos_prestasi,
+    }
+    return render(request=request,
+                  template_name='page_siswa/pengumuman_penerimaan.html',
+                  context={'data_siswa': data_siswa})
 
 
 def success(request):

@@ -15,4 +15,6 @@ urlpatterns = [
     path('notifikasi/', views.NotifikasiAPI, name='notifikasi'),
     path('sekolah/', views.SekolahAPI, name='sekolah'),
     path('siswa/<int:nis>', views.ProfileAPI, name='profileAPI'),
+    path('pengumuman/', views.Pengumuman_LolosAPI, name='pengumumanAPIRoot'),
+    path('pengumuman/<sort>', views.Pengumuman_LolosAPI, name='pengumumanAPI'),
 ]

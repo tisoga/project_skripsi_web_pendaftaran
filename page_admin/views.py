@@ -111,6 +111,10 @@ def tabelSeleksi2(request, data):
     if data == 'zonasi' or data == 'zonasii':
         list_siswa = Siswa.object.filter(status=10).annotate(
             avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
+        if len(list_siswa) == 0:
+            messages.success(
+                request, f'Seleksi Untuk Jalur Zonasi telah Di selesaikan')
+            return redirect('admin_page:seleksi')
         seleksi['kuota'] = data_sekolah.sisa_zonasi
         seleksi['jumlah_siswa'] = len(list_siswa)
         if (data_sekolah.sisa_zonasi - len(list_siswa)) >= 0:
@@ -134,6 +138,10 @@ def tabelSeleksi2(request, data):
     elif data == 'afirmasi' or data == 'afirmasii':
         list_siswa = Siswa.object.filter(status=11).annotate(
             avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
+        if len(list_siswa) == 0:
+            messages.success(
+                request, f'Seleksi Untuk Jalur Afirmasi telah Di selesaikan')
+            return redirect('admin_page:seleksi')
         seleksi['kuota'] = data_sekolah.sisa_afirmasi
         seleksi['jumlah_siswa'] = len(list_siswa)
         if (data_sekolah.sisa_afirmasi - len(list_siswa)) >= 0:
@@ -143,6 +151,10 @@ def tabelSeleksi2(request, data):
     elif data == 'perpindahan' or data == 'perpiindahan':
         list_siswa = Siswa.object.filter(status=12).annotate(
             avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
+        if len(list_siswa) == 0:
+            messages.success(
+                request, f'Seleksi Untuk Jalur Perpindahan Orang Tua telah Di selesaikan')
+            return redirect('admin_page:seleksi')
         seleksi['kuota'] = data_sekolah.sisa_perpindahan
         seleksi['jumlah_siswa'] = len(list_siswa)
         if (data_sekolah.sisa_perpindahan - len(list_siswa)) >= 0:
@@ -152,6 +164,10 @@ def tabelSeleksi2(request, data):
     elif data == 'prestasi' or data == 'prestasii':
         list_siswa = Siswa.object.filter(status=13).annotate(
             avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
+        if len(list_siswa) == 0:
+            messages.success(
+                request, f'Seleksi Untuk Jalur Prestasi telah Di selesaikan')
+            return redirect('admin_page:seleksi')
         seleksi['kuota'] = data_sekolah.sisa_prestasi
         seleksi['jumlah_siswa'] = len(list_siswa)
         if (data_sekolah.sisa_prestasi - len(list_siswa)) >= 0:
@@ -269,7 +285,7 @@ def prosesSeleksi(request):
         elif hasil == 'terima':
             siswa.status = 5
         siswa.save()
-        if data == 'afirmasi':
+        if data == 'afirmasi' or 'afirmasii':
             list_notifikasi.objects.create(siswa=siswa, notifikasi=alasan)
             messages.error(
                 request, f'Seleksi untuk calon siswa {nis}, Berhasil ditolak')
@@ -281,10 +297,10 @@ def prosesSeleksi(request):
             return redirect('admin_page:list_seleksi', 'zonasi')
         elif data == 'perpindahan':
             messages.success(request, f'Seleksi Berhasil')
-            return redirect('admin_page:list_seleksi', data)
+            return redirect('admin_page:list_seleksi', 'perpindahan')
         elif data == 'prestasi':
             messages.success(request, f'Seleksi Berhasil')
-            return redirect('admin_page:list_seleksi', data)
+            return redirect('admin_page:list_seleksi', 'prestasi')
 
 
 def tabelSeleksi(request, data):

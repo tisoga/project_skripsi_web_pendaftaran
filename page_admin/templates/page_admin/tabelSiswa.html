@@ -10,10 +10,10 @@
             <div class="card">
                 <div class="card-header">
                     <div class="form-row">
-                        <!-- <div class="col-12">
+                        <div class="col-12">
                             <h3 class="card-title">Sorting Siswa Berdasarkan</h3>
                         </div>
-                        <div class="col-10">
+                        <div class="col-12">
                             <form method="POST" name="formSiswa" id="formSiswa">
                                 {%csrf_token%}
                                 <input type="hidden" name="ganti" id="sort">
@@ -21,10 +21,16 @@
                                     <option value="0">Semua Siswa</option>
                                     <option value="1">Siswa Yang Belum Melengkapi Identitas</option>
                                     <option value="2">Siswa Yang Belum Mengupload Berkas-Berkas</option>
-                                    <option value="3">Siswa Yang Belum diverifikasi</option>
+                                    <option value="6">Siswa Yang Belum Diseleksi</option>
+                                    <option value="5">Siswa Yang Lolos Seleksi</option>
+                                    <option value="7">Siswa Yang Gagal Seleksi</option>
+                                    <option value="10">Siswa Yang Mendaftar Melalui Jalur Zonasi</option>
+                                    <option value="11">Siswa Yang Mendaftar Melalui Jalur Afrimasi</option>
+                                    <option value="12">Siswa Yang Mendaftar Melalui Jalur Perpindahan Orang Tua</option>
+                                    <option value="13">Siswa Yang Mendaftar Melalui Jalur Prestasi</option>
                                 </select>
                             </form>
-                        </div> -->
+                        </div>
                         <!-- <div class="col-2">
                             <div class="input-group input-group-sm" style="width: 150px;">
                                 <input type="text" name="table_search" class="form-control float-right"
@@ -246,10 +252,14 @@
                 status = 'Proses Daftar Ulang'
                 break
             case 6:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
                 status = 'Proses Seleksi Siswa'
                 break
             case 7:
-                status = 'Tidak Diterima'
+                status = 'Gagal Seleksi'
                 break
             case 8:
                 status = 'Diterima'
@@ -349,9 +359,17 @@
             url: '{% url "admin_page:ajax_list_siswa"%}' + '?sort=' + sort,
             dataType: 'json',
             success: function (data) {
-                $.each(data, function (key, value) {
-                    $('#data tbody').append(html(value.nis, value.user.first_name + ' ' + value.user.last_name, value.user.email, print_status(value.status)))
-                })
+                if (data.length >= 1) {
+                    $.each(data, function (key, value) {
+                        $('#data tbody').append(html(value.nis, value.user.first_name + ' ' + value.user.last_name, value.user.email, print_status(value.status)))
+                    })
+                }
+                else {
+                    console.log('as')
+                    $('#data tbody').append(`
+                        <td colspan='5' class='text-center'>Tidak Ada Data Siswa</td>
+                    `)
+                }
             }
         })
     }

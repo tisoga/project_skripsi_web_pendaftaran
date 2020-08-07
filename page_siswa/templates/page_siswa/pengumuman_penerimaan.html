@@ -1,0 +1,171 @@
+{% extends 'page_siswa/base_siswa.html'%}
+
+{% block title %}Pengumuman Penerimaan{% endblock %}
+
+{% block judul %}Pengumuman Penerimaan{% endblock %}
+
+{% block content %}
+<div class="card card-primary card-outline">
+    <div class="card-header d-flex justify-content-center">
+        <h5 class="card-title m-0">Pengumuman Penerimaan Siswa</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-3">
+                <div class='bg-primary text-center' style="height: 100px;cursor: pointer;"
+                    onclick="openPenerimaan('zonasi')">
+                    <i class="fas fa-user fa-2x pt-4"></i>
+                    <p class="pt-1">Zonasi</p>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class='bg-primary text-center' style="height: 100px;cursor: pointer;"
+                    onclick="openPenerimaan('afirmasi')">
+                    <i class="fas fa-file fa-2x pt-4"></i>
+                    <p class="pt-1">Afirmasi</p>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class='bg-primary text-center' style="height: 100px;cursor: pointer;"
+                    onclick="openPenerimaan('perpindahan')">
+                    <i class="fas fa-clipboard fa-2x pt-4"></i>
+                    <p class="pt-1">Perpindahan Orang Tua</p>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class='bg-primary text-center' style="height: 100px;cursor: pointer;"
+                    onclick="openPenerimaan('prestasi')">
+                    <i class="fas fa-retweet fa-2x pt-4"></i>
+                    <p class="pt-1">Prestasi</p>
+                </div>
+                </a>
+            </div>
+        </div>
+        <div class="row" id="jalurZonasi" style="margin-top: 10px;" hidden>
+            <div class="col-12">
+                <h3 class="text-center">Jalur Zonasi</h3>
+            </div>
+            <table class="table table-bordered">
+                <tr>
+                    <th class="align-middle text-center" style="width: 6%">NIS</th>
+                    <th class="align-middle text-center">Nama</th>
+                    <th class="align-middle text-center">Tanggal Lahir</th>
+                    <th class="align-middle text-center" style="width: 50%">Alamat</th>
+                    <th class="align-middle text-center" style="width: 8%">Nilai Rata-Rata</th>
+                </tr>
+                <tr>
+                    {%for data in data_siswa.lolos_zonasi%}
+                    <td class="align-middle">{{data.nis}}</td>
+                    <td class="align-middle">{{data.user.get_full_name}}</td>
+                    <td class="align-middle">{{data.tanggal_lahir}}</td>
+                    <td class="align-middle">{{data.alamat}}</td>
+                    <td class="align-middle text-center">{{data.avg}}</td>
+                    {% endfor %}
+                </tr>
+            </table>
+        </div>
+        <div class="row" id="jalurAfirmasi" style="margin-top: 10px;" hidden>
+            <div class="col-12">
+                <h3 class="text-center">Jalur Afirmasi</h3>
+            </div>
+            <table class="table table-bordered">
+                <tr>
+                    <th class="align-middle text-center" style="width: 6%">NIS</th>
+                    <th class="align-middle text-center">Nama</th>
+                    <th class="align-middle text-center">Tanggal Lahir</th>
+                    <th class="align-middle text-center" style="width: 50%">Alamat</th>
+                    <th class="align-middle text-center" style="width: 8%">Nilai Rata-Rata</th>
+                </tr>
+                <tr>
+                    {%for data in data_siswa.lolos_afirmasi%}
+                    <td class="align-middle">{{data.nis}}</td>
+                    <td class="align-middle">{{data.user.get_full_name}}</td>
+                    <td class="align-middle">{{data.tanggal_lahir}}</td>
+                    <td class="align-middle">{{data.alamat}}</td>
+                    <td class="align-middle text-center">{{data.avg}}</td>
+                    {% endfor %}
+                </tr>
+            </table>
+        </div>
+        <div class="row" id="jalurPerpindahan" style="margin-top: 10px;" hidden>
+            <div class="col-12">
+                <h3 class="text-center">Jalur Perpindahan Orang Tua</h3>
+            </div>
+            <table class="table table-bordered">
+                <tr>
+                    <th class="align-middle text-center" style="width: 6%">NIS</th>
+                    <th class="align-middle text-center">Nama</th>
+                    <th class="align-middle text-center">Tanggal Lahir</th>
+                    <th class="align-middle text-center" style="width: 50%">Alamat</th>
+                    <th class="align-middle text-center" style="width: 8%">Nilai Rata-Rata</th>
+                </tr>
+                <tr>
+                    {%for data in data_siswa.lolos_perpindahan%}
+                    <td class="align-middle">{{data.nis}}</td>
+                    <td class="align-middle">{{data.user.get_full_name}}</td>
+                    <td class="align-middle">{{data.tanggal_lahir}}</td>
+                    <td class="align-middle">{{data.alamat}}</td>
+                    <td class="align-middle text-center">{{data.avg}}</td>
+                    {% endfor %}
+                </tr>
+            </table>
+        </div>
+        <div class="row" id="jalurPrestasi" style="margin-top: 10px;" hidden>
+            <div class="col-12">
+                <h3 class="text-center">Jalur Prestasi</h3>
+            </div>
+            <table class="table table-bordered">
+                <tr>
+                    <th class="align-middle text-center" style="width: 6%">NIS</th>
+                    <th class="align-middle text-center">Nama</th>
+                    <th class="align-middle text-center">Tanggal Lahir</th>
+                    <th class="align-middle text-center" style="width: 50%">Alamat</th>
+                    <th class="align-middle text-center" style="width: 8%">Nilai Rata-Rata</th>
+                </tr>
+                <tr>
+                    {%for data in data_siswa.lolos_prestasi%}
+                    <td class="align-middle">{{data.nis}}</td>
+                    <td class="align-middle">{{data.user.get_full_name}}</td>
+                    <td class="align-middle">{{data.tanggal_lahir}}</td>
+                    <td class="align-middle">{{data.alamat}}</td>
+                    <td class="align-middle text-center">{{data.avg}}</td>
+                    {% endfor %}
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+function openPenerimaan(jalur) {
+    const zonasi = document.getElementById('jalurZonasi')
+    const afirmasi = document.getElementById('jalurAfirmasi')
+    const perpindahan = document.getElementById('jalurPerpindahan')
+    const prestasi = document.getElementById('jalurPrestasi')
+    if (jalur === 'zonasi') {
+        zonasi.hidden = false
+        afirmasi.hidden = true
+        perpindahan.hidden = true
+        prestasi.hidden = true
+    }
+    else if (jalur === 'afirmasi') {
+        zonasi.hidden = true
+        afirmasi.hidden = false
+        perpindahan.hidden = true
+        prestasi.hidden = true
+    }
+    else if (jalur === 'perpindahan') {
+        zonasi.hidden = true
+        afirmasi.hidden = true
+        perpindahan.hidden = false
+        prestasi.hidden = true
+    }
+    else if (jalur === 'prestasi') {
+        zonasi.hidden = true
+        afirmasi.hidden = true
+        perpindahan.hidden = true
+        prestasi.hidden = false
+    }
+}
+{% endblock %}
