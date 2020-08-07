@@ -94,6 +94,7 @@ AUTH_USER_MODEL = 'page_siswa.CustomUser'
 DATABASES = {
     'default': {
         'ENGINE' : 'django.db.backends.mysql',
+        'CONN_MAX_AGE': 3600,
         'USER' : 'root',
         'PASSWORD':'',
         'NAME' : 'db_ppdb_online',
