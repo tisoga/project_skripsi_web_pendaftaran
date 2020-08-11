@@ -12,30 +12,30 @@
     <div class="card-body">
         <div class="row">
             <div class="col-3">
-                <div class='bg-primary text-center' style="height: 100px;cursor: pointer;"
+                <div class='bg-primary text-center' id="btnZonasi" style="height: 100px;cursor: pointer;"
                     onclick="openPenerimaan('zonasi')">
-                    <i class="fas fa-user fa-2x pt-4"></i>
+                    <i class="fas fa-map-marked-alt fa-2x pt-4"></i>
                     <p class="pt-1">Zonasi</p>
                 </div>
             </div>
             <div class="col-3">
-                <div class='bg-primary text-center' style="height: 100px;cursor: pointer;"
+                <div class='bg-primary text-center' id="btnAfirmasi" style="height: 100px;cursor: pointer;"
                     onclick="openPenerimaan('afirmasi')">
                     <i class="fas fa-file fa-2x pt-4"></i>
                     <p class="pt-1">Afirmasi</p>
                 </div>
             </div>
             <div class="col-3">
-                <div class='bg-primary text-center' style="height: 100px;cursor: pointer;"
+                <div class='bg-primary text-center' id="btnPerpindahan" style="height: 100px;cursor: pointer;"
                     onclick="openPenerimaan('perpindahan')">
-                    <i class="fas fa-clipboard fa-2x pt-4"></i>
+                    <i class="fas fa-people-carry fa-2x pt-4"></i>
                     <p class="pt-1">Perpindahan Orang Tua</p>
                 </div>
             </div>
             <div class="col-3">
-                <div class='bg-primary text-center' style="height: 100px;cursor: pointer;"
+                <div class='bg-primary text-center' id="btnPrestasi" style="height: 100px;cursor: pointer;"
                     onclick="openPenerimaan('prestasi')">
-                    <i class="fas fa-retweet fa-2x pt-4"></i>
+                    <i class="fas fa-award fa-2x pt-4"></i>
                     <p class="pt-1">Prestasi</p>
                 </div>
                 </a>
@@ -59,7 +59,7 @@
                     <td class="align-middle">{{data.user.get_full_name}}</td>
                     <td class="align-middle">{{data.tanggal_lahir}}</td>
                     <td class="align-middle">{{data.alamat}}</td>
-                    <td class="align-middle text-center">{{data.avg}}</td>
+                    <td class="align-middle text-center">{{data.avg|floatformat:2}}</td>
                     {% endfor %}
                 </tr>
             </table>
@@ -82,7 +82,7 @@
                     <td class="align-middle">{{data.user.get_full_name}}</td>
                     <td class="align-middle">{{data.tanggal_lahir}}</td>
                     <td class="align-middle">{{data.alamat}}</td>
-                    <td class="align-middle text-center">{{data.avg}}</td>
+                    <td class="align-middle text-center">{{data.avg|floatformat:2}}</td>
                     {% endfor %}
                 </tr>
             </table>
@@ -105,7 +105,7 @@
                     <td class="align-middle">{{data.user.get_full_name}}</td>
                     <td class="align-middle">{{data.tanggal_lahir}}</td>
                     <td class="align-middle">{{data.alamat}}</td>
-                    <td class="align-middle text-center">{{data.avg}}</td>
+                    <td class="align-middle text-center">{{data.avg|floatformat:2}}</td>
                     {% endfor %}
                 </tr>
             </table>
@@ -128,7 +128,7 @@
                     <td class="align-middle">{{data.user.get_full_name}}</td>
                     <td class="align-middle">{{data.tanggal_lahir}}</td>
                     <td class="align-middle">{{data.alamat}}</td>
-                    <td class="align-middle text-center">{{data.avg}}</td>
+                    <td class="align-middle text-center">{{data.avg|floatformat:2}}</td>
                     {% endfor %}
                 </tr>
             </table>
@@ -143,29 +143,49 @@ function openPenerimaan(jalur) {
     const afirmasi = document.getElementById('jalurAfirmasi')
     const perpindahan = document.getElementById('jalurPerpindahan')
     const prestasi = document.getElementById('jalurPrestasi')
+    const btnZonasi = document.getElementById('btnZonasi')
+    const btnAfirmasi = document.getElementById('btnAfirmasi')
+    const btnPerpindahan = document.getElementById('btnPerpindahan')
+    const btnPrestasi = document.getElementById('btnPrestasi')
     if (jalur === 'zonasi') {
         zonasi.hidden = false
         afirmasi.hidden = true
         perpindahan.hidden = true
         prestasi.hidden = true
+        btnZonasi.classList.replace("bg-primary",'bg-success')
+        btnAfirmasi.classList.replace("bg-success",'bg-primary')
+        btnPerpindahan.classList.replace("bg-success",'bg-primary')
+        btnPrestasi.classList.replace("bg-success",'bg-primary')
     }
     else if (jalur === 'afirmasi') {
         zonasi.hidden = true
         afirmasi.hidden = false
         perpindahan.hidden = true
         prestasi.hidden = true
+        btnAfirmasi.classList.replace("bg-primary",'bg-success')
+        btnZonasi.classList.replace("bg-success",'bg-primary')
+        btnPerpindahan.classList.replace("bg-success",'bg-primary')
+        btnPrestasi.classList.replace("bg-success",'bg-primary')
     }
     else if (jalur === 'perpindahan') {
         zonasi.hidden = true
         afirmasi.hidden = true
         perpindahan.hidden = false
         prestasi.hidden = true
+        btnPerpindahan.classList.replace("bg-primary",'bg-success')
+        btnZonasi.classList.replace("bg-success",'bg-primary')
+        btnAfirmasi.classList.replace("bg-success",'bg-primary')
+        btnPrestasi.classList.replace("bg-success",'bg-primary')
     }
     else if (jalur === 'prestasi') {
         zonasi.hidden = true
         afirmasi.hidden = true
         perpindahan.hidden = true
         prestasi.hidden = false
+        btnPrestasi.classList.replace("bg-primary",'bg-success')
+        btnZonasi.classList.replace("bg-success",'bg-primary')
+        btnPerpindahan.classList.replace("bg-success",'bg-primary')
+        btnAfirmasi.classList.replace("bg-success",'bg-primary')
     }
 }
 {% endblock %}

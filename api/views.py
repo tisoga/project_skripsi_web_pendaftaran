@@ -145,17 +145,24 @@ def SekolahAPI(request):
 @api_view(['GET'])
 def Pengumuman_LolosAPI(reqeust, sort='all'):
     if reqeust.method == 'GET':
-        if sort == 'all':
-            data_siswa = Siswa.object.filter(status = 8)
-        elif sort == 'zonasi':
-            data_siswa = Siswa.object.filter(status = 8).filter(jalur_pendaftaran = 'Zonasi')
-        elif sort == 'afirmasi':
-            data_siswa = Siswa.object.filter(status = 8).filter(jalur_pendaftaran = 'Afirmasi')
-        elif sort == 'perpindahan':
-            data_siswa = Siswa.object.filter(status = 8).filter(jalur_pendaftaran = 'Perpindahan')
-        elif sort == 'prestasi':
-            data_siswa = Siswa.object.filter(status = 8).filter(jalur_pendaftaran = 'Prestasi')
-        # serializer = PengumumanSerializer(data_siswa, many=False)
-        serializer = ListSiswaSerializer(data_siswa, many=True)
+        data_siswa = {
+            'zonasi': Siswa.object.filter(status=8).filter(jalur_pendaftaran='Zonasi'),
+            'afirmasi': Siswa.object.filter(status=8).filter(jalur_pendaftaran='Afirmasi'),
+            'perpindahan': Siswa.object.filter(status=8).filter(jalur_pendaftaran='Perpindahan'),
+            'prestasi': Siswa.object.filter(status=8).filter(jalur_pendaftaran='Prestasi')
+        }
+        # if sort == 'all':
+        #     data_siswa = Siswa.object.filter(status = 8)
+        # elif sort == 'zonasi':
+        #     data_siswa = Siswa.object.filter(status = 8).filter(jalur_pendaftaran = 'Zonasi')
+        # elif sort == 'afirmasi':
+        #     data_siswa = Siswa.object.filter(status = 8).filter(jalur_pendaftaran = 'Afirmasi')
+        # elif sort == 'perpindahan':
+        #     data_siswa = Siswa.object.filter(status = 8).filter(jalur_pendaftaran = 'Perpindahan')
+        # elif sort == 'prestasi':
+        #     data_siswa = Siswa.object.filter(status = 8).filter(jalur_pendaftaran = 'Prestasi')
+        serializer = PengumumanSerializer(data_siswa, many=False)
+        # print(serializer.data)
+        # serializer = ListSiswaSerializer(data_siswa, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

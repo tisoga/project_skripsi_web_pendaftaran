@@ -247,7 +247,7 @@ class SekolahSerializer(serializers.ModelSerializer):
 
 
 class PengumumanSerializer(serializers.Serializer):
-    zonasi = ListSiswaSerializer(read_only = True)
-    afirmasi = serializers.CharField(read_only=True)
-    perpindahan = serializers.CharField(read_only=True)
-    prestasi = serializers.CharField(read_only=True)
+    zonasi = ListSiswaSerializer(read_only = True, many=True)
+    afirmasi = ListSiswaSerializer(read_only = True, many=True)
+    perpindahan = ListSiswaSerializer(read_only = True, many=True)
+    prestasi = ListSiswaSerializer(read_only = True, many=True)
