@@ -8,11 +8,11 @@ from rest_framework.permissions import IsAuthenticated
 
 from .serializer import ListSiswaSerializer, LoginSerializer, \
     UserSerializer, RegisterSerializer, PelengkapanIdentitasSerializer, \
-    PelengkapanBerkasSerializer, KegiatanSerializer, NotifikasiSerializer, PengajuanPendaftaranSerializer, EditPengajuanSerializer, SekolahSerializer, PengumumanSerializer
+    PelengkapanBerkasSerializer, KegiatanSerializer, NotifikasiSerializer, PengajuanPendaftaranSerializer, EditPengajuanSerializer, SekolahSerializer, PengumumanSerializer, GantiPasswordSerilaizer
 
 from knox.auth import AuthToken
 
-from page_siswa.models import Siswa, list_events, list_notifikasi, sekolah
+from page_siswa.models import Siswa, list_events, list_notifikasi, sekolah, CustomUser
 # Create your views here.
 
 
@@ -162,7 +162,32 @@ def Pengumuman_LolosAPI(reqeust, sort='all'):
         # elif sort == 'prestasi':
         #     data_siswa = Siswa.object.filter(status = 8).filter(jalur_pendaftaran = 'Prestasi')
         serializer = PengumumanSerializer(data_siswa, many=False)
-        # print(serializer.data)
         # serializer = ListSiswaSerializer(data_siswa, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def Change_PasswordAPI(request):
+    user = get_object_or_404(CustomUser, id=request.user.id)
+    if request.method == 'POST':
+        serializer = GantiPasswordSerilaizer(user, data=request.data)
+        if serializer.is_valid():
+            old = serializer.validated_data.get('old_password')
+            new = serializer.validated_data.get('new_password')
+            confirm = serializer.validated_data.get('confirm_password')
+            if user.check_password(old):
+                if new and confirm:
+                    if new == confirm:
+                        user.set_password(new)
+                        user.save()
+                        return Response({"proses": "Password Berhasil Di Ubah."}, status=status.HTTP_200_OK)
+                    else:
+                        return Response({"error":"Password Tidak Sama, Harap Coba Lagi"}, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response({"proses": "verified"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"password_lama": "Harap Masukan Password Lama Yang Benar"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -8,6 +8,7 @@ urlpatterns = [
     path('auth/logout/', knox_views.LogoutView.as_view(), name='logout'),
     path('auth/login/', views.LoginAPI, name='login'),
     path('auth/register/', views.RegisterAPI, name='register'),
+    path('auth/change_password/', views.Change_PasswordAPI, name='changePassword'),
     path('profile/', views.ProfileSiswaAPI, name='profile'),
     path('profile/berkas/', views.UploadBerkasAPI, name='berkas'),
     path('profile/pengajuan/', views.PengajuanAPI, name='pengajuan'),

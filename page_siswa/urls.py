@@ -12,6 +12,7 @@ urlpatterns = [
     path('register/', views.register_views, name='register'),
     path('tahapan_pendaftaran/', views.tahapan_pendaftaran_views, name='tahapan_pendaftaran'),
     path('proses_pengajuan_pendaftaran', views.proses_ajukan_pendaftaran, name='proses_pengajuan'),
+    path('ganti_password/', views.ganti_password, name='ganti_password'),
     path('pengumuman/', views.pengumuman_penerimaan, name='pengumuman'),
     path('success', views.success, name='success'),
     path('ajax/get_provinsi', ajax.get_provinsi, name='ajax_provinsi'),

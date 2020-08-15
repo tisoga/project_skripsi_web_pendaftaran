@@ -16,8 +16,8 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
-    if len(sys.argv) == 2 and sys.argv[1] == 'migrate':
-        execute_from_command_line(['manage.py', 'loaddata','initial.json'])
+    # if len(sys.argv) == 2 and sys.argv[1] == 'migrate':
+    #     execute_from_command_line(['manage.py', 'loaddata','initial.json'])
 
 if __name__ == '__main__':
     main()

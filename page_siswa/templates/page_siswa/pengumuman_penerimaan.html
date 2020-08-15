@@ -10,6 +10,7 @@
         <h5 class="card-title m-0">Pengumuman Penerimaan Siswa</h5>
     </div>
     <div class="card-body">
+        {% if data_sekolah.status_pendaftaran == 4 %}
         <div class="row">
             <div class="col-3">
                 <div class='bg-primary text-center' id="btnZonasi" style="height: 100px;cursor: pointer;"
@@ -53,15 +54,15 @@
                     <th class="align-middle text-center" style="width: 50%">Alamat</th>
                     <th class="align-middle text-center" style="width: 8%">Nilai Rata-Rata</th>
                 </tr>
+                {%for data in data_siswa.lolos_zonasi%}
                 <tr>
-                    {%for data in data_siswa.lolos_zonasi%}
                     <td class="align-middle">{{data.nis}}</td>
                     <td class="align-middle">{{data.user.get_full_name}}</td>
                     <td class="align-middle">{{data.tanggal_lahir}}</td>
                     <td class="align-middle">{{data.alamat}}</td>
                     <td class="align-middle text-center">{{data.avg|floatformat:2}}</td>
-                    {% endfor %}
                 </tr>
+                {% endfor %}
             </table>
         </div>
         <div class="row" id="jalurAfirmasi" style="margin-top: 10px;" hidden>
@@ -76,15 +77,15 @@
                     <th class="align-middle text-center" style="width: 50%">Alamat</th>
                     <th class="align-middle text-center" style="width: 8%">Nilai Rata-Rata</th>
                 </tr>
+                {%for data in data_siswa.lolos_afirmasi%}
                 <tr>
-                    {%for data in data_siswa.lolos_afirmasi%}
                     <td class="align-middle">{{data.nis}}</td>
                     <td class="align-middle">{{data.user.get_full_name}}</td>
                     <td class="align-middle">{{data.tanggal_lahir}}</td>
                     <td class="align-middle">{{data.alamat}}</td>
                     <td class="align-middle text-center">{{data.avg|floatformat:2}}</td>
-                    {% endfor %}
                 </tr>
+                {% endfor %}
             </table>
         </div>
         <div class="row" id="jalurPerpindahan" style="margin-top: 10px;" hidden>
@@ -99,15 +100,15 @@
                     <th class="align-middle text-center" style="width: 50%">Alamat</th>
                     <th class="align-middle text-center" style="width: 8%">Nilai Rata-Rata</th>
                 </tr>
+                {%for data in data_siswa.lolos_perpindahan%}
                 <tr>
-                    {%for data in data_siswa.lolos_perpindahan%}
                     <td class="align-middle">{{data.nis}}</td>
                     <td class="align-middle">{{data.user.get_full_name}}</td>
                     <td class="align-middle">{{data.tanggal_lahir}}</td>
                     <td class="align-middle">{{data.alamat}}</td>
                     <td class="align-middle text-center">{{data.avg|floatformat:2}}</td>
-                    {% endfor %}
                 </tr>
+                {% endfor %}
             </table>
         </div>
         <div class="row" id="jalurPrestasi" style="margin-top: 10px;" hidden>
@@ -122,17 +123,20 @@
                     <th class="align-middle text-center" style="width: 50%">Alamat</th>
                     <th class="align-middle text-center" style="width: 8%">Nilai Rata-Rata</th>
                 </tr>
+                {%for data in data_siswa.lolos_prestasi%}
                 <tr>
-                    {%for data in data_siswa.lolos_prestasi%}
                     <td class="align-middle">{{data.nis}}</td>
                     <td class="align-middle">{{data.user.get_full_name}}</td>
                     <td class="align-middle">{{data.tanggal_lahir}}</td>
                     <td class="align-middle">{{data.alamat}}</td>
                     <td class="align-middle text-center">{{data.avg|floatformat:2}}</td>
-                    {% endfor %}
                 </tr>
+                {% endfor %}
             </table>
         </div>
+        {% else %}
+            <p>Maaf Pengumuman Penerimaan Pendaftaran Belum Tersedia!</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

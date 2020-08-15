@@ -251,3 +251,23 @@ class PengumumanSerializer(serializers.Serializer):
     afirmasi = ListSiswaSerializer(read_only = True, many=True)
     perpindahan = ListSiswaSerializer(read_only = True, many=True)
     prestasi = ListSiswaSerializer(read_only = True, many=True)
+
+class GantiPasswordSerilaizer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True, required=True)
+    new_password = serializers.CharField(write_only=True, required=False)
+    confirm_password = serializers.CharField(write_only=True, required=False)
+
+    # def update(self, instance, validated_data):
+    #     old = validated_data.get('old_password')
+    #     new = validated_data.get('new_password')
+    #     confirm = validated_data.get('confirm_password')
+    #     if instance.check_password(old):
+    #         if new and confirm:
+    #             if new == confirm:
+    #                 print('sama')
+    #             else:
+    #                 print('beda')
+    #         else:
+    #             print('tidak ada')
+    #     else:
+    #         print(False)

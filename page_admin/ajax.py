@@ -1,10 +1,13 @@
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import SetPasswordForm
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
+from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from page_siswa.models import Siswa
+from page_siswa.models import Siswa, CustomUser
 
 from api.serializer import ListSiswaSerializer
 
@@ -57,3 +60,37 @@ def getSiswaSeleksi(request):
         daftar_siswa = Siswa.object.all()
         serializer = ListSiswaSerializer(daftar_siswa, many=True)
         return Response(serializer.data)
+
+@api_view(['POST'])
+def check_password(request):
+    if request.method == 'POST':
+        id_user = request.data.get('id')
+        old = request.data.get('old_password')
+        if not old:
+            return Response({"error": "Password Lama Tidak Boleh Kosong"}, status=status.HTTP_400_BAD_REQUEST)
+        elif not id_user:
+            return Response({"error": "Terjadi Kesalahan Silahkan Reload Ulang Page ini."}, status=status.HTTP_400_BAD_REQUEST)
+        user = get_object_or_404(CustomUser, id=id_user)
+        if user.check_password(old):
+            return Response({"proses": "verified"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Harap Masukan Password Lama Yang Benar"}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def new_password(request):
+    if request.method == "POST":
+        id_user = request.data.get('id')
+        new = request.data.get('new_password')
+        confirm = request.data.get('confirm_password')
+        if not (new and confirm):
+            return Response({"error": "Password baru dan Password Confirm Tidak Boleh Kosong"}, status=status.HTTP_400_BAD_REQUEST)
+        elif not id_user:
+            return Response({"error": "Terjadi Kesalahan Silahkan Reload Ulang Page ini."}, status=status.HTTP_400_BAD_REQUEST)
+        user = get_object_or_404(CustomUser, id=id_user)
+        if new == confirm:
+            user.set_password(new)
+            user.save()
+            # update_session_auth_hash(request, user)
+            return Response({"proses": "Password Berhasil di ubah."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Password Tidak Sesuai"}, status=status.HTTP_400_BAD_REQUEST)

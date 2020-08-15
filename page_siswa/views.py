@@ -249,6 +249,7 @@ def proses_ajukan_pendaftaran(request):
 
 
 def pengumuman_penerimaan(request):
+    data_sekolah = sekolah.objects.first()
     lolos_zonasi = Siswa.object.filter(status=8).filter(jalur_pendaftaran='Zonasi').annotate(
         avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
     lolos_afirmasi = Siswa.object.filter(
@@ -264,12 +265,16 @@ def pengumuman_penerimaan(request):
         'lolos_zonasi': lolos_zonasi,
         'lolos_afirmasi': lolos_afirmasi,
         'lolos_perpindahan': lolos_perpindahan,
-        'lolos_prestas': lolos_prestasi,
+        'lolos_prestasi': lolos_prestasi,
     }
+    # print(data_siswa)
     return render(request=request,
                   template_name='page_siswa/pengumuman_penerimaan.html',
-                  context={'data_siswa': data_siswa})
+                  context={'data_siswa': data_siswa, 'data_sekolah': data_sekolah})
 
+def ganti_password(request):
+    return render(request = request,
+                  template_name= 'page_siswa/ganti_password.html')
 
 def success(request):
     cs = CustomUser.object.get(email=request.user.email)
