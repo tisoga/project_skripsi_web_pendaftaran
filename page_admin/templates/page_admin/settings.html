@@ -74,6 +74,13 @@
                             <div class="d-flex justify-content-around mt-2">
                                 <button class="btn btn-secondary" type="button" id="btnStatus"
                                     onclick="showHideDiv('desc')">Deskripsi Daftar Ulang</button>
+                                <button class="btn btn-dark" type="button" id="btnStatus"
+                                    onclick="showHideDiv('password')">Ubah
+                                    Password Admin</button>
+                            </div>
+                            <div class="d-flex justify-content-around mt-2">
+                                <button class="btn btn-primary" type="button" id="btnStatus" data-toggle="modal"
+                                    data-target="#modalTahunAjaranBaru">Tahun Ajaran Baru</button>
                             </div>
                             <hr>
                             <div id="divStatus" style="display: none;">
@@ -211,6 +218,43 @@
                                         data-toggle="modal" data-target="#modalDesc">
                                 </form>
                             </div>
+                            <div id="divPassword" style="display: none;">
+                                <label for="oldPassword" id="label_old">Masukan Password Sebelumnya</label>
+                                <div class="form-row form-group">
+                                    <input type="hidden" name="id_user" id="id_user" value="{{request.user.id}}"
+                                        readonly>
+                                    <div class="col-sm-12 col-md-8">
+                                        <input type="password" class="form-control" name="old_password"
+                                            id="old_password">
+                                    </div>
+                                    <div class="col-sm-12 col-md-4">
+                                        <button type="button" class="btn btn-primary float-right btn-block"
+                                            id="btn_check"
+                                            onclick="check_password(id_user.value, old_password.value)">Check
+                                            Password</button>
+                                    </div>
+                                </div>
+                                <label for="newPassword" class="text-muted" id="label_new">Masukan Password Baru</label>
+                                <div class="form-row form-group">
+                                    <div class="col-12">
+                                        <input type="password" class="form-control" name="new_password"
+                                            id="new_password" disabled>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="text-muted" for="confirm_password" id="label_confirm">Masukan
+                                            Kembali Password Baru</label>
+                                    </div>
+                                    <div class="col-12">
+                                        <input type="password" class="form-control" id="confirm_password"
+                                            name="confirm_password" disabled>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <button type="button" class="btn btn-secondary btn-block" id="btn_change"
+                                            onclick="ganti_password(id_user.value, new_password.value, confirm_password.value)"
+                                            disabled> Save Password</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -316,6 +360,86 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalPeringatan" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Peringatan</h5>
+            </div>
+            <div class="modal-body">
+                <h3 id="modal-body" class="text-center"></h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btn_modal" onclick="close_modal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="modalTahunAjaranBaru" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h5>Apakah anda yakin ingin memulai tahun ajaran baru?</h5>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+                <button type="submit" class="btn btn-primary" onclick="openModalAjaranBaru()">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="modalPeringatanAjaranBaru" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h4 class="text-center">Peringatan</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h5 style="text-align: justify;">Jika anda ingin memulai tahun ajaran baru, seluruh <b
+                        style="color: red;">data siswa</b>
+                    pada tahun ajaran ini akan terhapus!</h5>
+                <h5 style="text-align: justify;"><b>Apakah Anda Yakin</b> ?</h5>
+            </div>
+            <div class="modal-footer form-row">
+                <div class="col-12">
+                    <label>Ketik "<b style="color: aqua;">Tahun Ajaran Baru</b>", di form dibawah, untuk memulai tahun
+                        ajaran baru. dan <b style="color: red;">seluruh data siswa akan terhapus</b>.</label>
+                </div>
+                <div class="form-inline">
+                    <div class="form-group">
+                        <form method="POST" id="form_reset_tahun" action="{% url 'admin_page:ajax_reset_tahun'%}">
+                            {% csrf_token %}
+                            <input type="text" class="form-control" name="checkForm" id="checkForm"
+                                placeholder="Tahun Ajaran Baru">
+                            <input type="hidden" name="secretText" id="secretText">
+                            <button type="button" class="btn btn-primary float-right ml-1"
+                                onclick="validasiForm()">Ya</button>
+                            <button class="btn btn-secondary float-right ml-1" data-dismiss="modal">Tidak</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-12" style="display: none;" id="validasiGagal">
+                    <label style="color: red;text-align: justify;">Text Salah, Harap Masukan <b
+                            style="color: aqua;">"Tahun Ajaran Baru"</b> di form, untuk memulai tahun ajaran
+                        baru!</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block script %}
@@ -380,24 +504,35 @@
             $('#divStatus').show();
             $('#divAlamat').hide();
             $('#divDesc').hide();
+            $('#divPassword').hide();
         }
         else if (val == 'alamat') {
             $('#divNama').hide();
             $('#divStatus').hide();
             $('#divAlamat').show();
             $('#divDesc').hide();
+            $('#divPassword').hide();
         }
         else if (val == 'nama') {
             $('#divNama').show();
             $('#divStatus').hide();
             $('#divAlamat').hide();
             $('#divDesc').hide();
+            $('#divPassword').hide();
         }
         else if (val == 'desc') {
             $('#divNama').hide();
             $('#divStatus').hide();
             $('#divAlamat').hide();
             $('#divDesc').show();
+            $('#divPassword').hide();
+        }
+        else if (val == 'password') {
+            $('#divNama').hide();
+            $('#divStatus').hide();
+            $('#divAlamat').hide();
+            $('#divDesc').hide();
+            $('#divPassword').show();
         }
     }
     function showModal(id) {
@@ -422,4 +557,126 @@
     });
 </script>
 
+<script>
+    const text_peringatan = document.getElementById('modal-body');
+    const label_old = document.getElementById('label_old');
+    const label_new = document.getElementById('label_new');
+    const label_confirm = document.getElementById('label_confirm');
+    const input_old = document.getElementById('old_password');
+    const input_new = document.getElementById('new_password');
+    const input_confirm = document.getElementById('confirm_password');
+    const btn_check = document.getElementById('btn_check');
+    const btn_change = document.getElementById('btn_change');
+    const btn_modal = document.getElementById('btn_modal');
+
+    function check_password(id, password) {
+        // console.log(id)
+        if (!password) {
+            text_peringatan.innerHTML = "Password Lama Tidak Boleh Kosong!";
+            $('#modalPeringatan').modal('show');
+        }
+        else if (id === 'None' || !id) {
+            text_peringatan.innerHTML = "Terjadi Kesalahan, Silahkan Coba Kembali.";
+            $('#modalPeringatan').modal('show');
+            btn_modal.setAttribute("onClick", "location.reload()");
+        }
+        else {
+            const data = JSON.stringify({
+                "id": id,
+                "old_password": password
+            })
+            $.ajax({
+                url: '{% url "admin_page:ajax_check_password" %}',
+                type: 'POST',
+                contentType: 'application/json',
+                data: data,
+                dataType: 'json',
+                success: function (res) {
+                    // console.log(res)
+                    label_new.classList.remove('text-muted');
+                    label_confirm.classList.remove('text-muted');
+                    label_old.classList.add('text-muted');
+                    input_old.disabled = true;
+                    input_new.disabled = false;
+                    input_confirm.disabled = false;
+                    btn_check.disabled = true;
+                    btn_check.className = "btn btn-secondary float-right btn-block";
+                    btn_change.disabled = false;
+                    btn_change.className = "btn btn-primary btn-block";
+                },
+                error: function (request, status, error) {
+                    // console.log(request.responseJSON)
+                    text_peringatan.innerHTML = request.responseJSON.error;
+                    $('#modalPeringatan').modal('show');
+                    input_old.value = "";
+                }
+            })
+        }
+    }
+
+    function ganti_password(id, new_password, confirm_password) {
+        if (!new_password || !confirm_password) {
+            text_peringatan.innerHTML = "Password Baru dan Konfirmasi Password tidak boleh kosong.";
+            $('#modalPeringatan').modal('show');
+        }
+        else if (!id) {
+            text_peringatan.innerHTML = "Terjadi Kesalahan, Silahkan Coba Kembali.";
+            btn_modal.setAttribute("onClick", "location.reload()");
+        }
+        else {
+            const data = JSON.stringify({
+                "id": id,
+                "new_password": new_password,
+                "confirm_password": confirm_password
+            })
+            console.log(data)
+            $.ajax({
+                url: '{% url "admin_page:ajax_new_password" %}',
+                type: 'POST',
+                contentType: 'application/json',
+                data: data,
+                dataType: 'json',
+                success: function (res) {
+                    // console.log(res)
+                    text_peringatan.innerHTML = "Password Berhasil Diubah, Silahkan Login Kembali!"
+                    btn_modal.setAttribute("onClick", "window.location.href = '{%url 'siswa:login'%}'");
+                    $('#modalPeringatan').modal({ backdrop: 'static', keyboard: false });
+                },
+                error: function (request, status, error) {
+                    // console.log(request.responseJSON)
+                    text_peringatan.innerHTML = request.responseJSON.error;
+                    $('#modalPeringatan').modal('show');
+                }
+            })
+        }
+    }
+
+    function close_modal() {
+        $('#modalPeringatan').modal('hide');
+    }
+</script>
+
+<script>
+    function openModalAjaranBaru() {
+        $('#modalPeringatanAjaranBaru').modal('show');
+        $('#modalTahunAjaranBaru').modal('hide');
+    }
+    function validasiForm() {
+        const validasiText = document.getElementById('checkForm').value
+        const secretText = document.getElementById('secretText')
+        const form = document.getElementById('form_reset_tahun')
+        if (validasiText === 'Tahun Ajaran Baru') {
+            secretText.value = 'fjazxsaas'
+            form.submit()
+        }
+        else {
+            $('#validasiGagal').show()
+        }
+    }
+    $('#checkForm').keyup(function () {
+        if (!this.value) {
+            $('#validasiGagal').hide()
+        }
+    })
+</script>
 {% endblock %}

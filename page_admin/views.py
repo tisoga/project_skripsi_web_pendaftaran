@@ -13,6 +13,8 @@ from page_siswa.models import Siswa, list_events, list_notifikasi, sekolah
 def homepage(request):
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     data_sekolah = sekolah.objects.first()
     setting = False
     if data_sekolah.nama == '' or data_sekolah.alamat == '' or data_sekolah.daya_tampung == 0:
@@ -36,6 +38,8 @@ def homepage(request):
 def listsiswa(request):
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     data_sekolah = sekolah.objects.first()
     setting = False
     if data_sekolah.nama == '' or data_sekolah.alamat == '' or data_sekolah.daya_tampung == 0:
@@ -59,6 +63,8 @@ def pageSeleksi(request):
     data_sekolah = sekolah.objects.first()
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     if data_sekolah.status_pendaftaran != 2:
         messages.error(
             request, f'Ubah Status PPDB di Setting PPDB, untuk memulai Proses Seleksi Siswa.')
@@ -93,6 +99,8 @@ def tabelSeleksi2(request, data):
     data_sekolah = sekolah.objects.first()
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     if data_sekolah.status_pendaftaran != 2:
         messages.error(
             request, f'Ubah Status PPDB di Setting PPDB, untuk memulai Proses Seleksi Siswa.')
@@ -145,7 +153,8 @@ def tabelSeleksi2(request, data):
         seleksi['kuota'] = data_sekolah.sisa_afirmasi
         seleksi['jumlah_siswa'] = len(list_siswa)
         if (data_sekolah.sisa_afirmasi - len(list_siswa)) >= 0:
-            seleksi['sisa_kuota'] = data_sekolah.sisa_afirmasi - len(list_siswa)
+            seleksi['sisa_kuota'] = data_sekolah.sisa_afirmasi - \
+                len(list_siswa)
         else:
             seleksi['sisa_kuota'] = 0
     elif data == 'perpindahan' or data == 'perpiindahan':
@@ -158,7 +167,8 @@ def tabelSeleksi2(request, data):
         seleksi['kuota'] = data_sekolah.sisa_perpindahan
         seleksi['jumlah_siswa'] = len(list_siswa)
         if (data_sekolah.sisa_perpindahan - len(list_siswa)) >= 0:
-            seleksi['sisa_kuota'] = data_sekolah.sisa_perpindahan - len(list_siswa)
+            seleksi['sisa_kuota'] = data_sekolah.sisa_perpindahan - \
+                len(list_siswa)
         else:
             seleksi['sisa_kuota'] = 0
     elif data == 'prestasi' or data == 'prestasii':
@@ -171,7 +181,8 @@ def tabelSeleksi2(request, data):
         seleksi['kuota'] = data_sekolah.sisa_prestasi
         seleksi['jumlah_siswa'] = len(list_siswa)
         if (data_sekolah.sisa_prestasi - len(list_siswa)) >= 0:
-            seleksi['sisa_kuota'] = data_sekolah.sisa_prestasi - len(list_siswa)
+            seleksi['sisa_kuota'] = data_sekolah.sisa_prestasi - \
+                len(list_siswa)
         else:
             seleksi['sisa_kuota'] = 0
     else:
@@ -273,6 +284,10 @@ def tabelSeleksi2(request, data):
 
 
 def prosesSeleksi(request):
+    if request.user.is_authenticated and not request.user.is_staff:
+        return redirect('siswa:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     data_sekolah = sekolah.objects.first()
     if request.method == 'POST':
         nis = request.POST.get('nis')
@@ -307,6 +322,8 @@ def tabelSeleksi(request, data):
     data_sekolah = sekolah.objects.first()
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     if data_sekolah.status_pendaftaran != 6:
         messages.error(
             request, f'Ubah Status PPDB di Setting PPDB, untuk memulai Proses Seleksi Siswa.')
@@ -357,6 +374,8 @@ def tabelSeleksi(request, data):
 def verifikasi_siswa(request):
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     list_siswa = Siswa.object.filter(status=3).order_by('nis')
     data_sekolah = sekolah.objects.first()
     setting = False
@@ -398,6 +417,8 @@ def daftar_ulang(request):
     data_sekolah = sekolah.objects.first()
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     if data_sekolah.status_pendaftaran != 3:
         messages.error(
             request, f'Ubah Status PPDB di Setting PPDB, untuk memulai Proses Daftar Ulang.')
@@ -431,6 +452,8 @@ def daftar_ulang(request):
 def events(request):
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     data_sekolah = sekolah.objects.first()
     setting = False
     if data_sekolah.nama == '' or data_sekolah.alamat == '' or data_sekolah.daya_tampung == 0:
@@ -461,10 +484,13 @@ def setting_ppdb(request):
     data_sekolah = sekolah.objects.first()
     if request.user.is_authenticated and not request.user.is_staff:
         return redirect('siswa:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     if request.method == 'POST':
         if request.POST.get('dayaTampung'):
             if data_sekolah.status_pendaftaran == 2 or data_sekolah.status_pendaftaran == 3 or data_sekolah.status_pendaftaran == 4:
-                messages.error(request, f'Gagal Merubah daya tampung, dikarenakan status pendaftaran PPDB sudah sampai {data_sekolah.get_status_pendaftaran_display()}') 
+                messages.error(
+                    request, f'Gagal Merubah daya tampung, dikarenakan status pendaftaran PPDB sudah sampai {data_sekolah.get_status_pendaftaran_display()}')
                 return redirect('admin_page:setting')
             sisa = json.loads(data_sekolah.pembagian_kuota())
             kuota = request.POST.get('dayaTampung')
@@ -514,7 +540,8 @@ def setting_ppdb(request):
             return redirect('admin_page:setting')
         elif request.POST.get('desa'):
             if data_sekolah.status_pendaftaran == 2 or data_sekolah.status_pendaftaran == 3 or data_sekolah.status_pendaftaran == 4:
-                messages.error(request, f'Gagal Merubah Alamat Sekolah, dikarenakan status pendaftaran PPDB sudah sampai {data_sekolah.get_status_pendaftaran_display()}') 
+                messages.error(
+                    request, f'Gagal Merubah Alamat Sekolah, dikarenakan status pendaftaran PPDB sudah sampai {data_sekolah.get_status_pendaftaran_display()}')
                 return redirect('admin_page:setting')
             lengkap = request.POST['alamat_lengkap']
             prov = request.POST['prov']
@@ -551,3 +578,25 @@ def setting_ppdb(request):
     return render(request=request,
                   template_name='page_admin/settings.html',
                   context={'active': 'setting', 'data_sekolah': data_sekolah})
+
+
+def tahunAjaranBaru(request):
+    if request.user.is_authenticated and not request.user.is_staff:
+        return redirect('siswa:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
+    if request.method == 'POST':
+        all_siswa = Siswa.object.all()
+        data_sekolah = sekolah.objects.first()
+        # print(data_sekolah)
+        secret_text = request.POST.get('secretText')
+        if secret_text == 'fjazxsaas':
+            for siswa in all_siswa:
+                siswa.user.delete()
+            data_sekolah.status_pendaftaran = 0
+            data_sekolah.save()
+            messages.success(
+                request, 'Tahun Ajaran telah berganti, Seluruh data Siswa Pada Tahun Ajaran Sebelumnya Berhasil Dihapus')
+            return redirect('admin_page:setting')
+    messages.error(request, 'Terjadi Kesalahan, Silahkan Coba Lagi.')
+    return redirect('admin_page:setting')

@@ -19,4 +19,5 @@ urlpatterns = [
     path('ajax/get_siswa_seleksi', ajax.getSiswaSeleksi, name='ajax_seleksi_siswa'),
     path('ajax/check_password', ajax.check_password, name='ajax_check_password'),
     path('ajax/new_password', ajax.new_password, name='ajax_new_password'),
+    path('ajax/reset_tahun_ajaran', views.tahunAjaranBaru, name='ajax_reset_tahun')
 ]

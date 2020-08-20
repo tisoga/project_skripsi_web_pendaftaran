@@ -12,6 +12,10 @@ from .models import CustomUser, Siswa, list_events, list_notifikasi, sekolah
 
 
 def login_views(request):
+    if request.user.is_authenticated and request.user.is_staff:
+        return redirect('admin_page:home')
+    elif request.user.is_authenticated and not request.user.is_staff:
+        return redirect('siswa:home')
     data_sekolah = sekolah.objects.first()
     if request.method == 'POST':
         if request.POST.get('email'):
@@ -39,6 +43,10 @@ def logout_views(request):
 
 
 def register_views(request):
+    if request.user.is_authenticated and request.user.is_staff:
+        return redirect('admin_page:home')
+    elif request.user.is_authenticated and not request.user.is_staff:
+        return redirect('siswa:home')
     data_sekolah = sekolah.objects.first()
     if request.method == 'POST':
         if request.POST.get('email'):
@@ -72,6 +80,8 @@ def redirect_sites(request):
 def homepage(request):
     if request.user.is_authenticated and request.user.is_staff:
         return redirect('admin_page:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     # print(request.user.DetailUser.get_jenis_kelamin_display())
     page = 'home'
     events = list_events.objects.all()
@@ -93,6 +103,8 @@ def homepage(request):
 def tahapan_pendaftaran_views(request):
     if request.user.is_authenticated and request.user.is_staff:
         return redirect('admin_page:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     data_sekolah = sekolah.objects.first()
     data = Siswa.object.get(user=request.user)
     status = data.status
@@ -170,6 +182,10 @@ def tahapan_pendaftaran_views(request):
 
 
 def proses_ajukan_pendaftaran(request):
+    if request.user.is_authenticated and request.user.is_staff:
+        return redirect('admin_page:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     if request.user.DetailUser.status != 2:
         messages.error(request, f'Terjadi Kesalahn')
         return redirect('siswa:home')
@@ -249,6 +265,10 @@ def proses_ajukan_pendaftaran(request):
 
 
 def pengumuman_penerimaan(request):
+    if request.user.is_authenticated and request.user.is_staff:
+        return redirect('admin_page:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     data_sekolah = sekolah.objects.first()
     lolos_zonasi = Siswa.object.filter(status=8).filter(jalur_pendaftaran='Zonasi').annotate(
         avg=(F('nilai_matematika') + F('nilai_ipa') + F('nilai_indonesia') + F('nilai_inggris'))/4).order_by('-avg')
@@ -273,6 +293,10 @@ def pengumuman_penerimaan(request):
                   context={'data_siswa': data_siswa, 'data_sekolah': data_sekolah})
 
 def ganti_password(request):
+    if request.user.is_authenticated and request.user.is_staff:
+        return redirect('admin_page:home')
+    elif not request.user.is_authenticated:
+        return redirect('siswa:login')
     return render(request = request,
                   template_name= 'page_siswa/ganti_password.html')
 
