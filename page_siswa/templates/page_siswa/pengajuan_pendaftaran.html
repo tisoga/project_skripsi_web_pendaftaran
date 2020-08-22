@@ -141,7 +141,7 @@
                         value="{{request.user.DetailUser.nilai_ipa}}" required disabled>
                 </div>
             </div>
-            <div class="form-row" id="berkas">
+            <div class="row" id="berkas">
                 <div class="col-12 text-center">
                     <h3><u>Berkas-Berkas</u></h3>
                 </div>
@@ -149,21 +149,24 @@
                     <label>Ijazah</label>
                     <a href="{{user.DetailUser.berkas_ijazah.url}}" data-fancybox
                         data-caption="Ijazah {{request.user.get_full_name}}">
-                        <img class="img-fluid" src="{{user.DetailUser.berkas_ijazah.url}}" style="height: 250px;">
+                        <img class="img-fluid" src="{{user.DetailUser.berkas_ijazah.url}}"
+                            style="height: 250px;width: 330px;">
                     </a>
                 </div>
                 <div class="col-lg-4 col-md-4 col-xs-6 text-center hidden">
                     <label>Akta Kelahiran</label>
                     <a href="{{user.DetailUser.berkas_akta.url}}" data-fancybox
                         data-caption="Akta Kelahiran {{request.user.get_full_name}}">
-                        <img class="img-fluid" src="{{user.DetailUser.berkas_akta.url}}" style="height: 250px;">
+                        <img class="img-fluid" src="{{user.DetailUser.berkas_akta.url}}"
+                            style="height: 250px;width: 330px;">
                     </a>
                 </div>
                 <div class="col-lg-4 col-md-4 col-xs-6 text-center hidden">
                     <label>Surat Kesehatan</label>
                     <a href="{{user.DetailUser.berkas_kesehatan.url}}" data-fancybox
                         data-caption="Surat Kesehatan {{request.user.get_full_name}}">
-                        <img class="img-fluid" src="{{user.DetailUser.berkas_kesehatan.url}}" style="height: 250px;">
+                        <img class="img-fluid" src="{{user.DetailUser.berkas_kesehatan.url}}"
+                            style="height: 250px;width: 330px;">
                     </a>
                 </div>
             </div>
@@ -275,7 +278,7 @@
                             <div id="fileUpload" style="display: none;">
                                 <label id="labelUpload"></label>
                                 <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="inputUpload" >
+                                    <input type="file" class="custom-file-input" id="inputUpload">
                                     <label class="custom-file-label" for="input_kesehatan">Choose file</label>
                                 </div>
                             </div>

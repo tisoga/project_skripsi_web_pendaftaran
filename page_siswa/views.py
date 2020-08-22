@@ -197,10 +197,6 @@ def proses_ajukan_pendaftaran(request):
             kabupaten = request.POST.get('kab')
             kecamatan = request.POST.get('kec')
             desa = request.POST.get('desa')
-            foto = CompressImage(request.FILES.get('foto'))
-            ijazah = CompressImage(request.FILES.get('skhun'))
-            akta = CompressImage(request.FILES.get('akta'))
-            kesehatan = request.FILES.get('kesehatan')
             request.user.first_name = request.POST.get('first_name')
             request.user.last_name = request.POST.get('last_name')
             data_siswa.jenis_kelamin = request.POST.get('jk')
@@ -215,14 +211,19 @@ def proses_ajukan_pendaftaran(request):
             if lengkap and provinsi and kabupaten and kecamatan and desa:
                 data_siswa.alamat = '{}, {}, {}, {}, {}'.format(
                     lengkap, desa, kecamatan, kabupaten, provinsi)
-            if foto:
+            if request.FILES.get('foto'):
+                foto = CompressImage(request.FILES.get('foto'))
                 data_siswa.foto_diri = foto
-            if ijazah:
+            if request.FILES.get('skhun'):
+                ijazah = CompressImage(request.FILES.get('skhun'))
                 data_siswa.berkas_ijazah = ijazah
-            if akta:
+            if request.FILES.get('akta'):
+                akta = CompressImage(request.FILES.get('akta'))
                 data_siswa.berkas_akta = akta
-            if kesehatan:
+            if request.FILES.get('kesehatan'):
+                kesehatan = request.FILES.get('kesehatan')
                 data_siswa.berkas_kesehatan = kesehatan
+            print(request.POST)
             request.user.save()
             data_siswa.save()
             messages.success(request, f'Identitas Diri Berhasil diedit')
