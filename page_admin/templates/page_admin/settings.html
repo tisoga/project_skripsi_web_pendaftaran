@@ -89,7 +89,7 @@
                                     <label>Status Pendaftaran PPDB :
                                         {{data_sekolah.get_status_pendaftaran_display}}</label>
                                     <select class="form-control" name="status" required>
-                                        <option value="0" {% if data_sekolah.status_pendaftaran == 0%}selected{%endif%}>
+                                        <option value="0" {% if data_sekolah.status_pendaftaran == 0%}selected{%endif%} disabled>
                                             Pendaftaran Ditutup</option>
                                         <option value="1" {% if data_sekolah.status_pendaftaran == 1%}selected{%endif%}>
                                             Pendaftaran Dibuka</option>

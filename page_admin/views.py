@@ -26,10 +26,15 @@ def homepage(request):
         'identitas': len(siswa.filter(status=0)),
         'upload_berkas': len(siswa.filter(status=1)),
         'verifikasi': len(siswa.filter(status=3)),
-        'gagal_verifikasi': len(siswa.filter(status=4))
+        'gagal_verifikasi': len(siswa.filter(status=4)),
+        'jalur_zonasi': len(siswa.filter(jalur_pendaftaran='zonasi')),
+        'jalur_afirmasi': len(siswa.filter(jalur_pendaftaran='afirmasi')),
+        'jalur_perpindahan': len(siswa.filter(jalur_pendaftaran='perpindahan')),
+        'jalur_prestasi': len(siswa.filter(jalur_pendaftaran='prestasi')),
     }
     data = {'jumlah': len(siswa), 'laki': len(laki), 'perempuan': len(perempuan),
             'status': status}
+    print(data)
     return render(request=request,
                   template_name='page_admin/beranda.html',
                   context={'data': data, 'active': 'beranda', 'setting': setting})
@@ -90,6 +95,11 @@ def pageSeleksi(request):
         'jumlah': len(data_siswa.filter(status=13)),
         'kuota': json.loads(data_sekolah.pembagian_kuota())['prestasi']
     }
+    tolak = {
+        'jumlah': len(data_siswa.filter(status=7)),
+        'kuota': json.loads(data_sekolah.pembagian_kuota())['prestasi']
+    }
+    print(tolak)
     return render(request=request,
                   template_name='page_admin/seleksi_siswa.html',
                   context={'active': 'seleksi', 'data': [zonasi, afirmasi, perpindahan, prestasi]})
@@ -499,14 +509,18 @@ def setting_ppdb(request):
             perpindahan = request.POST.get('perpindahan')
             prestasi = request.POST.get('prestasi')
             data_sekolah.daya_tampung = kuota
-            data_sekolah.sisa_zonasi = int(
-                zonasi) + (sisa['zonasi'] - data_sekolah.sisa_zonasi)
-            data_sekolah.sisa_afirmasi = int(
-                afirmasi) + (sisa['afirmasi'] - data_sekolah.sisa_afirmasi)
-            data_sekolah.sisa_perpindahan = int(
-                perpindahan) + (sisa['perpindahan'] - data_sekolah.sisa_perpindahan)
-            data_sekolah.sisa_prestasi = int(
-                prestasi) + (sisa['prestasi'] - data_sekolah.sisa_prestasi)
+            # data_sekolah.sisa_zonasi = int(
+            #     zonasi) + (sisa['zonasi'] - data_sekolah.sisa_zonasi)
+            # data_sekolah.sisa_afirmasi = int(
+            #     afirmasi) + (sisa['afirmasi'] - data_sekolah.sisa_afirmasi)
+            # data_sekolah.sisa_perpindahan = int(
+            #     perpindahan) + (sisa['perpindahan'] - data_sekolah.sisa_perpindahan)
+            # data_sekolah.sisa_prestasi = int(
+            #     prestasi) + (sisa['prestasi'] - data_sekolah.sisa_prestasi)
+            data_sekolah.sisa_zonasi = zonasi
+            data_sekolah.sisa_prestasi = prestasi
+            data_sekolah.sisa_perpindahan = perpindahan
+            data_sekolah.sisa_afirmasi = afirmasi
             data_sekolah.save()
             messages.success(request, f'Daya Tampung Sekolah Berhasil di Ubah')
             return redirect('admin_page:setting')
@@ -594,6 +608,11 @@ def tahunAjaranBaru(request):
             for siswa in all_siswa:
                 siswa.user.delete()
             data_sekolah.status_pendaftaran = 0
+            data_sekolah.daya_tampung = 0
+            data_sekolah.sisa_afirmasi = 0
+            data_sekolah.sisa_perpindahan = 0
+            data_sekolah.sisa_prestasi = 0
+            data_sekolah.sisa_zonasi = 0
             data_sekolah.save()
             messages.success(
                 request, 'Tahun Ajaran telah berganti, Seluruh data Siswa Pada Tahun Ajaran Sebelumnya Berhasil Dihapus')

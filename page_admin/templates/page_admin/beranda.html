@@ -97,7 +97,7 @@
                     <h3>0</h3>
                     {% endif %}
 
-                    <p>Jumlah siswa yang belum diverifikasi</p>
+                    <p>Jumlah siswa yang belum diseleksi</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-help"></i>
@@ -114,10 +114,78 @@
                     <h3>0</h3>
                     {% endif %}
 
-                    <p>Jumlah Siswa yang gagal verifikasi</p>
+                    <p>Jumlah Siswa yang gagal di seleksi</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-close"></i>
+                </div>        
+            </div>
+        </div>
+    </div>
+    {% endwith %}
+    {% with status=data.status%}
+    <div class="row">
+        <div class="col-lg-3 col-6">
+             <!-- small box -->
+             <div class="small-box bg-dark">
+                <div class="inner">
+                    {% if status.jalur_zonasi%}
+                    <h3>{{status.jalur_zonasi}}</h3>
+                    {% else %}
+                    <h3>0</h3>
+                    {% endif %}
+                    <p>Jumlah Siswa yang mendaftar melalui jalur Zonasi</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>        
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+             <!-- small box -->
+             <div class="small-box bg-primary">
+                <div class="inner">
+                    {% if status.afirmasi%}
+                    <h3>{{status.afirmasi}}</h3>
+                    {% else %}
+                    <h3>0</h3>
+                    {% endif %}
+                    <p>Jumlah Siswa yang mendaftar melalui jalur Afirmasi</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-file"></i>
+                </div>        
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+             <!-- small box -->
+             <div class="small-box bg-success">
+                <div class="inner">
+                    {% if status.perpindahan%}
+                    <h3>{{status.perpindahan}}</h3>
+                    {% else %}
+                    <h3>0</h3>
+                    {% endif %}
+                    <p style="font-size: 13.7px;">Jumlah Siswa yang mendaftar melalui jalur Perpindahan Orang Tua</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-people-carry"></i>
+                </div>        
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+             <!-- small box -->
+             <div class="small-box bg-warning">
+                <div class="inner">
+                    {% if status.prestasi%}
+                    <h3>{{status.prestasi}}</h3>
+                    {% else %}
+                    <h3>0</h3>
+                    {% endif %}
+                    <p>Jumlah Siswa yang mendaftar melalui jalur Prestasi</p>
+                </div>
+                <div class="icon">
+                    <i class=""></i>
                 </div>        
             </div>
         </div>

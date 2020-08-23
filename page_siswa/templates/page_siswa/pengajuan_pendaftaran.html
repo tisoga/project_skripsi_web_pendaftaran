@@ -116,28 +116,28 @@
                     <h3 style="display: inline-block;"><b><u>Hasil Nilai UN</u></b></h3>
                     <a href="#">
                         <i class="fa fa-question-circle fa-sm" data-toggle="tooltip"
-                            title="Gunakan titik '.' untuk memasukan nilai bernilai koma ','"
+                            title="Gunakan titik '.' untuk memasukan nilai bernilai koma',' dan batas nilai maximal adalah 100"
                             style="display: inline-block;position: absolute;"></i>
                     </a>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="mtk">Matematika</label>
-                    <input type="number" step="any" class="form-control editabled" name="mtk" id="mtk"
+                    <input type="number" step="any" class="form-control editabled" min='0' max='100' name="mtk" id="mtk"
                         value="{{request.user.DetailUser.nilai_matematika}}" required disabled>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="indo">Bhs.Indonesia</label>
-                    <input type="number" step="any" class="form-control editabled" name="indo" id="indo"
+                    <input type="number" step="any" class="form-control editabled" min='0' max='100' name="indo" id="indo"
                         value="{{request.user.DetailUser.nilai_indonesia}}" required disabled>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="ing">Bhs.Inggris</label>
-                    <input type="number" step="any" class="form-control editabled" name="ing" id="ing"
+                    <input type="number" step="any" class="form-control editabled" min='0' max='100' name="ing" id="ing"
                         value="{{request.user.DetailUser.nilai_inggris}}" required disabled>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="ipa">IPA</label>
-                    <input type="number" step="any" class="form-control editabled" name="ipa" id="ipa"
+                    <input type="number" step="any" class="form-control editabled" min='0' max='100' name="ipa" id="ipa"
                         value="{{request.user.DetailUser.nilai_ipa}}" required disabled>
                 </div>
             </div>

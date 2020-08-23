@@ -131,7 +131,7 @@ def tahapan_pendaftaran_views(request):
         messages.error(
             request, f'Pendaftaran sudah ditutup, anda tidak bisa lagi untuk mengajukan pendaftaran!')
         return redirect('siswa:home')
-    print(page)
+    # print(page)
     if request.method == 'POST':
         if request.POST.get('first_name'):
             if request.user.DetailUser.status != 0:
@@ -156,7 +156,8 @@ def tahapan_pendaftaran_views(request):
             data.umur = request.POST.get('umur')
             data.alamat = '{}, {}, {}, {}, {}'.format(
                 lengkap, desa, kecamatan, kabupaten, provinsi)
-            data.foto_diri = CompressImage(request.FILES.get('foto'))
+            # data.foto_diri = CompressImage(request.FILES.get('foto'))
+            data.foto_diri = request.FILES.get('foto')
             data.save()
             messages.success(request, f'Identitas Diri Berhasil disimpan')
             return redirect('siswa:home')
@@ -169,10 +170,13 @@ def tahapan_pendaftaran_views(request):
             data.nilai_inggris = request.POST.get('ing')
             data.nilai_ipa = request.POST.get('ipa')
             data.status = 2
-            data.berkas_ijazah = CompressImage(request.FILES.get('skhun'))
-            data.berkas_akta = CompressImage(request.FILES.get('akta'))
-            data.berkas_kesehatan = CompressImage(
-                request.FILES.get('kesehatan'))
+            # data.berkas_ijazah = CompressImage(request.FILES.get('skhun'))
+            # data.berkas_akta = CompressImage(request.FILES.get('akta'))
+            # data.berkas_kesehatan = CompressImage(
+            #     request.FILES.get('kesehatan'))
+            data.berkas_ijazah = request.FILES.get('skhun')
+            data.berkas_akta = request.FILES.get('akta')
+            data.berkas_kesehatan = request.FILES.get('kesehatan')
             data.save()
             messages.success(request, f'Berkas-Berkas Berhasil disimpan')
             return redirect('siswa:home')
@@ -192,6 +196,10 @@ def proses_ajukan_pendaftaran(request):
     if request.method == 'POST':
         data_siswa = Siswa.object.get(pk=request.user)
         if request.POST.get('decision') == 'edit':
+            if int(request.POST.get('umur')) > 21:
+                messages.error(
+                    request, f'Maaf Umur Anda Sudah Melebihi Batas Maksimal untuk Melakukan PPDB tingkat SMA. Batas Umur Maksimal melakukan PPDB Tingkat SMA Adalah 21 Tahun')
+                return redirect('siswa:tahapan_pendaftaran')
             lengkap = request.POST.get('alamat')
             provinsi = request.POST.get('prov')
             kabupaten = request.POST.get('kab')
@@ -212,18 +220,21 @@ def proses_ajukan_pendaftaran(request):
                 data_siswa.alamat = '{}, {}, {}, {}, {}'.format(
                     lengkap, desa, kecamatan, kabupaten, provinsi)
             if request.FILES.get('foto'):
-                foto = CompressImage(request.FILES.get('foto'))
+                foto = request.FILES.get('foto')
+                # foto = CompressImage(request.FILES.get('foto'))
                 data_siswa.foto_diri = foto
             if request.FILES.get('skhun'):
-                ijazah = CompressImage(request.FILES.get('skhun'))
+                ijazah = request.FILES.get('skhun')
+                # ijazah = CompressImage(request.FILES.get('skhun'))
                 data_siswa.berkas_ijazah = ijazah
             if request.FILES.get('akta'):
-                akta = CompressImage(request.FILES.get('akta'))
+                akta = request.FILES.get('akta')
+                # akta = CompressImage(request.FILES.get('akta'))
                 data_siswa.berkas_akta = akta
             if request.FILES.get('kesehatan'):
                 kesehatan = request.FILES.get('kesehatan')
                 data_siswa.berkas_kesehatan = kesehatan
-            print(request.POST)
+            # print(request.POST)
             request.user.save()
             data_siswa.save()
             messages.success(request, f'Identitas Diri Berhasil diedit')
@@ -241,19 +252,18 @@ def proses_ajukan_pendaftaran(request):
             elif request.POST.get('pengajuan') == 'afirmasi':
                 pengajuan = 11
                 jalur = 'Afirmasi'
-                tambahan = CompressImage(
-                    request.FILES.get('afirmasi'), 'file_afirmasi')
+                # tambahan = CompressImage(
+                #     request.FILES.get('afirmasi'), 'file_afirmasi')
+                tambahan = request.FILES.get('afirmasi')
             elif request.POST.get('pengajuan') == 'perpindahan':
                 pengajuan = 12
                 jalur = 'Perpindahan OrangTua'
-                tambahan = CompressImage(request.FILES.get(
-                    'perpindahan'), 'file_perpindahan')
+                tambahan = request.FILES.get('perpindahan')
             elif request.POST.get('pengajuan') == 'prestasi':
                 pengajuan = 13
                 jalur = 'Prestasi'
                 if 'prestasi' in request.FILES:
-                    tambahan = CompressImage(
-                        request.FILES.get('prestasi'), 'file_prestasi')
+                    tambahan = request.FILES.get('prestasi')
                 else:
                     tambahan = None
             data_siswa.status = pengajuan
@@ -261,7 +271,7 @@ def proses_ajukan_pendaftaran(request):
             data_siswa.berkas_tambahan = tambahan
             data_siswa.save()
             messages.success(
-                request, f'Pengajuan Pendaftaran Berhasil, Silahkan Tunggu Proses Verifikasi. Maksimal 3 x 24 Jam')
+                request, f'Pengajuan Pendaftaran Berhasil, Silahkan Tunggu Proses Seleksi.')
             return redirect('siswa:home')
 
 
@@ -293,13 +303,15 @@ def pengumuman_penerimaan(request):
                   template_name='page_siswa/pengumuman_penerimaan.html',
                   context={'data_siswa': data_siswa, 'data_sekolah': data_sekolah})
 
+
 def ganti_password(request):
     if request.user.is_authenticated and request.user.is_staff:
         return redirect('admin_page:home')
     elif not request.user.is_authenticated:
         return redirect('siswa:login')
-    return render(request = request,
-                  template_name= 'page_siswa/ganti_password.html')
+    return render(request=request,
+                  template_name='page_siswa/ganti_password.html')
+
 
 def success(request):
     cs = CustomUser.object.get(email=request.user.email)

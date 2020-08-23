@@ -1,9 +1,10 @@
 {% if list_siswa.desa%}
-<td class="text-center align-middle bg-info" colspan="8">
+<td class="text-center align-middle bg-info" colspan="9">
     Satu domisili Kelurahan / Desa
 </td>
 {% for siswa in list_siswa.desa %}
 <tr>
+    <td class="align-middle text-center">{{forloop.counter}}</td>
     <td class="text-center align-middle">{{siswa.nis}}</td>
     <td class="align-middle text-center">{{siswa.user.get_full_name}}</td>
     <td class="align-middle text-center">{{siswa.nilai_indonesia}}</td>
@@ -27,6 +28,7 @@
 </tr>
 {% for siswa in list_siswa.kecamatan %}
 <tr>
+    <td class="align-middle text-center">{{forloop.counter}}</td>
     <td class="text-center align-middle">{{siswa.nis}}</td>
     <td class="align-middle text-center">{{siswa.user.get_full_name}}</td>
     <td class="align-middle text-center">{{siswa.nilai_indonesia}}</td>
@@ -50,6 +52,7 @@
 </tr>
 {% for siswa in list_siswa.kabupaten %}
 <tr>
+    <td class="align-middle text-center">{{forloop.counter}}</td>
     <td class="text-center align-middle">{{siswa.nis}}</td>
     <td class="align-middle text-center">{{siswa.user.get_full_name}}</td>
     <td class="align-middle text-center">{{siswa.nilai_indonesia}}</td>
