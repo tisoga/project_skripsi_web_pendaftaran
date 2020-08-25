@@ -25,12 +25,12 @@ def homepage(request):
     status = {
         'identitas': len(siswa.filter(status=0)),
         'upload_berkas': len(siswa.filter(status=1)),
-        'verifikasi': len(siswa.filter(status=3)),
-        'gagal_verifikasi': len(siswa.filter(status=4)),
-        'jalur_zonasi': len(siswa.filter(jalur_pendaftaran='zonasi')),
-        'jalur_afirmasi': len(siswa.filter(jalur_pendaftaran='afirmasi')),
-        'jalur_perpindahan': len(siswa.filter(jalur_pendaftaran='perpindahan')),
-        'jalur_prestasi': len(siswa.filter(jalur_pendaftaran='prestasi')),
+        'verifikasi': len(siswa.filter(status=6)),
+        'gagal_verifikasi': len(siswa.filter(status=7)),
+        'jalur_zonasi': len(siswa.filter(jalur_pendaftaran='Zonasi')),
+        'jalur_afirmasi': len(siswa.filter(jalur_pendaftaran='Afirmasi')),
+        'jalur_perpindahan': len(siswa.filter(jalur_pendaftaran='Perpindahan')),
+        'jalur_prestasi': len(siswa.filter(jalur_pendaftaran='Prestasi')),
     }
     data = {'jumlah': len(siswa), 'laki': len(laki), 'perempuan': len(perempuan),
             'status': status}
@@ -97,9 +97,9 @@ def pageSeleksi(request):
     }
     tolak = {
         'jumlah': len(data_siswa.filter(status=7)),
-        'kuota': json.loads(data_sekolah.pembagian_kuota())['prestasi']
+        'kuota': data_sekolah.sisa_prestasi
     }
-    print(tolak)
+    # print(tolak)
     return render(request=request,
                   template_name='page_admin/seleksi_siswa.html',
                   context={'active': 'seleksi', 'data': [zonasi, afirmasi, perpindahan, prestasi]})
@@ -282,7 +282,7 @@ def tabelSeleksi2(request, data):
                     x.save()
             if count > 0:
                 data_sekolah.sisa_perpindahan = 0
-                data_sekolah.sisa_prestasi = data_sekolah.sisa_prestasi + count
+                data_sekolah.sisa_prestasi = count
                 data_sekolah.save()
             messages.success(
                 request, f'Seleksi Untuk Jalur Prestasi Berhasil Di selesaikan')
@@ -531,17 +531,17 @@ def setting_ppdb(request):
                 'perpindahan': len(Siswa.object.filter(status=12)),
                 'prestasi': len(Siswa.object.filter(status=13)),
             }
-            # print(data_sekolah.jam_daftar_ulang)
+            print(jumlah_siswa)
+            status = request.POST.get('status')
             if data_sekolah.nama == '' or data_sekolah.alamat == '' or data_sekolah.daya_tampung == 0 or data_sekolah.jam_daftar_ulang == None or data_sekolah.tanggal_daftar_ulang == None:
                 messages.error(
                     request, f'Harap Isi seluruh settingan PPDB terlebih dahulu, untuk dapat membuka pendaftaran PPDB')
                 return redirect('admin_page:setting')
             elif data_sekolah.status_pendaftaran != 1:
-                if jumlah_siswa['zonasi'] != 0 or jumlah_siswa['afirmasi'] != 0 or jumlah_siswa['perpindahan'] != 0 or jumlah_siswa['prestasi'] != 0 and data_sekolah.status_pendaftaran != 2:
+                if jumlah_siswa['zonasi'] != 0 or jumlah_siswa['afirmasi'] != 0 or jumlah_siswa['perpindahan'] != 0 or jumlah_siswa['prestasi'] != 0 and status != 2:
                     messages.error(
                         request, f'Harap Seleksi seluruh siswa terlebih dahulu, untuk dapat merubah status pendaftaran ke Daftar Ulang')
                     return redirect('admin_page:seleksi')
-            status = request.POST.get('status')
             data_sekolah.status_pendaftaran = status
             data_sekolah.save()
             messages.success(request, f'Status PPDB Berhasil diubah')
