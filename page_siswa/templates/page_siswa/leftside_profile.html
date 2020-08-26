@@ -31,6 +31,15 @@
             <li class="list-group-item">
                 {{request.user.DetailUser.print_status.html | safe}}
             </li>
+            <li class="list-group-item">
+                <b>Jalur Pendaftaran :</b> <a class="float-right text-success">
+                    {% if user.DetailUser.jalur_pendaftaran %}
+                        {{user.DetailUser.jalur_pendaftaran}}
+                    {% else %}
+                        Jalur Pendaftaran Belum Dipilih
+                    {% endif %}
+                </a>
+            </li>
         </ul>
 
         <!-- <a href="#" class="btn btn-success btn-block"><b>Edit Profile</b></a> -->

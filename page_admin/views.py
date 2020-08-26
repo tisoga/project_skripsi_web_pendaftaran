@@ -29,12 +29,12 @@ def homepage(request):
         'gagal_verifikasi': len(siswa.filter(status=7)),
         'jalur_zonasi': len(siswa.filter(jalur_pendaftaran='Zonasi')),
         'jalur_afirmasi': len(siswa.filter(jalur_pendaftaran='Afirmasi')),
-        'jalur_perpindahan': len(siswa.filter(jalur_pendaftaran='Perpindahan')),
+        'jalur_perpindahan': len(siswa.filter(jalur_pendaftaran='Perpindahan OrangTua')),
         'jalur_prestasi': len(siswa.filter(jalur_pendaftaran='Prestasi')),
     }
     data = {'jumlah': len(siswa), 'laki': len(laki), 'perempuan': len(perempuan),
             'status': status}
-    print(data)
+    # print(data)
     return render(request=request,
                   template_name='page_admin/beranda.html',
                   context={'data': data, 'active': 'beranda', 'setting': setting})

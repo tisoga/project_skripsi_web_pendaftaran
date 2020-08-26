@@ -22,7 +22,7 @@ def list_siswa(request):
     elif sort == 11:
         list_siswa = Siswa.object.filter(jalur_pendaftaran = 'Afirmasi')
     elif sort == 12:
-        list_siswa = Siswa.object.filter(jalur_pendaftaran = 'Perpindahan')
+        list_siswa = Siswa.object.filter(jalur_pendaftaran = 'Perpindahan OrangTua')
     elif sort == 13:
         list_siswa = Siswa.object.filter(jalur_pendaftaran = 'Prestasi')
     else:
@@ -34,6 +34,7 @@ def list_siswa(request):
     # elif sort == '3':
     #     list_siswa = Siswa.object.filter(status=3)
     if request.method == 'GET':
+        # print(list_siswa)
         serializer = ListSiswaSerializer(list_siswa, many=True)
         return Response(serializer.data)
     

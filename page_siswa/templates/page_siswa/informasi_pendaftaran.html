@@ -1,0 +1,58 @@
+{% extends 'page_siswa/base_siswa.html'%}
+
+{% block title %}Pengumuman Penerimaan{% endblock %}
+
+{% block judul %}Pengumuman Penerimaan{% endblock %}
+
+{% block content %}
+<div class="card card-primary card-outline">
+    <div class="card-header d-flex justify-content-center">
+        <h5 class="card-title m-0">Informasi Pendaftaran</h5>
+    </div>
+    <div class="card-body">
+        <div class="d-flex flex-column">
+            <h3 class="text-center m-0">{{data_sekolah.nama}}</h3>
+            <h5 class="card-title m-0 text-center">{{data_sekolah.alamat_lengkap}}</h5>
+        </div>
+        <div class="border-top my-3"></div>
+        <div>
+            <h5 class="text-center">Daya Tampung Sekolah : {{data_sekolah.daya_tampung}}</h5>
+            <div class="row">
+                <div class="col-3">
+                    <div class='bg-primary text-center' id="btnZonasi" style="height: 100px;cursor: pointer;"
+                        onclick="openPenerimaan('zonasi')">
+                        <i class="fas fa-2x pt-4">{{data_sekolah.quota_jalur.zonasi}}</i>
+                        <p class="pt-1">Zonasi</p>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class='bg-primary text-center' id="btnAfirmasi" style="height: 100px;cursor: pointer;"
+                        onclick="openPenerimaan('afirmasi')">
+                        <i class="fas fa-2x pt-4">{{data_sekolah.quota_jalur.afirmasi}}</i>
+                        <p class="pt-1">Afirmasi</p>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class='bg-primary text-center' id="btnPerpindahan" style="height: 100px;cursor: pointer;"
+                        onclick="openPenerimaan('perpindahan')">
+                        <i class="fas fa-2x pt-4">{{data_sekolah.quota_jalur.perpindahan}}</i>
+                        <p class="pt-1">Perpindahan Orang Tua</p>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class='bg-primary text-center' id="btnPrestasi" style="height: 100px;cursor: pointer;"
+                        onclick="openPenerimaan('prestasi')">
+                        <i class="fas fa-2x pt-4">{{data_sekolah.quota_jalur.prestasi}}</i>
+                        <p class="pt-1">Prestasi</p>
+                    </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

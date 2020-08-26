@@ -312,6 +312,16 @@ def ganti_password(request):
     return render(request=request,
                   template_name='page_siswa/ganti_password.html')
 
+def informasi_pendaftaran(request):
+    data_sekolah = sekolah.objects.first()
+    alamat = json.loads(data_sekolah.split_alamat())
+    daya_tampung = json.loads(data_sekolah.pembagian_kuota())
+    data_sekolah.quota_jalur = daya_tampung
+    data_sekolah.alamat_lengkap = f'{data_sekolah.alamat_lengkap}, {alamat["desa"]}, {alamat["kecamatan"]}, {alamat["kabupaten"]}, {alamat["provinsi"]}'
+    # print(data_sekolah.alamat_lengkap)  
+    return render(request = request,
+                  template_name = 'page_siswa/informasi_pendaftaran.html',
+                  context={'data_sekolah': data_sekolah})
 
 def success(request):
     cs = CustomUser.object.get(email=request.user.email)
