@@ -174,6 +174,7 @@ class PengajuanPendaftaranSerializer(serializers.ModelSerializer):
             instance.berkas_tambahan = CompressImage(
                 validated_data['berkas_tambahan'])
         instance.status = validated_data['status']
+        instance.jalur_pendaftaran = validated_data['jalur_pendaftaran']
         instance.save()
 
         return instance

@@ -148,7 +148,7 @@ def Pengumuman_LolosAPI(reqeust, sort='all'):
         data_siswa = {
             'zonasi': Siswa.object.filter(status=8).filter(jalur_pendaftaran='Zonasi'),
             'afirmasi': Siswa.object.filter(status=8).filter(jalur_pendaftaran='Afirmasi'),
-            'perpindahan': Siswa.object.filter(status=8).filter(jalur_pendaftaran='Perpindahan'),
+            'perpindahan': Siswa.object.filter(status=8).filter(jalur_pendaftaran='Perpindahan OrangTua'),
             'prestasi': Siswa.object.filter(status=8).filter(jalur_pendaftaran='Prestasi')
         }
         # if sort == 'all':
