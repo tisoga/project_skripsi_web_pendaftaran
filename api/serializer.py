@@ -158,7 +158,7 @@ class PengajuanPendaftaranSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Siswa
-        fields = ['nis', 'status', 'berkas_tambahan']
+        fields = ['nis', 'status', 'berkas_tambahan', 'jalur_pendaftaran']
         read_only_fields = ['nis']
         extra_kwargs = {'status': {'required': True}}
 
