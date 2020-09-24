@@ -74,14 +74,16 @@
                             <div class="d-flex justify-content-around mt-2">
                                 <button class="btn btn-secondary" type="button" id="btnStatus"
                                     onclick="showHideDiv('desc')">Deskripsi Daftar Ulang</button>
-                                <button class="btn btn-dark" type="button" id="btnStatus"
-                                    onclick="showHideDiv('password')">Ubah
-                                    Password Admin</button>
-                            </div>
-                            <div class="d-flex justify-content-around mt-2">
                                 <button class="btn btn-primary" type="button" id="btnStatus" data-toggle="modal"
                                     data-target="#modalTahunAjaranBaru">Tahun Ajaran Baru</button>
+                                <!-- <button class="btn btn-dark" type="button" id="btnStatus"
+                                    onclick="showHideDiv('password')">Ubah
+                                    Password Admin</button> -->
                             </div>
+                            <!-- <div class="d-flex justify-content-around mt-2">
+                                <button class="btn btn-primary" type="button" id="btnStatus" data-toggle="modal"
+                                    data-target="#modalTahunAjaranBaru">Tahun Ajaran Baru</button>
+                            </div> -->
                             <hr>
                             <div id="divStatus" style="display: none;">
                                 <form method="POST" id="formStatus">
@@ -89,7 +91,8 @@
                                     <label>Status Pendaftaran PPDB :
                                         {{data_sekolah.get_status_pendaftaran_display}}</label>
                                     <select class="form-control" name="status" required>
-                                        <option value="0" {% if data_sekolah.status_pendaftaran == 0%}selected{%endif%} disabled>
+                                        <option value="0" {% if data_sekolah.status_pendaftaran == 0%}selected{%endif%}
+                                            disabled>
                                             Pendaftaran Ditutup</option>
                                         <option value="1" {% if data_sekolah.status_pendaftaran == 1%}selected{%endif%}>
                                             Pendaftaran Dibuka</option>

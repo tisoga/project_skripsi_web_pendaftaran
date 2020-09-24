@@ -27,8 +27,8 @@
     <!-- /.login-logo -->
     <div class="card">
       {% include 'page_siswa/messages.html'%}
-      <!-- <div class="col-12">
-        <div class="form-row mt-2 mb-2">
+      <div class="col-12 bg-dark">
+        <!-- <div class="form-row mt-2 mb-2">
           <div class="col-4 offset-2">
             <input type="radio" id='siswa' name="kls" onclick="showHideDiv()" checked>Login Siswa
           </div>
@@ -36,8 +36,20 @@
             <input type="radio" id='admin' name="kls" onclick="showHideDiv()">Login Admin
           </div>
         </div> -->
-      <!-- </div> -->
+        <div>
+          <p class="text-center">Credentials Info</p>
+          <div class="d-flex justify-content-around mb-2">
+            <button class="btn btn-primary" onclick="credentialsInfo('admin')">Admin</button>
+            <!-- <button class="btn btn-primary" onclick="credentialsInfo('students')">Students</button> -->
+          </div>
+          <div class="credentials-info" id="credentials-info" style="display: none;">
+            <p class="email_info" id="email_info">Email : admin@gmail.com</p>
+            <p class="pass_info" id="pass_info">Pass : 123</p>
+          </div>
+        </div>
+      </div>
       <div class="card-body login-card-body" id="divsiswa" style="display: block;">
+        <hr />
         <p class="login-box-msg">Login</p>
         <form method="POST">
           {% csrf_token %}
@@ -159,6 +171,21 @@
         divAdmin.style.display = 'block';
         divSiswa.style.display = 'none';
       }
+    }
+    function credentialsInfo(val) {
+      divInfo = document.getElementById('credentials-info')
+      email = document.getElementById('email_info')
+      pass = document.getElementById('pass_info')
+      divInfo.style.display = 'block';
+      if (val === 'admin') {
+        email.innerHTML = 'Email : admin@gmail.com';
+        pass.innerHTML = 'Pass : 123';
+      }
+      else {
+        email.innerHTML = 'Email : user@gmail.com';
+        pass.innerHTML = 'Pass : 123';
+      }
+
     }
   </script>
 
